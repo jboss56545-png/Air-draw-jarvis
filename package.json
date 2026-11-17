@@ -1,0 +1,13 @@
+{
+  "name": "asviro-airsketch",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "dev": "npx vercel dev",
+    "start": "npx serve ."
+  }
+}
