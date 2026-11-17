@@ -3,23 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>ASVIRO AIRSKETCH — Five Finger AI Control System</title>
+  <title>ASVIRO AIRSKETCH — Live Webcam Air Drawing &amp; AI</title>
   <style>
     :root {
       --bg-void: #030712; --bg-navy: #071024;
       --glass: rgba(7, 16, 36, 0.72); --glass-strong: rgba(5, 12, 28, 0.92);
-      --border-cyan: rgba(0, 229, 255, 0.25); --border-soft: rgba(148, 163, 184, 0.16);
-      --cyan: #00e5ff; --cyan-dim: rgba(0, 229, 255, 0.14);
+      --border-cyan: rgba(0, 229, 255, 0.28); --border-soft: rgba(148, 163, 184, 0.18);
+      --cyan: #00e5ff; --cyan-dim: rgba(0, 229, 255, 0.15);
       --blue: #2563eb; --emerald: #10b981; --amber: #f59e0b; --crimson: #ff3b5c;
-      --text: #f0f9ff; --muted: rgba(186, 230, 253, 0.7);
+      --text: #f0f9ff; --muted: rgba(186, 230, 253, 0.74);
       --font-ui: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
       --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      --shadow-hud: 0 16px 40px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(0, 229, 255, 0.14);
+      --shadow-hud: 0 12px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(0, 229, 255, 0.14);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
     html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg-void); color: var(--text); font-family: var(--font-ui); }
+    button:focus-visible, input:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
     .workspace {
-      position: relative; width: 100vw; height: 100vh; overflow: hidden;
+      position: relative; width: 100vw; height: 100vh; height: 100dvh; overflow: hidden;
       background: radial-gradient(circle at 50% 45%, rgba(0, 229, 255, 0.08), transparent 55%),
                   radial-gradient(circle at 15% 15%, #0c1b3a 0%, var(--bg-void) 72%);
     }
@@ -28,160 +30,220 @@
     #webcam.hidden-feed { opacity: 0; }
     #drawCanvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; touch-action: none; cursor: crosshair; }
     #overlayCanvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; }
+
     .hud-grid {
       position: absolute; inset: 0; z-index: 4; pointer-events: none;
-      background-image: linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+      background-image: linear-gradient(rgba(0,229,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,255,0.025) 1px, transparent 1px);
       background-size: 48px 48px;
-      mask-image: radial-gradient(circle at center, transparent 48%, black 100%);
-      -webkit-mask-image: radial-gradient(circle at center, transparent 48%, black 100%);
+      mask-image: radial-gradient(circle at center, transparent 52%, black 100%);
+      -webkit-mask-image: radial-gradient(circle at center, transparent 52%, black 100%);
     }
-    .cb { position: absolute; width: 24px; height: 24px; z-index: 5; pointer-events: none; border: 2px solid rgba(0,229,255,0.45); }
-    .cb-tl { top: 10px; left: 10px; border-right: 0; border-bottom: 0; border-top-left-radius: 6px; }
-    .cb-tr { top: 10px; right: 10px; border-left: 0; border-bottom: 0; border-top-right-radius: 6px; }
-    .cb-bl { bottom: 10px; left: 10px; border-right: 0; border-top: 0; border-bottom-left-radius: 6px; }
-    .cb-br { bottom: 10px; right: 10px; border-left: 0; border-top: 0; border-bottom-right-radius: 6px; }
+    .cb { position: absolute; width: 20px; height: 20px; z-index: 5; pointer-events: none; border: 2px solid rgba(0,229,255,0.45); }
+    .cb-tl { top: 8px; left: 8px; border-right: 0; border-bottom: 0; border-top-left-radius: 6px; }
+    .cb-tr { top: 8px; right: 8px; border-left: 0; border-bottom: 0; border-top-right-radius: 6px; }
+    .cb-bl { bottom: 8px; left: 8px; border-right: 0; border-top: 0; border-bottom-left-radius: 6px; }
+    .cb-br { bottom: 8px; right: 8px; border-left: 0; border-top: 0; border-bottom-right-radius: 6px; }
 
-    .glass { background: var(--glass); backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%); border: 1px solid var(--border-cyan); box-shadow: var(--shadow-hud); }
-    .air-hover { outline: 2px solid var(--cyan) !important; box-shadow: 0 0 18px rgba(0, 229, 255, 0.55) !important; transform: scale(1.04); }
+    .glass { background: var(--glass); backdrop-filter: blur(14px) saturate(155%); -webkit-backdrop-filter: blur(14px) saturate(155%); border: 1px solid var(--border-cyan); box-shadow: var(--shadow-hud); }
+    .air-hover { outline: 2px solid var(--cyan) !important; box-shadow: 0 0 16px rgba(0, 229, 255, 0.55) !important; transform: scale(1.04); }
 
-    .top-hud { position: fixed; top: max(12px, env(safe-area-inset-top)); left: 14px; right: 14px; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 8px; pointer-events: none; flex-wrap: wrap; }
+    /* Top HUD */
+    .top-hud { position: fixed; top: max(10px, env(safe-area-inset-top)); left: 12px; right: 12px; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 8px; pointer-events: none; flex-wrap: wrap; }
     .top-hud > * { pointer-events: auto; }
-    .brand-cluster { display: flex; align-items: center; gap: 11px; padding: 7px 15px 7px 9px; border-radius: 999px; }
-    .arc-core { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; position: relative; background: radial-gradient(circle, rgba(0,229,255,0.34), rgba(37,99,235,0.22)); border: 1.5px solid var(--cyan); box-shadow: 0 0 16px rgba(0,229,255,0.38); }
-    .arc-core::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; border: 1px dashed rgba(0,229,255,0.65); animation: spinSlow 16s linear infinite; }
+    .brand-cluster { display: flex; align-items: center; gap: 9px; padding: 5px 13px 5px 7px; border-radius: 999px; }
+    .arc-core { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; position: relative; background: radial-gradient(circle, rgba(0,229,255,0.34), rgba(37,99,235,0.22)); border: 1.5px solid var(--cyan); box-shadow: 0 0 14px rgba(0,229,255,0.38); }
+    .arc-core::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; border: 1px dashed rgba(0,229,255,0.65); animation: spinSlow 16s linear infinite; }
     @keyframes spinSlow { to { transform: rotate(360deg); } }
-    .brand-meta h1 { font-size: 0.86rem; font-weight: 800; letter-spacing: 0.08em; }
-    .brand-sub { font-size: 0.65rem; letter-spacing: 0.06em; color: var(--cyan); }
+    .brand-meta h1 { font-size: 0.82rem; font-weight: 800; letter-spacing: 0.08em; }
+    .brand-sub { font-size: 0.6rem; letter-spacing: 0.05em; color: var(--cyan); }
 
-    .telemetry-strip { display: flex; align-items: center; gap: 10px; padding: 7px 14px; border-radius: 999px; font-size: 0.74rem; }
-    .tel-item { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .telemetry-strip { display: flex; align-items: center; gap: 8px; padding: 5px 12px; border-radius: 999px; font-size: 0.72rem; }
+    .tel-item { display: flex; align-items: center; gap: 5px; white-space: nowrap; }
     .tel-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 8px var(--amber); }
     .tel-dot.online { background: var(--emerald); box-shadow: 0 0 9px var(--emerald); }
     .tel-dot.active { background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
     .tel-dot.erase { background: var(--crimson); box-shadow: 0 0 10px var(--crimson); }
     .tel-dot.paused { background: var(--amber); box-shadow: 0 0 10px var(--amber); }
-    .finger-leds { display: flex; gap: 4px; padding-left: 8px; border-left: 1px solid var(--border-soft); }
-    .f-led { width: 20px; height: 20px; border-radius: 6px; display: grid; place-items: center; font-family: var(--font-mono); font-size: 0.65rem; font-weight: 700; color: var(--muted); background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: 0.12s ease; }
-    .f-led.up { color: #030712; background: var(--cyan); border-color: #fff; box-shadow: 0 0 10px rgba(0,229,255,0.65); }
-    .gesture-pill { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: var(--cyan-dim); border: 1px solid rgba(0,229,255,0.38); color: var(--cyan); }
-    .perf-readout { font-family: var(--font-mono); font-size: 0.69rem; color: var(--muted); border-left: 1px solid var(--border-soft); padding-left: 8px; }
+    .finger-leds { display: flex; gap: 3px; padding-left: 7px; border-left: 1px solid var(--border-soft); }
+    .f-led { width: 18px; height: 18px; border-radius: 5px; display: grid; place-items: center; font-family: var(--font-mono); font-size: 0.61rem; font-weight: 700; color: var(--muted); background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: 0.12s ease; }
+    .f-led.up { color: #030712; background: var(--cyan); border-color: #fff; box-shadow: 0 0 9px rgba(0,229,255,0.65); }
+    .gesture-pill { font-family: var(--font-mono); font-size: 0.67rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--cyan-dim); border: 1px solid rgba(0,229,255,0.38); color: var(--cyan); }
+    .perf-readout { font-family: var(--font-mono); font-size: 0.66rem; color: var(--muted); border-left: 1px solid var(--border-soft); padding-left: 7px; }
 
-    .hud-actions { display: flex; align-items: center; gap: 5px; padding: 5px 8px; border-radius: 999px; flex-wrap: wrap; }
-    .hud-btn { appearance: none; border: 1px solid transparent; background: transparent; color: var(--text); height: 32px; min-width: 32px; padding: 0 9px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: 0.15s ease; white-space: nowrap; }
+    .hud-actions { display: flex; align-items: center; gap: 4px; padding: 4px 7px; border-radius: 999px; flex-wrap: wrap; }
+    .hud-btn { appearance: none; border: 1px solid transparent; background: transparent; color: var(--text); height: 32px; min-width: 32px; padding: 0 9px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 0.74rem; font-weight: 600; cursor: pointer; transition: 0.15s ease; white-space: nowrap; }
     .hud-btn:hover:not(:disabled) { background: rgba(0,229,255,0.14); border-color: rgba(0,229,255,0.35); }
     .hud-btn:disabled { opacity: 0.35; cursor: not-allowed; }
     .hud-btn.active { background: rgba(0,229,255,0.22); border-color: var(--cyan); color: var(--cyan); }
     .hud-btn.danger:hover:not(:disabled) { background: rgba(255,59,92,0.2); border-color: rgba(255,59,92,0.5); color: #fda4af; }
     .hud-btn.primary { background: linear-gradient(135deg, rgba(0,229,255,0.25), rgba(37,99,235,0.3)); border-color: rgba(0,229,255,0.45); }
-    .hud-btn.ai-cta { background: linear-gradient(135deg, #00e5ff, #2563eb); color: #030712; font-weight: 800; box-shadow: 0 0 16px rgba(0,229,255,0.36); }
+    .hud-btn.ai-cta { background: linear-gradient(135deg, #00e5ff, #2563eb); color: #030712; font-weight: 800; box-shadow: 0 0 14px rgba(0,229,255,0.36); }
 
-    .bottom-dock-wrap { position: fixed; bottom: max(12px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 20; max-width: calc(100vw - 16px); }
-    .bottom-dock { display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 24px; flex-wrap: wrap; justify-content: center; }
-    .dock-sep { width: 1px; height: 24px; background: var(--border-soft); }
-    .mode-group { display: flex; padding: 3px; border-radius: 999px; background: rgba(0,0,0,0.36); border: 1px solid var(--border-soft); gap: 4px; }
-    .mode-pill { appearance: none; border: none; background: transparent; color: var(--muted); padding: 6px 13px; border-radius: 999px; font-size: 0.77rem; font-weight: 700; cursor: pointer; transition: 0.16s ease; }
-    .mode-pill.active[data-tool="brush"] { background: linear-gradient(135deg, #00e5ff, #2563eb); color: #030712; box-shadow: 0 0 16px rgba(0,229,255,0.4); }
-    .mode-pill.active[data-tool="eraser"] { background: linear-gradient(135deg, #ff3b5c, #e11d48); color: #fff; box-shadow: 0 0 16px rgba(255,59,92,0.4); }
-    .swatches { display: flex; align-items: center; gap: 7px; }
+    /* Compact Live Gesture Guide Bar near Webcam */
+    .gesture-guide-bar {
+      position: fixed; top: 58px; left: 50%; transform: translateX(-50%); z-index: 15;
+      display: flex; align-items: center; gap: 10px; padding: 5px 12px; border-radius: 999px;
+      font-size: 0.69rem; font-weight: 700; letter-spacing: 0.03em; color: var(--text);
+      pointer-events: none; max-width: calc(100vw - 24px); flex-wrap: wrap; justify-content: center;
+    }
+    .gg-item { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+    .gg-item span { color: var(--cyan); }
+
+    /* Bottom Command Dock */
+    .bottom-dock-wrap { position: fixed; bottom: max(10px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 22; width: max-content; max-width: calc(100vw - 16px); }
+    .bottom-dock { display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 22px; flex-wrap: wrap; justify-content: center; }
+    .dock-sep { width: 1px; height: 22px; background: var(--border-soft); }
+    .mode-group { display: flex; padding: 3px; border-radius: 999px; background: rgba(0,0,0,0.36); border: 1px solid var(--border-soft); gap: 3px; }
+    .mode-pill { appearance: none; border: none; background: transparent; color: var(--muted); padding: 6px 12px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; cursor: pointer; transition: 0.16s ease; }
+    .mode-pill.active[data-tool="brush"] { background: linear-gradient(135deg, #00e5ff, #2563eb); color: #030712; box-shadow: 0 0 14px rgba(0,229,255,0.4); }
+    .mode-pill.active[data-tool="eraser"] { background: linear-gradient(135deg, #ff3b5c, #e11d48); color: #fff; box-shadow: 0 0 14px rgba(255,59,92,0.4); }
+    .swatches { display: flex; align-items: center; gap: 6px; }
     .swatch { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.25); cursor: pointer; transition: 0.14s ease; }
     .swatch:hover { transform: scale(1.15); }
-    .swatch.active { transform: scale(1.18); border-color: #fff; box-shadow: 0 0 12px currentColor; }
-    .color-custom { position: relative; width: 24px; height: 24px; border-radius: 50%; padding: 2px; background: conic-gradient(#ff3b5c, #f59e0b, #10b981, #00e5ff, #a855f7, #ff3b5c); cursor: pointer; display: grid; place-items: center; }
+    .swatch.active { transform: scale(1.18); border-color: #fff; box-shadow: 0 0 11px currentColor; }
+    .color-custom { position: relative; width: 23px; height: 23px; border-radius: 50%; padding: 2px; background: conic-gradient(#ff3b5c, #f59e0b, #10b981, #00e5ff, #a855f7, #ff3b5c); cursor: pointer; display: grid; place-items: center; }
     .color-custom input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
     .color-custom-dot { width: 100%; height: 100%; border-radius: 50%; border: 2px solid #040812; pointer-events: none; }
-    .slider-group { display: flex; align-items: center; gap: 8px; font-size: 0.73rem; color: var(--muted); }
-    .size-dot-wrap { width: 25px; height: 25px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid var(--border-soft); display: grid; place-items: center; }
+    .slider-group { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; color: var(--muted); }
+    .size-dot-wrap { width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid var(--border-soft); display: grid; place-items: center; }
     .size-dot { border-radius: 50%; background: var(--cyan); }
-    input[type="range"].cyber-range { -webkit-appearance: none; appearance: none; width: 84px; height: 4px; border-radius: 99px; background: rgba(0,229,255,0.22); outline: none; cursor: pointer; }
-    input[type="range"].cyber-range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 15px; height: 15px; border-radius: 50%; background: var(--cyan); border: 2px solid #fff; box-shadow: 0 0 8px rgba(0,229,255,0.7); cursor: pointer; }
-    .mono-val { font-family: var(--font-mono); font-size: 0.72rem; min-width: 34px; color: var(--text); }
+    input[type="range"].cyber-range { -webkit-appearance: none; appearance: none; width: 76px; height: 4px; border-radius: 99px; background: rgba(0,229,255,0.22); outline: none; cursor: pointer; }
+    input[type="range"].cyber-range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--cyan); border: 2px solid #fff; box-shadow: 0 0 8px rgba(0,229,255,0.7); cursor: pointer; }
+    .mono-val { font-family: var(--font-mono); font-size: 0.7rem; min-width: 32px; color: var(--text); }
 
-    .floating-panel { position: fixed; z-index: 30; border-radius: 20px; padding: 18px; transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease; }
-    .floating-panel.hidden { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(8px) scale(0.98); }
-    .panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-soft); gap: 8px; }
-    .panel-title { font-size: 0.82rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cyan); }
+    /* Compact Floating AI Result Card (Never Full-Screen on Mobile) */
+    .ai-panel {
+      position: fixed; z-index: 28; left: 14px; bottom: 78px;
+      width: 500px; max-width: calc(100vw - 24px);
+      max-height: 44vh; max-height: 44dvh;
+      border-radius: 18px; padding: 12px 14px;
+      background: var(--glass-strong); border: 1px solid var(--border-cyan); box-shadow: var(--shadow-hud);
+      display: flex; flex-direction: column; gap: 8px;
+      transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+    }
+    .ai-panel.hidden { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(12px) scale(0.98); }
 
-    .controls-panel { top: 74px; right: 16px; width: 315px; max-width: calc(100vw - 32px); max-height: calc(100vh - 165px); overflow-y: auto; }
-    .control-row { margin-bottom: 12px; }
-    .control-label { display: flex; justify-content: space-between; font-size: 0.74rem; color: var(--muted); margin-bottom: 5px; }
-    .seg-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-    .seg-btn { appearance: none; border: 1px solid var(--border-soft); background: rgba(255,255,255,0.04); color: var(--muted); padding: 7px 6px; border-radius: 10px; font-size: 0.72rem; font-weight: 600; cursor: pointer; }
-    .seg-btn.active { background: rgba(0,229,255,0.18); border-color: var(--cyan); color: var(--cyan); }
-    .gesture-cheat { margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.7rem; }
-    .cheat-chip { padding: 6px 8px; border-radius: 9px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: var(--muted); }
-    .cheat-chip strong { display: block; color: var(--text); font-size: 0.71rem; }
+    .ai-card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border-soft); }
+    .ai-card-title { font-size: 0.76rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: var(--cyan); display: flex; align-items: center; gap: 6px; }
 
-    .ai-panel { top: 74px; left: 16px; width: 350px; max-width: calc(100vw - 32px); max-height: calc(100vh - 165px); overflow-y: auto; background: var(--glass-strong); display: flex; flex-direction: column; gap: 10px; }
-    .char-stage { position: relative; width: 100%; height: 175px; border-radius: 16px; overflow: hidden; background: radial-gradient(circle at 50% 60%, rgba(0,229,255,0.16), rgba(3,7,18,0.92)); border: 1px solid var(--border-cyan); }
+    .ai-card-body { display: grid; grid-template-columns: 122px 1fr; gap: 10px; overflow-y: auto; min-height: 0; padding-right: 2px; }
+    .char-stage { position: relative; width: 122px; height: 118px; border-radius: 14px; overflow: hidden; background: radial-gradient(circle at 50% 60%, rgba(0,229,255,0.16), rgba(3,7,18,0.92)); border: 1px solid var(--border-cyan); flex-shrink: 0; }
     #threeStage, #fallback2dCanvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-    .char-state-pill { position: absolute; top: 8px; left: 8px; padding: 3px 9px; border-radius: 999px; font-family: var(--font-mono); font-size: 0.66rem; font-weight: 700; background: rgba(3,7,18,0.75); border: 1px solid var(--border-cyan); color: var(--cyan); }
-    .ai-result-card { padding: 10px 12px; border-radius: 14px; background: rgba(0,229,255,0.06); border: 1px solid rgba(0,229,255,0.22); }
-    .ai-res-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 5px; }
-    .ai-res-title { font-size: 1rem; font-weight: 800; color: var(--text); }
-    .ai-conf { font-family: var(--font-mono); font-size: 0.68rem; padding: 2px 8px; border-radius: 999px; background: rgba(16,185,129,0.18); border: 1px solid rgba(16,185,129,0.45); color: #6ee7b7; }
-    .ai-desc { font-size: 0.76rem; color: var(--muted); line-height: 1.42; }
-    .speech-bubble { padding: 10px 12px; border-radius: 14px; background: rgba(37,99,235,0.16); border: 1px solid rgba(59,130,246,0.35); font-size: 0.78rem; line-height: 1.45; color: #e0f2fe; min-height: 52px; }
-    .ai-btn-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .char-state-pill { position: absolute; top: 5px; left: 5px; padding: 2px 6px; border-radius: 999px; font-family: var(--font-mono); font-size: 0.58rem; font-weight: 700; background: rgba(3,7,18,0.8); border: 1px solid var(--border-cyan); color: var(--cyan); }
+    .char-obj-badge { position: absolute; bottom: 5px; right: 5px; padding: 2px 6px; border-radius: 999px; font-size: 0.62rem; background: rgba(3,7,18,0.8); border: 1px solid var(--border-soft); color: var(--text); }
 
-    .thumb-menu { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 370px; max-width: calc(100vw - 28px); background: var(--glass-strong); }
+    .ai-info-col { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    .ai-res-head { display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .ai-res-title { font-size: 0.92rem; font-weight: 800; color: var(--text); overflow-wrap: anywhere; }
+    .ai-conf { font-family: var(--font-mono); font-size: 0.66rem; padding: 2px 7px; border-radius: 999px; background: rgba(16,185,129,0.18); border: 1px solid rgba(16,185,129,0.45); color: #6ee7b7; }
+    .ai-desc { font-size: 0.74rem; color: var(--muted); line-height: 1.38; overflow-wrap: anywhere; }
+    .speech-bubble { padding: 7px 10px; border-radius: 12px; background: rgba(37,99,235,0.18); border: 1px solid rgba(59,130,246,0.35); font-size: 0.75rem; line-height: 1.38; color: #e0f2fe; max-height: 58px; overflow-y: auto; overflow-wrap: anywhere; }
+    .ai-suggestion { font-size: 0.7rem; color: var(--cyan); opacity: 0.92; }
+
+    .ai-btn-row { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; padding-top: 4px; border-top: 1px solid var(--border-soft); }
+    .ai-btn-row .hud-btn { height: 28px; font-size: 0.71rem; padding: 0 8px; }
+
+    /* Minimized Floating AI Pill */
+    .ai-mini-pill {
+      position: fixed; left: 12px; bottom: 80px; z-index: 28;
+      display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px;
+      border-radius: 999px; background: var(--glass-strong); border: 1px solid var(--cyan);
+      color: var(--text); font-size: 0.75rem; font-weight: 700; cursor: pointer;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    }
+    .ai-mini-pill.hidden { display: none; }
+
+    /* Secondary Panels (Controls, Thumb Menu, Modals) */
+    .floating-panel { position: fixed; z-index: 30; border-radius: 20px; padding: 16px; transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease; }
+    .floating-panel.hidden { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(8px) scale(0.98); }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border-soft); gap: 8px; }
+    .panel-title { font-size: 0.8rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cyan); }
+
+    .controls-panel { top: 72px; right: 14px; width: 305px; max-width: calc(100vw - 28px); max-height: calc(100dvh - 170px); overflow-y: auto; }
+    .control-row { margin-bottom: 11px; }
+    .control-label { display: flex; justify-content: space-between; font-size: 0.73rem; color: var(--muted); margin-bottom: 5px; }
+    .seg-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .seg-btn { appearance: none; border: 1px solid var(--border-soft); background: rgba(255,255,255,0.04); color: var(--muted); padding: 7px 6px; border-radius: 10px; font-size: 0.71rem; font-weight: 600; cursor: pointer; }
+    .seg-btn.active { background: rgba(0,229,255,0.18); border-color: var(--cyan); color: var(--cyan); }
+    .gesture-cheat { margin-top: 9px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.69rem; }
+    .cheat-chip { padding: 6px 8px; border-radius: 9px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: var(--muted); }
+    .cheat-chip strong { display: block; color: var(--text); font-size: 0.7rem; }
+
+    .thumb-menu { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 350px; max-width: calc(100vw - 24px); background: var(--glass-strong); }
     .thumb-menu.hidden { transform: translate(-50%, -46%) scale(0.95); }
     .thumb-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
     .thumb-tile { appearance: none; border: 1px solid var(--border-soft); background: rgba(255,255,255,0.05); color: var(--text); padding: 10px 6px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
     .thumb-tile:hover { border-color: var(--cyan); background: rgba(0,229,255,0.16); }
     .thumb-colors { display: flex; justify-content: space-between; gap: 8px; padding: 10px; border-radius: 12px; background: rgba(0,0,0,0.32); }
     .thumb-colors .swatch { width: 28px; height: 28px; }
-    .thumb-hint { margin-top: 9px; font-size: 0.71rem; text-align: center; color: var(--muted); }
+    .thumb-hint { margin-top: 9px; font-size: 0.7rem; text-align: center; color: var(--muted); }
 
     .modal-backdrop { position: fixed; inset: 0; z-index: 45; background: rgba(2,6,18,0.74); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: grid; place-items: center; padding: 16px; transition: opacity 0.22s ease, visibility 0.22s ease; }
     .modal-backdrop.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-    .cal-card, .gallery-card { width: 100%; max-width: 580px; max-height: 90vh; overflow-y: auto; border-radius: 24px; padding: 22px; background: var(--glass-strong); }
+    .cal-card, .gallery-card { width: 100%; max-width: 560px; max-height: 88dvh; overflow-y: auto; border-radius: 22px; padding: 20px; background: var(--glass-strong); }
     .finger-test-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 14px; }
     .finger-card { padding: 10px 6px; border-radius: 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-soft); text-align: center; transition: 0.14s ease; }
     .finger-card.detected { background: rgba(0,229,255,0.18); border-color: var(--cyan); box-shadow: 0 0 14px rgba(0,229,255,0.3); }
     .finger-card .f-name { font-size: 0.74rem; font-weight: 700; display: block; }
-    .finger-card .f-role { font-size: 0.65rem; color: var(--muted); display: block; margin: 3px 0 8px; }
+    .finger-card .f-role { font-size: 0.64rem; color: var(--muted); display: block; margin: 3px 0 8px; }
     .toggle-chip { appearance: none; border: 1px solid var(--border-soft); background: rgba(0,0,0,0.35); color: var(--muted); padding: 3px 8px; border-radius: 999px; font-size: 0.64rem; font-weight: 700; cursor: pointer; }
     .toggle-chip.on { background: rgba(16,185,129,0.22); border-color: var(--emerald); color: #6ee7b7; }
     .cal-sliders { display: grid; gap: 10px; margin-bottom: 16px; }
-    .cal-slider-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.04); font-size: 0.77rem; }
-    .cal-slider-row input[type="range"] { width: 130px; }
+    .cal-slider-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.04); font-size: 0.76rem; }
+    .cal-slider-row input[type="range"] { width: 120px; }
 
-    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 12px; margin-top: 12px; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-top: 12px; }
     .gal-card { border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.04); border: 1px solid var(--border-soft); display: flex; flex-direction: column; }
-    .gal-thumb { width: 100%; height: 106px; object-fit: cover; background: #030712; }
-    .gal-body { padding: 9px; font-size: 0.73rem; display: flex; flex-direction: column; gap: 4px; }
+    .gal-thumb { width: 100%; height: 102px; object-fit: cover; background: #030712; }
+    .gal-body { padding: 9px; font-size: 0.72rem; display: flex; flex-direction: column; gap: 4px; }
     .gal-title { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .gal-ai { font-size: 0.66rem; color: var(--cyan); }
-    .gal-date { font-size: 0.64rem; color: var(--muted); }
+    .gal-ai { font-size: 0.65rem; color: var(--cyan); }
+    .gal-date { font-size: 0.63rem; color: var(--muted); }
     .gal-actions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
 
-    .confirm-card { width: 100%; max-width: 360px; border-radius: 22px; padding: 22px; background: var(--glass-strong); text-align: center; }
-    .confirm-card h3 { font-size: 1.05rem; margin-bottom: 8px; }
-    .confirm-card p { font-size: 0.81rem; color: var(--muted); margin-bottom: 18px; }
+    .confirm-card { width: 100%; max-width: 350px; border-radius: 20px; padding: 20px; background: var(--glass-strong); text-align: center; }
+    .confirm-card h3 { font-size: 1.02rem; margin-bottom: 8px; }
+    .confirm-card p { font-size: 0.8rem; color: var(--muted); margin-bottom: 16px; }
     .confirm-actions { display: flex; gap: 10px; justify-content: center; }
 
-    .startup-card { width: 100%; max-width: 510px; border-radius: 26px; padding: 26px 22px; background: var(--glass-strong); text-align: center; }
-    .startup-badge { display: inline-block; padding: 5px 12px; border-radius: 999px; background: var(--cyan-dim); border: 1px solid rgba(0,229,255,0.4); color: var(--cyan); font-size: 0.69rem; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 12px; }
-    .startup-card h2 { font-size: 1.45rem; font-weight: 800; margin-bottom: 8px; }
-    .startup-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.5; margin-bottom: 16px; }
-    .feature-matrix { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; text-align: left; margin-bottom: 18px; }
-    .fm-item { padding: 9px 11px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); font-size: 0.73rem; color: var(--muted); }
+    .startup-card { width: 100%; max-width: 490px; border-radius: 24px; padding: 24px 20px; background: var(--glass-strong); text-align: center; }
+    .startup-badge { display: inline-block; padding: 5px 12px; border-radius: 999px; background: var(--cyan-dim); border: 1px solid rgba(0,229,255,0.4); color: var(--cyan); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 10px; }
+    .startup-card h2 { font-size: 1.38rem; font-weight: 800; margin-bottom: 6px; }
+    .startup-card p { font-size: 0.83rem; color: var(--muted); line-height: 1.48; margin-bottom: 14px; }
+    .feature-matrix { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; text-align: left; margin-bottom: 16px; }
+    .fm-item { padding: 9px 11px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); font-size: 0.72rem; color: var(--muted); }
     .fm-item strong { color: var(--cyan); display: block; margin-bottom: 2px; }
     .start-cta { width: 100%; padding: 13px 20px; border-radius: 999px; border: none; background: linear-gradient(135deg, #00e5ff, #2563eb); color: #030712; font-size: 0.92rem; font-weight: 800; cursor: pointer; box-shadow: 0 10px 28px rgba(0,229,255,0.36); }
     .start-cta:disabled { opacity: 0.65; cursor: wait; }
-    .secondary-cta { margin-top: 10px; width: 100%; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--border-soft); background: transparent; color: var(--muted); font-size: 0.79rem; font-weight: 600; cursor: pointer; }
+    .secondary-cta { margin-top: 9px; width: 100%; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--border-soft); background: transparent; color: var(--muted); font-size: 0.79rem; font-weight: 600; cursor: pointer; }
     .secondary-cta:hover { border-color: var(--cyan); color: var(--text); }
     .error-banner { display: none; margin-top: 12px; padding: 10px 12px; border-radius: 12px; background: rgba(255,59,92,0.14); border: 1px solid rgba(255,59,92,0.42); color: #fda4af; font-size: 0.77rem; text-align: left; }
-    .toast { position: fixed; top: 72px; left: 50%; transform: translateX(-50%) translateY(-8px); z-index: 60; padding: 7px 16px; border-radius: 999px; font-size: 0.77rem; font-weight: 700; color: var(--cyan); opacity: 0; pointer-events: none; transition: 0.2s ease; }
+    .toast { position: fixed; top: 94px; left: 50%; transform: translateX(-50%) translateY(-8px); z-index: 60; padding: 7px 16px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; color: var(--cyan); opacity: 0; pointer-events: none; transition: 0.2s ease; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    @media (max-width: 1040px) { .telemetry-strip { order: 3; width: 100%; justify-content: space-between; } }
-    @media (max-width: 640px) {
+    /* Responsive Breakpoints (Portrait & Landscape Mobile) */
+    @media (max-width: 1020px) {
+      .telemetry-strip { order: 3; width: 100%; justify-content: space-between; }
+      .gesture-guide-bar { top: 92px; }
+    }
+    @media (max-width: 680px) {
       .brand-sub, .dock-sep, .perf-readout { display: none; }
-      .bottom-dock { gap: 8px; padding: 8px 10px; }
+      .hud-btn { height: 34px; padding: 0 8px; font-size: 0.72rem; }
+      .gesture-guide-bar { top: 96px; font-size: 0.64rem; gap: 7px; padding: 4px 10px; }
+      .bottom-dock { gap: 6px; padding: 7px 10px; border-radius: 18px; }
+      .ai-panel {
+        left: 12px; right: 12px; width: calc(100% - 24px);
+        bottom: 96px; max-height: 40dvh; padding: 10px 12px;
+      }
+      .ai-mini-pill { bottom: 96px; }
+      .ai-card-body { grid-template-columns: 98px 1fr; gap: 9px; }
+      .char-stage { width: 98px; height: 104px; }
       .finger-test-grid { grid-template-columns: repeat(2, 1fr); }
       .feature-matrix { grid-template-columns: 1fr; }
-      .ai-panel { left: 10px; right: 10px; width: auto; max-height: 60vh; }
+    }
+    @media (max-height: 520px) and (orientation: landscape) {
+      .gesture-guide-bar { display: none; }
+      .ai-panel { max-height: 58dvh; bottom: 64px; width: 420px; }
     }
   </style>
 </head>
@@ -194,11 +256,11 @@
     <div class="cb cb-tl"></div><div class="cb cb-tr"></div><div class="cb cb-bl"></div><div class="cb cb-br"></div>
   </div>
 
-  <!-- Top JARVIS HUD -->
+  <!-- Top HUD -->
   <header class="top-hud">
     <div class="brand-cluster glass">
       <div class="arc-core">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2.4">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2.4">
           <circle cx="12" cy="12" r="4"></circle>
           <path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path>
         </svg>
@@ -219,21 +281,27 @@
     </div>
 
     <div class="hud-actions glass">
-      <button class="hud-btn ai-cta" id="aiAnalyzeBtn" title="Analyze Drawing with Gemini AI">✨ Ask AI</button>
-      <button class="hud-btn" id="gestureModeBtn" title="Toggle Standard / AirSketch AI Mode">Mode: Standard</button>
+      <button class="hud-btn ai-cta" id="aiAnalyzeBtn" title="Submit Drawing to ASVIRO AI">✨ Ask AI</button>
       <button class="hud-btn" id="galleryBtn" title="My Creations Gallery">Gallery</button>
-      <button class="hud-btn" id="undoBtn" title="Undo (Pinky Hold / Ctrl+Z)" disabled>Undo</button>
-      <button class="hud-btn" id="redoBtn" title="Redo (3-Finger / Ctrl+Y)" disabled>Redo</button>
+      <button class="hud-btn" id="undoBtn" title="Undo (Ctrl+Z)" disabled>Undo</button>
+      <button class="hud-btn" id="redoBtn" title="Redo (Ctrl+Y)" disabled>Redo</button>
       <button class="hud-btn" id="calibrateBtn" title="Gesture Calibration">Calibrate</button>
-      <button class="hud-btn" id="controlsToggleBtn" title="Controls Panel (Open Palm)">Panel</button>
+      <button class="hud-btn" id="controlsToggleBtn" title="Open Controls Menu">Menu</button>
       <button class="hud-btn danger" id="clearBtn" title="Clear Canvas">Clear</button>
       <button class="hud-btn primary" id="exportBtn" title="Export PNG">Export</button>
     </div>
   </header>
 
+  <!-- Clear Live Gesture Guide -->
+  <div class="gesture-guide-bar glass" aria-label="Gesture Instructions">
+    <div class="gg-item">☝️ <span>INDEX FINGER UP</span> — DRAW</div>
+    <div class="gg-item">🖐 <span>OPEN PALM</span> — PEN UP / PAUSE</div>
+    <div class="gg-item">✊ <span>HOLD FIST 1 SEC</span> — SUBMIT TO AI</div>
+  </div>
+
   <div class="toast glass" id="toast"></div>
 
-  <!-- Bottom Command Dock -->
+  <!-- Compact Bottom Drawing Dock -->
   <div class="bottom-dock-wrap">
     <div class="bottom-dock glass">
       <div class="mode-group">
@@ -242,7 +310,7 @@
       </div>
       <div class="dock-sep"></div>
       <div class="swatches">
-        <button class="swatch active" data-color="#00e5ff" style="background:#00e5ff;color:#00e5ff;" title="Arc Cyan"></button>
+        <button class="swatch active" data-color="#00e5ff" style="background:#00e5ff;color:#00e5ff;" title="Electric Cyan"></button>
         <button class="swatch" data-color="#3b82f6" style="background:#3b82f6;color:#3b82f6;" title="Plasma Blue"></button>
         <button class="swatch" data-color="#10b981" style="background:#10b981;color:#10b981;" title="Emerald"></button>
         <button class="swatch" data-color="#f59e0b" style="background:#f59e0b;color:#f59e0b;" title="Stark Gold"></button>
@@ -256,59 +324,67 @@
       <div class="dock-sep"></div>
       <div class="slider-group">
         <div class="size-dot-wrap"><div class="size-dot" id="sizeDot" style="width:9px;height:9px;"></div></div>
-        <input type="range" class="cyber-range" id="sizeSlider" min="2" max="54" value="9" />
+        <input type="range" class="cyber-range" id="sizeSlider" min="2" max="54" value="9" aria-label="Brush or Eraser Size" />
         <span class="mono-val" id="sizeVal">9px</span>
       </div>
       <div class="dock-sep"></div>
       <button class="hud-btn active" id="skeletonToggleBtn">Skeleton</button>
       <button class="hud-btn" id="camFeedBtn">Cam: Full</button>
-      <button class="hud-btn" id="thumbMenuBtn">Menu</button>
+      <button class="hud-btn" id="thumbMenuBtn">Tools</button>
     </div>
   </div>
 
-  <!-- Floating AI Recognition & 3D Character Panel -->
-  <aside class="floating-panel ai-panel glass hidden" id="aiPanel">
-    <div class="panel-head">
-      <div class="panel-title">ASVIRO AI • Assistant</div>
+  <!-- Compact Floating AI Result Card (Preserves Webcam View) -->
+  <aside class="ai-panel hidden" id="aiPanel" aria-label="ASVIRO AI Result">
+    <div class="ai-card-head">
+      <div class="ai-card-title">🤖 ASVIRO AI • <span id="aiCategoryTag">READY</span></div>
       <div style="display:flex;gap:4px;">
-        <button class="hud-btn primary" id="saveToGalleryBtn" title="Save to Gallery">Save</button>
+        <button class="hud-btn" id="minimizeAiBtn" title="Minimize Card">—</button>
         <button class="hud-btn" id="closeAiPanelBtn" title="Dismiss">✕</button>
       </div>
     </div>
-    <div class="char-stage">
-      <div id="threeStage"></div>
-      <canvas id="fallback2dCanvas" style="display:none;"></canvas>
-      <span class="char-state-pill" id="charStateTag">IDLE</span>
-    </div>
-    <div class="ai-result-card">
-      <div class="ai-res-head">
-        <span class="ai-res-title" id="aiObjectTitle">Ready to Analyze</span>
-        <span class="ai-conf" id="aiConfidenceBadge">--%</span>
+
+    <div class="ai-card-body">
+      <div class="char-stage">
+        <div id="threeStage"></div>
+        <canvas id="fallback2dCanvas" style="display:none;"></canvas>
+        <span class="char-state-pill" id="charStateTag">IDLE</span>
+        <span class="char-obj-badge" id="charObjTag" style="display:none;"></span>
       </div>
-      <div class="ai-desc" id="aiExplanationText">Draw anything on the canvas and click "Ask AI" (or hold a Closed Fist 1s in AI Mode).</div>
+
+      <div class="ai-info-col">
+        <div class="ai-res-head">
+          <span class="ai-res-title" id="aiObjectTitle">Ready to Analyze</span>
+          <span class="ai-conf" id="aiConfidenceBadge">--%</span>
+        </div>
+        <div class="ai-desc" id="aiExplanationText">Draw in the air and hold a Closed Fist for 1 second, or tap Ask AI.</div>
+        <div class="speech-bubble" id="speechBubbleText">Hey! I'm Asviro. Draw something over the camera and hold a fist to show me!</div>
+        <div class="ai-suggestion" id="aiSuggestionText"></div>
+      </div>
     </div>
-    <div class="speech-bubble" id="speechBubbleText">Hello! I'm your ASVIRO AI companion. Draw something and let's see what it is!</div>
+
     <div class="ai-btn-row">
       <button class="hud-btn primary" id="voiceReplayBtn">🔊 Speak</button>
       <button class="hud-btn" id="voiceMuteBtn">Mute: Off</button>
       <button class="hud-btn" id="replayReplyBtn">Replay Text</button>
-      <button class="hud-btn" id="aiRetryBtn">Retry AI</button>
+      <button class="hud-btn primary" id="saveToGalleryBtn">Save</button>
+      <button class="hud-btn" id="aiRetryBtn">Retry</button>
       <button class="hud-btn danger" id="dismissAiBtn">Dismiss</button>
     </div>
   </aside>
 
-  <!-- Main Controls Panel -->
+  <!-- Minimized AI Result Pill -->
+  <button class="ai-mini-pill hidden" id="aiMiniPill" title="Reopen ASVIRO AI Result">
+    <span>🤖 ASVIRO:</span>
+    <span id="aiMiniLabel" style="color:var(--cyan);">Result</span>
+    <span>▲</span>
+  </button>
+
+  <!-- Controls Menu Panel (Opens ONLY on Button Tap — NEVER on Open Palm) -->
   <aside class="floating-panel controls-panel glass hidden" id="controlsPanel">
     <div class="panel-head">
-      <div class="panel-title">JARVIS Command Matrix</div>
+      <div class="panel-title">ASVIRO Controls Menu</div>
       <button class="hud-btn" id="closeControlsBtn">✕</button>
-    </div>
-    <div class="control-row">
-      <div class="control-label"><span>Gesture Mode</span><span id="gestureModeLbl">STANDARD</span></div>
-      <div class="seg-group" style="grid-template-columns:1fr 1fr;">
-        <button class="seg-btn active" data-gmode="standard">Standard (5-Finger)</button>
-        <button class="seg-btn" data-gmode="ai">AirSketch AI</button>
-      </div>
     </div>
     <div class="control-row">
       <div class="control-label"><span>Brush Size</span><span id="brushSizeLbl">9px</span></div>
@@ -334,20 +410,18 @@
       </div>
     </div>
     <div class="gesture-cheat">
-      <div class="cheat-chip"><strong>☝️ Index</strong>Air Draw (Both Modes)</div>
-      <div class="cheat-chip"><strong>🖕 Middle</strong>Cursor &amp; UI Hover</div>
-      <div class="cheat-chip"><strong>💍 Ring</strong>Dedicated Eraser</div>
+      <div class="cheat-chip"><strong>☝️ Index Up</strong>Draw cyan strokes</div>
+      <div class="cheat-chip"><strong>🖐 Open Palm</strong>Pen Up / Pause</div>
+      <div class="cheat-chip"><strong>✊ Fist (1s Hold)</strong>Submit to AI</div>
+      <div class="cheat-chip"><strong>💍 Ring Up</strong>Dedicated Eraser</div>
       <div class="cheat-chip"><strong>🤙 Pinky (Hold)</strong>Deliberate Undo</div>
-      <div class="cheat-chip"><strong>👍 Thumb (Hold)</strong>Tool/Color Menu</div>
-      <div class="cheat-chip"><strong>🖐 Open Palm</strong>Std: Controls / AI: Pause</div>
-      <div class="cheat-chip"><strong>✊ Closed Fist</strong>Std: Pause / AI: 1s Submit</div>
-      <div class="cheat-chip"><strong>✌️ 2-Finger</strong>Nav Mode</div>
-      <div class="cheat-chip"><strong>🤟 3-Finger</strong>Redo Action</div>
+      <div class="cheat-chip"><strong>🤟 3-Finger (Hold)</strong>Redo Action</div>
+      <div class="cheat-chip"><strong>✌️ 2-Finger</strong>Hover UI Controls</div>
       <div class="cheat-chip"><strong>🤏 Pinch</strong>Confirm UI Click</div>
     </div>
   </aside>
 
-  <!-- Thumb Tool & Color Menu -->
+  <!-- Quick Tools & Color Menu (Button-Triggered) -->
   <section class="floating-panel thumb-menu glass hidden" id="thumbMenu">
     <div class="panel-head">
       <div class="panel-title">Quick Tool &amp; Color Menu</div>
@@ -371,7 +445,7 @@
       <button class="swatch" data-color="#ff3b5c" style="background:#ff3b5c;color:#ff3b5c;"></button>
       <button class="swatch" data-color="#ffffff" style="background:#ffffff;color:#ffffff;"></button>
     </div>
-    <div class="thumb-hint">Hover with Middle / 2-Finger &amp; Pinch (Thumb + Index) to confirm</div>
+    <div class="thumb-hint">Tap any tool or hover with 2-Finger &amp; Pinch to confirm</div>
   </section>
 
   <!-- Gesture Calibration Modal -->
@@ -381,9 +455,9 @@
         <div class="panel-title">Five-Finger Gesture Calibration</div>
         <button class="hud-btn" id="closeCalBtn">✕</button>
       </div>
-      <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">Test all five fingers live, toggle individual finger controls, and tune sensitivity, smoothing, and hold delay.</p>
+      <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">Test all five fingers live, enable/disable individual finger controls, and tune sensitivity, smoothing, and hold delay.</p>
       <div class="finger-test-grid">
-        <div class="finger-card" id="calCardT"><span class="f-name">Thumb</span><span class="f-role">Quick Menu</span><button class="toggle-chip on" data-finger-toggle="thumb">Enabled</button></div>
+        <div class="finger-card" id="calCardT"><span class="f-name">Thumb</span><span class="f-role">Pinch / Palm</span><button class="toggle-chip on" data-finger-toggle="thumb">Enabled</button></div>
         <div class="finger-card" id="calCardI"><span class="f-name">Index</span><span class="f-role">Air Draw</span><button class="toggle-chip on" data-finger-toggle="index">Enabled</button></div>
         <div class="finger-card" id="calCardM"><span class="f-name">Middle</span><span class="f-role">Cursor / UI</span><button class="toggle-chip on" data-finger-toggle="middle">Enabled</button></div>
         <div class="finger-card" id="calCardR"><span class="f-name">Ring</span><span class="f-role">Eraser</span><button class="toggle-chip on" data-finger-toggle="ring">Enabled</button></div>
@@ -391,15 +465,15 @@
       </div>
       <div class="cal-sliders">
         <div class="cal-slider-row">
-          <div><strong>Gesture Sensitivity</strong><div style="font-size:0.68rem;color:var(--muted);">Lower = easier, Higher = stricter pose</div></div>
+          <div><strong>Gesture Sensitivity</strong><div style="font-size:0.67rem;color:var(--muted);">Lower = easier, Higher = stricter pose</div></div>
           <div style="display:flex;align-items:center;gap:8px;"><input type="range" class="cyber-range" id="calSensitivity" min="1.02" max="1.24" step="0.01" value="1.09" /><span class="mono-val" id="calSensitivityVal">1.09</span></div>
         </div>
         <div class="cal-slider-row">
-          <div><strong>Drawing Smoothing</strong><div style="font-size:0.68rem;color:var(--muted);">Lower = smoother, Higher = faster response</div></div>
+          <div><strong>Drawing Smoothing</strong><div style="font-size:0.67rem;color:var(--muted);">Lower = smoother, Higher = faster response</div></div>
           <div style="display:flex;align-items:center;gap:8px;"><input type="range" class="cyber-range" id="calSmoothing" min="0.4" max="3.0" step="0.1" value="1.4" /><span class="mono-val" id="calSmoothingVal">1.4</span></div>
         </div>
         <div class="cal-slider-row">
-          <div><strong>Activation Hold Delay</strong><div style="font-size:0.68rem;color:var(--muted);">Hold time for Undo, Redo, Menu &amp; Palm</div></div>
+          <div><strong>Hold Delay (Undo / Redo)</strong><div style="font-size:0.67rem;color:var(--muted);">Fist AI submit stays at ~1.0s</div></div>
           <div style="display:flex;align-items:center;gap:8px;"><input type="range" class="cyber-range" id="calDelay" min="180" max="800" step="20" value="380" /><span class="mono-val" id="calDelayVal">380ms</span></div>
         </div>
       </div>
@@ -440,16 +514,16 @@
   <!-- Startup Modal -->
   <div class="modal-backdrop" id="startupModal">
     <div class="startup-card glass">
-      <div class="startup-badge">ASVIRO AIRSKETCH • 5-FINGER + GEMINI AI</div>
-      <h2>Initialize Vision System</h2>
-      <p>Draw in mid-air with five-finger hand tracking, let Gemini AI recognize your sketch, and watch the 3D assistant react.</p>
+      <div class="startup-badge">ASVIRO AIRSKETCH • LIVE WEBCAM + GEMINI AI</div>
+      <h2>Start Air Sketching</h2>
+      <p>Draw glowing cyan strokes directly over your live webcam feed, lift the pen with an open palm, and hold a fist for 1 second to let ASVIRO AI recognize your creation.</p>
       <div class="feature-matrix">
-        <div class="fm-item"><strong>☝️ Index / 🖕 Middle</strong>Index draws; Middle steers cursor &amp; hovers UI.</div>
+        <div class="fm-item"><strong>☝️ Index Finger Up</strong>Draw smooth strokes directly in the air.</div>
+        <div class="fm-item"><strong>🖐 Open Palm</strong>Lift virtual pen &amp; pause without opening menus.</div>
+        <div class="fm-item"><strong>✊ Hold Fist (1s)</strong>Submit your drawing to Gemini AI &amp; ASVIRO.</div>
         <div class="fm-item"><strong>💍 Ring / 🤙 Pinky</strong>Ring erases strokes; Pinky hold triggers Undo.</div>
-        <div class="fm-item"><strong>👍 Thumb / 🤏 Pinch</strong>Thumb opens menu; Pinch confirms selection.</div>
-        <div class="fm-item"><strong>✨ Ask AI / AI Mode</strong>Click Ask AI or hold Closed Fist 1s in AI Mode.</div>
       </div>
-      <button class="start-cta" id="startCamBtn">Initialize Camera &amp; AI Tracking</button>
+      <button class="start-cta" id="startCamBtn">Enable Camera &amp; Start Drawing</button>
       <button class="secondary-cta" id="touchOnlyBtn">Continue with Touch / Mouse Only</button>
       <div class="error-banner" id="startupError"></div>
     </div>
@@ -458,12 +532,14 @@
   <script type="module">
     import { FilesetResolver, HandLandmarker } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs";
 
+    // =========================================================================
+    // 1. PREFERENCES & ONE-EURO SMOOTHING FILTER
+    // =========================================================================
     const PREFS_KEY = "asviro_airsketch_prefs_v1";
     const DEFAULT_PREFS = {
       sensitivity: 1.09, smoothingCutoff: 1.4, activationDelayMs: 380,
       brushSize: 9, eraserSize: 28, color: "#00e5ff",
-      showSkeleton: true, showPerfHud: true, perfMode: "auto",
-      gestureMode: "standard", voiceMuted: false,
+      showSkeleton: true, showPerfHud: true, perfMode: "auto", voiceMuted: false,
       enabledFingers: { thumb: true, index: true, middle: true, ring: true, pinky: true }
     };
 
@@ -501,6 +577,9 @@
       reset() { this.x.reset(); this.dx.reset(); this.lastT = null; }
     }
 
+    // =========================================================================
+    // 2. DOM & STATE BUFFERS
+    // =========================================================================
     const $ = (id) => document.getElementById(id);
     const video = $("webcam"), drawCanvas = $("drawCanvas"), overlayCanvas = $("overlayCanvas");
     const drawCtx = drawCanvas.getContext("2d", { willReadFrequently: true });
@@ -517,13 +596,14 @@
       undoStack: [], redoStack: [], maxHistory: 25, hasHand: false, lostFrames: 0,
       candidateGesture: "NO_HAND", candidateCount: 0, stableGesture: "NO_HAND", pinchActive: false,
       holdGesture: null, holdStartTime: 0, holdProgress: 0,
-      cooldowns: { undo: 0, redo: 0, thumbMenu: 0, palmPanel: 0, pinchClick: 0, aiSubmit: 0 },
+      cooldowns: { undo: 0, redo: 0, pinchClick: 0, aiSubmit: 0 },
       targetX: 0, targetY: 0, renderX: 0, renderY: 0, hasCursorPos: false, hoveredElement: null, lastHoverCheck: 0,
       lastDetectTime: 0, detectIntervalMs: 0, detectMsAvg: 12, slowStreak: 0, fastStreak: 0, qualityTier: "HIGH",
       fpsFrames: 0, fpsLastCheck: performance.now(), currentFps: 0, lastHudUpdate: 0,
       prevStatusText: "", prevStatusClass: "", prevGestureText: "", prevLedsBitmask: -1, toastTimer: null,
       isAnalyzing: false, userInteracted: false, lastAiResult: null,
-      lastReplyText: "Hello! I'm your ASVIRO AI companion. Draw something and click Ask AI!", typewriterTimer: null
+      lastReplyText: "Hey! I'm Asviro. Draw something over the camera and hold a fist to show me!",
+      typewriterTimer: null
     };
 
     const filterX = new OneEuroFilter(prefs.smoothingCutoff, 0.022);
@@ -531,7 +611,9 @@
     document.addEventListener("pointerdown", () => { app.userInteracted = true; }, { once: true });
     document.addEventListener("keydown", () => { app.userInteracted = true; }, { once: true });
 
-    // Canvas Resize & History
+    // =========================================================================
+    // 3. CANVAS RESIZE, HISTORY & SMOOTH DRAWING
+    // =========================================================================
     function resizeCanvases() {
       const w = window.innerWidth, h = window.innerHeight;
       let snap = null;
@@ -571,7 +653,6 @@
       $("redoBtn").disabled = app.redoStack.length === 0;
     }
 
-    // Smooth Bezier Drawing
     function getStrokeWidth(toolName) { return toolName === "eraser" ? prefs.eraserSize : prefs.brushSize; }
     function applyStrokeStyle(ctx, toolName) {
       ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.lineWidth = getStrokeWidth(toolName);
@@ -579,7 +660,7 @@
         ctx.globalCompositeOperation = "destination-out"; ctx.strokeStyle = "rgba(0,0,0,1)"; ctx.shadowBlur = 0;
       } else {
         ctx.globalCompositeOperation = "source-over"; ctx.strokeStyle = prefs.color; ctx.shadowColor = prefs.color;
-        ctx.shadowBlur = app.qualityTier === "HIGH" ? 4 : 0;
+        ctx.shadowBlur = app.qualityTier === "HIGH" ? 8 : 2;
       }
     }
     function beginStroke(x, y, toolName, source) {
@@ -625,7 +706,9 @@
     drawCanvas.addEventListener("pointerup", stopPointer);
     drawCanvas.addEventListener("pointercancel", stopPointer);
 
-    // Coordinate Mapping & Dual-Mode 5-Finger Recognition
+    // =========================================================================
+    // 4. COORDINATE MAPPING & GESTURES (OPEN PALM = PEN UP, FIST 1s = SUBMIT)
+    // =========================================================================
     function mapAllLandmarks(lm) {
       const vw = video.videoWidth || 640, vh = video.videoHeight || 480, cw = overlayCanvas.width, ch = overlayCanvas.height;
       const vAspect = vw / vh, cAspect = cw / ch;
@@ -646,33 +729,30 @@
       if (app.pinchActive) { if (pinchRatio > 0.42) app.pinchActive = false; }
       else { if (pinchRatio < 0.30) app.pinchActive = true; }
     }
+
     function classifyGesturePriority() {
       const { T, I, M, R, P } = fingerState, en = prefs.enabledFingers;
-      if (prefs.gestureMode === "ai") {
-        if (!T && !I && !M && !R && !P) return { name: "AI_FIST_SUBMIT", pointerIdx: 9 };
-        if (T && I && M && R && P) return { name: "AI_PALM_PAUSE", pointerIdx: 9 };
-        if (app.pinchActive && !R && !P) return { name: "PINCH_CONFIRM", pointerIdx: 8 };
-        if (I && M && !R && !P) return { name: "TWO_NAV", pointerIdx: 8 };
-        if (I && !M && !R && !P && en.index) return { name: "INDEX_DRAW", pointerIdx: 8 };
-        if (R && !I && !M && !P && en.ring) return { name: "RING_ERASE", pointerIdx: 16 };
-        if (P && !I && !M && !R && en.pinky) return { name: "PINKY_UNDO", pointerIdx: 20 };
-        return { name: "AI_PALM_PAUSE", pointerIdx: 8 };
-      }
-      if (!T && !I && !M && !R && !P) return { name: "CLOSED_FIST", pointerIdx: 9 };
-      if (T && I && M && R && P) return { name: "OPEN_PALM", pointerIdx: 9 };
+
+      // Priority 1: Closed Fist -> Hold 1s to submit drawing to AI
+      if (!T && !I && !M && !R && !P) return { name: "FIST_SUBMIT", pointerIdx: 9 };
+      // Priority 2: Open Palm -> Pen Up / Pause ONLY (NEVER opens menu)
+      if ((T && I && M && R && P) || (I && M && R && P)) return { name: "OPEN_PALM_PAUSE", pointerIdx: 9 };
+      // Priority 3: Thumb + Index Pinch -> Confirm hovered UI button
       if (app.pinchActive && !R && !P) return { name: "PINCH_CONFIRM", pointerIdx: 8 };
+      // Priority 4: Three-Finger -> Redo
       if (I && M && R && !P) return { name: "THREE_REDO", pointerIdx: 12 };
+      // Priority 5: Two-Finger -> Hover UI controls without drawing
       if (I && M && !R && !P) return { name: "TWO_NAV", pointerIdx: 8 };
+      // Priority 6: Dedicated Single-Finger Roles
       if (I && !M && !R && !P && en.index) return { name: "INDEX_DRAW", pointerIdx: 8 };
       if (M && !I && !R && !P && en.middle) return { name: "MIDDLE_NAV", pointerIdx: 12 };
       if (R && !I && !M && !P && en.ring) return { name: "RING_ERASE", pointerIdx: 16 };
       if (P && !I && !M && !R && en.pinky) return { name: "PINKY_UNDO", pointerIdx: 20 };
-      if (T && !I && !M && !R && !P && en.thumb) return { name: "THUMB_MENU", pointerIdx: 4 };
-      return { name: "IDLE", pointerIdx: 8 };
+
+      return { name: "PEN_UP", pointerIdx: 8 };
     }
-    function clearAirHover() {
-      if (app.hoveredElement) { app.hoveredElement.classList.remove("air-hover"); app.hoveredElement = null; }
-    }
+
+    function clearAirHover() { if (app.hoveredElement) { app.hoveredElement.classList.remove("air-hover"); app.hoveredElement = null; } }
     function updateUiHover(x, y, now) {
       if (now - app.lastHoverCheck < 55) return;
       app.lastHoverCheck = now;
@@ -683,55 +763,68 @@
         if (target && target.id !== "drawCanvas") { app.hoveredElement = target; target.classList.add("air-hover"); }
       }
     }
-    function handleDeliberateHold(name, now, fn, cdKey, cdMs = 1100, delayOverride = null) {
-      const delay = delayOverride ?? prefs.activationDelayMs;
+
+    function handleDeliberateHold(name, now, fn, cdKey, cdMs, delayMs) {
       if (now < app.cooldowns[cdKey]) { app.holdProgress = 0; return; }
       if (app.holdGesture !== name) { app.holdGesture = name; app.holdStartTime = now; app.holdProgress = 0; return; }
       const elapsed = now - app.holdStartTime;
-      app.holdProgress = Math.min(elapsed / delay, 1);
-      if (elapsed >= delay) { app.cooldowns[cdKey] = now + cdMs; app.holdGesture = null; app.holdProgress = 0; fn(); }
-    }
-    function processStableGesture(g, now) {
-      if (g !== "PINKY_UNDO" && g !== "THREE_REDO" && g !== "THUMB_MENU" && g !== "OPEN_PALM" && g !== "AI_FIST_SUBMIT") {
-        app.holdGesture = null; app.holdProgress = 0;
+      app.holdProgress = Math.min(elapsed / delayMs, 1);
+      if (elapsed >= delayMs) {
+        app.cooldowns[cdKey] = now + cdMs;
+        app.holdGesture = null;
+        app.holdProgress = 0;
+        fn();
       }
-      if (g !== "INDEX_DRAW" && g !== "RING_ERASE" && app.isDrawing && app.pointerSource === "gesture") finishStroke();
+    }
+
+    function processStableGesture(g, now) {
+      if (g !== "PINKY_UNDO" && g !== "THREE_REDO" && g !== "FIST_SUBMIT") {
+        app.holdGesture = null;
+        app.holdProgress = 0;
+      }
+      if (g !== "INDEX_DRAW" && g !== "RING_ERASE" && app.isDrawing && app.pointerSource === "gesture") {
+        finishStroke();
+      }
+
       switch (g) {
-        case "CLOSED_FIST": case "AI_PALM_PAUSE": clearAirHover(); break;
-        case "AI_FIST_SUBMIT":
+        case "OPEN_PALM_PAUSE":
+        case "PEN_UP":
+          clearAirHover();
+          break;
+        case "FIST_SUBMIT":
           clearAirHover();
           if (!app.isAnalyzing) {
-            handleDeliberateHold("AI_FIST_SUBMIT", now, () => { analyzeDrawingWithAI(); }, "aiSubmit", 4500, 1000);
+            handleDeliberateHold("FIST_SUBMIT", now, () => {
+              if (isCanvasBlank()) showToast("Draw something first before submitting!");
+              else analyzeDrawingWithAI();
+            }, "aiSubmit", 4500, 1000);
           } else {
             app.holdProgress = 0;
           }
           break;
-        case "OPEN_PALM":
+        case "PINKY_UNDO":
           clearAirHover();
-          handleDeliberateHold("OPEN_PALM", now, () => {
-            $("controlsPanel").classList.toggle("hidden");
-            showToast($("controlsPanel").classList.contains("hidden") ? "Controls Closed" : "Controls Opened");
-          }, "palmPanel", 1300);
+          handleDeliberateHold("PINKY_UNDO", now, performUndo, "undo", 1100, prefs.activationDelayMs);
           break;
-        case "THUMB_MENU":
+        case "THREE_REDO":
           clearAirHover();
-          handleDeliberateHold("THUMB_MENU", now, () => {
-            $("thumbMenu").classList.toggle("hidden");
-            showToast($("thumbMenu").classList.contains("hidden") ? "Menu Closed" : "Tool & Color Menu Open");
-          }, "thumbMenu", 1200);
+          handleDeliberateHold("THREE_REDO", now, performRedo, "redo", 1100, prefs.activationDelayMs);
           break;
-        case "PINKY_UNDO": clearAirHover(); handleDeliberateHold("PINKY_UNDO", now, performUndo, "undo", 1100); break;
-        case "THREE_REDO": clearAirHover(); handleDeliberateHold("THREE_REDO", now, performRedo, "redo", 1100); break;
-        case "MIDDLE_NAV": case "TWO_NAV": updateUiHover(app.renderX, app.renderY, now); break;
+        case "MIDDLE_NAV":
+        case "TWO_NAV":
+          updateUiHover(app.renderX, app.renderY, now);
+          break;
         case "PINCH_CONFIRM":
           updateUiHover(app.renderX, app.renderY, now);
           if (app.hoveredElement && now >= app.cooldowns.pinchClick) {
-            app.cooldowns.pinchClick = now + 750; app.hoveredElement.click(); showToast("Pinch Confirmed");
+            app.cooldowns.pinchClick = now + 750;
+            app.hoveredElement.click();
+            showToast("Pinch Confirmed");
           }
           break;
         case "INDEX_DRAW":
           clearAirHover();
-          if (!app.isDrawing) beginStroke(app.renderX, app.renderY, "brush", "gesture");
+          if (!app.isDrawing) beginStroke(app.renderX, app.renderY, app.tool === "eraser" ? "eraser" : "brush", "gesture");
           else if (app.pointerSource === "gesture") extendStroke(app.renderX, app.renderY);
           break;
         case "RING_ERASE":
@@ -739,29 +832,35 @@
           if (!app.isDrawing) beginStroke(app.renderX, app.renderY, "eraser", "gesture");
           else if (app.pointerSource === "gesture") extendStroke(app.renderX, app.renderY);
           break;
-        default: clearAirHover();
       }
     }
 
+    // =========================================================================
+    // 5. OVERLAY & TELEMETRY RENDERING
+    // =========================================================================
     function renderOverlay() {
       overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
       if (!app.hasHand) return;
+
       if (prefs.showSkeleton) {
-        overlayCtx.save(); overlayCtx.lineWidth = 1.8; overlayCtx.strokeStyle = "rgba(0, 229, 255, 0.34)"; overlayCtx.beginPath();
+        overlayCtx.save(); overlayCtx.lineWidth = 1.8; overlayCtx.strokeStyle = "rgba(0, 229, 255, 0.36)"; overlayCtx.beginPath();
         for (let i = 0; i < HAND_CONNECTIONS.length; i++) {
           const a = HAND_CONNECTIONS[i][0], b = HAND_CONNECTIONS[i][1];
           overlayCtx.moveTo(mappedX[a], mappedY[a]); overlayCtx.lineTo(mappedX[b], mappedY[b]);
         }
-        overlayCtx.stroke(); overlayCtx.fillStyle = "rgba(224, 242, 254, 0.72)";
+        overlayCtx.stroke(); overlayCtx.fillStyle = "rgba(224, 242, 254, 0.78)";
         for (let i = 0; i < 21; i++) { overlayCtx.beginPath(); overlayCtx.arc(mappedX[i], mappedY[i], i % 4 === 0 && i > 0 ? 3.8 : 2.1, 0, Math.PI * 2); overlayCtx.fill(); }
         overlayCtx.restore();
       }
+
       if (!app.hasCursorPos) return;
       const x = app.renderX, y = app.renderY, g = app.stableGesture;
       overlayCtx.save();
+
       if (g === "INDEX_DRAW") {
-        overlayCtx.beginPath(); overlayCtx.arc(x, y, Math.max(prefs.brushSize * 0.5, 5), 0, Math.PI * 2);
-        overlayCtx.fillStyle = prefs.color; overlayCtx.fill(); overlayCtx.lineWidth = 2; overlayCtx.strokeStyle = "#fff"; overlayCtx.stroke();
+        const activeColor = app.tool === "eraser" ? "#ff3b5c" : prefs.color;
+        overlayCtx.beginPath(); overlayCtx.arc(x, y, Math.max(getStrokeWidth(app.tool) * 0.5, 5), 0, Math.PI * 2);
+        overlayCtx.fillStyle = activeColor; overlayCtx.fill(); overlayCtx.lineWidth = 2; overlayCtx.strokeStyle = "#fff"; overlayCtx.stroke();
       } else if (g === "RING_ERASE") {
         overlayCtx.beginPath(); overlayCtx.arc(x, y, Math.max(prefs.eraserSize * 0.5, 8), 0, Math.PI * 2);
         overlayCtx.fillStyle = "rgba(255, 59, 92, 0.22)"; overlayCtx.fill(); overlayCtx.lineWidth = 2; overlayCtx.strokeStyle = "#ff3b5c"; overlayCtx.stroke();
@@ -769,13 +868,14 @@
         overlayCtx.beginPath(); overlayCtx.arc(x, y, 12, 0, Math.PI * 2); overlayCtx.setLineDash([4, 3]);
         overlayCtx.strokeStyle = g === "PINCH_CONFIRM" ? "#10b981" : "#00e5ff"; overlayCtx.lineWidth = 2; overlayCtx.stroke();
         overlayCtx.setLineDash([]); overlayCtx.beginPath(); overlayCtx.arc(x, y, 3, 0, Math.PI * 2); overlayCtx.fillStyle = "#fff"; overlayCtx.fill();
-      } else if (g === "CLOSED_FIST" || g === "AI_PALM_PAUSE" || g === "AI_FIST_SUBMIT") {
-        overlayCtx.beginPath(); overlayCtx.arc(x, y, 14, 0, Math.PI * 2);
-        overlayCtx.strokeStyle = g === "AI_FIST_SUBMIT" ? "#10b981" : "#f59e0b"; overlayCtx.lineWidth = 2; overlayCtx.stroke();
+      } else if (g === "OPEN_PALM_PAUSE" || g === "FIST_SUBMIT") {
+        overlayCtx.beginPath(); overlayCtx.arc(x, y, 15, 0, Math.PI * 2);
+        overlayCtx.strokeStyle = g === "FIST_SUBMIT" ? "#10b981" : "#f59e0b"; overlayCtx.lineWidth = 2.2; overlayCtx.stroke();
       }
+
       if (app.holdProgress > 0) {
-        overlayCtx.beginPath(); overlayCtx.arc(x, y, 22, -Math.PI * 0.5, -Math.PI * 0.5 + Math.PI * 2 * app.holdProgress);
-        overlayCtx.strokeStyle = g === "AI_FIST_SUBMIT" ? "#10b981" : "#00e5ff"; overlayCtx.lineWidth = 3.5; overlayCtx.stroke();
+        overlayCtx.beginPath(); overlayCtx.arc(x, y, 24, -Math.PI * 0.5, -Math.PI * 0.5 + Math.PI * 2 * app.holdProgress);
+        overlayCtx.strokeStyle = g === "FIST_SUBMIT" ? "#10b981" : "#00e5ff"; overlayCtx.lineWidth = 4; overlayCtx.stroke();
       }
       overlayCtx.restore();
     }
@@ -801,6 +901,7 @@
       }
       if (now - app.lastHudUpdate < 160) return;
       app.lastHudUpdate = now;
+
       const mask = (fingerState.T?1:0)|(fingerState.I?2:0)|(fingerState.M?4:0)|(fingerState.R?8:0)|(fingerState.P?16:0);
       if (mask !== app.prevLedsBitmask) {
         app.prevLedsBitmask = mask;
@@ -813,17 +914,20 @@
           calCards.P.classList.toggle("detected", fingerState.P);
         }
       }
+
       const gLabel = app.hasHand ? app.stableGesture.replace(/_/g, " ") : "NO HAND";
       if (gLabel !== app.prevGestureText) { app.prevGestureText = gLabel; $("gestureBadge").textContent = gLabel; }
+
       let sText = "CAMERA READY", sClass = "online";
       if (!app.cameraActive) sText = "TOUCH / MOUSE";
       else if (app.stableGesture === "INDEX_DRAW") { sText = "AIR DRAWING"; sClass = "active"; }
       else if (app.stableGesture === "RING_ERASE") { sText = "RING ERASER"; sClass = "erase"; }
-      else if (app.stableGesture === "AI_FIST_SUBMIT") { sText = "HOLD TO SUBMIT"; sClass = "active"; }
-      else if (app.stableGesture === "CLOSED_FIST" || app.stableGesture === "AI_PALM_PAUSE") { sText = "PAUSED"; sClass = "paused"; }
+      else if (app.stableGesture === "FIST_SUBMIT") { sText = "HOLD FIST 1s"; sClass = "active"; }
+      else if (app.stableGesture === "OPEN_PALM_PAUSE") { sText = "PEN UP (PALM)"; sClass = "paused"; }
       else if (app.hasHand) sText = "HAND TRACKED";
       if (sText !== app.prevStatusText) { app.prevStatusText = sText; $("camStatusText").textContent = sText; }
       if (sClass !== app.prevStatusClass) { app.prevStatusClass = sClass; $("statusDot").className = "tel-dot " + sClass; }
+
       const perfEl = $("perfReadout");
       if (prefs.showPerfHud) { perfEl.style.display = ""; perfEl.textContent = `${app.currentFps} FPS | ${Math.round(app.detectMsAvg)} ms (${app.qualityTier})`; }
       else perfEl.style.display = "none";
@@ -841,7 +945,7 @@
           app.hasHand = true; app.lostFrames = 0; mapAllLandmarks(lm); updateFingerStates(lm);
           const raw = classifyGesturePriority();
           if (raw.name === app.candidateGesture) app.candidateCount++; else { app.candidateGesture = raw.name; app.candidateCount = 1; }
-          if (app.candidateCount >= 2 || raw.name === "CLOSED_FIST" || raw.name === "AI_PALM_PAUSE") app.stableGesture = raw.name;
+          if (app.candidateCount >= 2 || raw.name === "OPEN_PALM_PAUSE") app.stableGesture = raw.name;
           const sx = filterX.filter(mappedX[raw.pointerIdx], now), sy = filterY.filter(mappedY[raw.pointerIdx], now);
           app.targetX = sx; app.targetY = sy;
           if (!app.hasCursorPos) { app.renderX = sx; app.renderY = sy; app.hasCursorPos = true; }
@@ -863,11 +967,97 @@
       renderOverlay(); updateTelemetryHud(now); requestAnimationFrame(mainFrameLoop);
     }
 
-    // Floating Procedural 3D Character + 2D Fallback
-    const charEngine = { THREE: null, renderer: null, scene: null, camera: null, bot: null, head: null, halo: null, core: null, eyes: [], state: "idle", rafId: 0, fbId: 0, use2D: false };
+    // =========================================================================
+    // 6. ASVIRO 3D CHARACTER + LIGHTWEIGHT OBJECT REACTION + 2D FALLBACK
+    // =========================================================================
+    const charEngine = {
+      THREE: null, renderer: null, scene: null, camera: null, bot: null, head: null,
+      halo: null, core: null, eyes: [], objGroup: null, state: "idle", rafId: 0, fbId: 0, use2D: false
+    };
+
     function setCharacterState(st) { charEngine.state = st; $("charStateTag").textContent = st.toUpperCase(); }
+
+    function clearMiniObject() {
+      if (!charEngine.objGroup) return;
+      charEngine.objGroup.traverse((o) => {
+        if (o.geometry) o.geometry.dispose();
+        if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => m.dispose());
+      });
+      charEngine.scene?.remove(charEngine.objGroup);
+      charEngine.objGroup = null;
+    }
+
+    function setMiniObjectReaction(objectName) {
+      const badge = $("charObjTag");
+      if (!objectName) { badge.style.display = "none"; clearMiniObject(); return; }
+      const lower = objectName.toLowerCase();
+      let emoji = "✨";
+      let kind = "none";
+      if (lower.includes("star")) { emoji = "⭐"; kind = "star"; }
+      else if (lower.includes("heart") || lower.includes("love")) { emoji = "💖"; kind = "heart"; }
+      else if (lower.includes("fish")) { emoji = "🐟"; kind = "fish"; }
+      else if (lower.includes("flower")) { emoji = "🌸"; kind = "flower"; }
+      else if (lower.includes("tree")) { emoji = "🌳"; kind = "tree"; }
+      else if (lower.includes("sun") || lower.includes("circle") || lower.includes("ball")) { emoji = "☀️"; kind = "sun"; }
+      else if (lower.includes("car") || lower.includes("truck") || lower.includes("bus")) { emoji = "🚗"; kind = "car"; }
+      else if (lower.includes("house") || lower.includes("home")) { emoji = "🏠"; kind = "house"; }
+      else if (lower.includes("cat")) { emoji = "🐱"; kind = "none"; }
+
+      badge.textContent = `${emoji} ${objectName.slice(0, 14)}`;
+      badge.style.display = "inline-block";
+
+      if (!charEngine.scene || !charEngine.THREE || charEngine.use2D) return;
+      clearMiniObject();
+      if (kind === "none") return;
+
+      const THREE = charEngine.THREE;
+      const g = new THREE.Group();
+      const m = new THREE.MeshStandardMaterial({ color: 0x00e5ff, emissive: 0x00e5ff, emissiveIntensity: 0.45, roughness: 0.25 });
+      if (kind === "sun") {
+        g.add(new THREE.Mesh(new THREE.SphereGeometry(0.24, 14, 14), m));
+      } else if (kind === "star") {
+        const s = new THREE.Shape();
+        for (let i = 0; i < 10; i++) {
+          const r = i % 2 === 0 ? 0.3 : 0.13, a = (i * Math.PI) / 5 + Math.PI * 0.5;
+          if (i === 0) s.moveTo(Math.cos(a) * r, Math.sin(a) * r); else s.lineTo(Math.cos(a) * r, Math.sin(a) * r);
+        }
+        s.closePath();
+        g.add(new THREE.Mesh(new THREE.ExtrudeGeometry(s, { depth: 0.08, bevelEnabled: false }), m));
+      } else if (kind === "heart") {
+        const hs = new THREE.Shape();
+        hs.moveTo(0, -0.22); hs.bezierCurveTo(-0.32, -0.02, -0.24, 0.28, 0, 0.12); hs.bezierCurveTo(0.24, 0.28, 0.32, -0.02, 0, -0.22);
+        g.add(new THREE.Mesh(new THREE.ExtrudeGeometry(hs, { depth: 0.08, bevelEnabled: false }), new THREE.MeshStandardMaterial({ color: 0xff3b5c, emissive: 0xff3b5c, emissiveIntensity: 0.45 })));
+      } else if (kind === "fish") {
+        const body = new THREE.Mesh(new THREE.SphereGeometry(0.2, 12, 12), m); body.scale.set(1.4, 0.85, 0.7);
+        const tail = new THREE.Mesh(new THREE.ConeGeometry(0.14, 0.2, 4), m); tail.rotation.z = -Math.PI * 0.5; tail.position.x = -0.32;
+        g.add(body, tail);
+      } else if (kind === "flower") {
+        g.add(new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 10), new THREE.MeshStandardMaterial({ color: 0xfbbf24, emissive: 0x92400e })));
+        for (let i = 0; i < 5; i++) {
+          const p = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), new THREE.MeshStandardMaterial({ color: 0xf472b6, emissive: 0x831843 }));
+          const a = (i * Math.PI * 2) / 5; p.position.set(Math.cos(a) * 0.18, Math.sin(a) * 0.18, 0); g.add(p);
+        }
+      } else if (kind === "tree") {
+        const tr = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.07, 0.25, 8), new THREE.MeshStandardMaterial({ color: 0x92400e })); tr.position.y = -0.18;
+        const top = new THREE.Mesh(new THREE.ConeGeometry(0.24, 0.38, 10), new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x064e3b })); top.position.y = 0.06;
+        g.add(tr, top);
+      } else if (kind === "car") {
+        const base = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.16, 0.24), m);
+        const cab = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.14, 0.2), m); cab.position.y = 0.13;
+        g.add(base, cab);
+      } else if (kind === "house") {
+        const wall = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.24, 0.28), m); wall.position.y = -0.08;
+        const roof = new THREE.Mesh(new THREE.ConeGeometry(0.28, 0.22, 4), new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0x78350f })); roof.rotation.y = Math.PI * 0.25; roof.position.y = 0.14;
+        g.add(wall, roof);
+      }
+      g.position.set(0.95, 0.65, 0.2);
+      charEngine.scene.add(g);
+      charEngine.objGroup = g;
+    }
+
     function disposeThreeResources() {
       cancelAnimationFrame(charEngine.rafId); cancelAnimationFrame(charEngine.fbId);
+      clearMiniObject();
       if (charEngine.bot) {
         charEngine.bot.traverse((o) => {
           if (o.geometry) o.geometry.dispose();
@@ -878,35 +1068,36 @@
       if (charEngine.renderer) { charEngine.renderer.dispose(); charEngine.renderer.domElement?.remove(); charEngine.renderer = null; }
       charEngine.scene = null; charEngine.camera = null; charEngine.eyes = [];
     }
+
     function start2DFallbackCharacter() {
       disposeThreeResources(); charEngine.use2D = true;
       $("threeStage").style.display = "none";
       const c = $("fallback2dCanvas"); c.style.display = "block";
       const rect = c.parentElement.getBoundingClientRect();
-      c.width = Math.max(260, Math.round(rect.width)); c.height = Math.max(160, Math.round(rect.height));
+      c.width = Math.max(96, Math.round(rect.width)); c.height = Math.max(96, Math.round(rect.height));
       const ctx = c.getContext("2d");
       function draw2D(now) {
         if ($("aiPanel").classList.contains("hidden") || !charEngine.use2D) return;
         const t = now * 0.001, st = charEngine.state, w = c.width, h = c.height;
         ctx.clearRect(0, 0, w, h);
-        const bob = st === "happy" ? Math.abs(Math.sin(t * 7)) * -12 : st === "speaking" ? Math.sin(t * 11) * 5 : Math.sin(t * 2.5) * 6;
-        const tilt = st === "confused" ? Math.sin(t * 5) * 0.22 : st === "thinking" ? 0.14 : 0;
+        const bob = st === "happy" ? Math.abs(Math.sin(t * 7)) * -8 : st === "speaking" ? Math.sin(t * 11) * 4 : Math.sin(t * 2.5) * 4;
+        const tilt = st === "confused" ? Math.sin(t * 5) * 0.2 : st === "thinking" ? 0.12 : 0;
         const col = st === "confused" ? "#f59e0b" : st === "happy" ? "#10b981" : "#00e5ff";
         ctx.save(); ctx.translate(w * 0.5, h * 0.52 + bob); ctx.rotate(tilt);
-        ctx.beginPath(); ctx.arc(0, 0, 42, 0, Math.PI * 2); ctx.fillStyle = "rgba(7,16,36,0.92)"; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = col; ctx.stroke();
+        ctx.beginPath(); ctx.arc(0, 0, 28, 0, Math.PI * 2); ctx.fillStyle = "rgba(7,16,36,0.92)"; ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = col; ctx.stroke();
         ctx.fillStyle = col;
-        const eh = st === "happy" ? 4 : Math.sin(t * 3) > 0.95 ? 1.5 : 8;
-        ctx.fillRect(-17, -8, 10, eh); ctx.fillRect(7, -8, 10, eh);
+        const eh = st === "happy" ? 3 : Math.sin(t * 3) > 0.95 ? 1.5 : 6;
+        ctx.fillRect(-12, -6, 7, eh); ctx.fillRect(5, -6, 7, eh);
         ctx.beginPath();
-        if (st === "speaking") ctx.ellipse(0, 14, 11, 3 + Math.abs(Math.sin(t * 16)) * 6, 0, 0, Math.PI * 2);
-        else if (st === "happy") ctx.arc(0, 10, 11, 0.15 * Math.PI, 0.85 * Math.PI);
-        else if (st === "confused") { ctx.moveTo(-10, 16); ctx.lineTo(10, 12); }
-        else { ctx.moveTo(-10, 14); ctx.lineTo(10, 14); }
-        ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.stroke(); ctx.restore();
+        if (st === "speaking") ctx.ellipse(0, 10, 8, 2 + Math.abs(Math.sin(t * 16)) * 4, 0, 0, Math.PI * 2);
+        else if (st === "happy") ctx.arc(0, 7, 8, 0.15 * Math.PI, 0.85 * Math.PI);
+        else { ctx.moveTo(-7, 10); ctx.lineTo(7, 10); }
+        ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
         charEngine.fbId = requestAnimationFrame(draw2D);
       }
       charEngine.fbId = requestAnimationFrame(draw2D);
     }
+
     async function ensureCharacterStage() {
       if (charEngine.renderer) return;
       if (charEngine.use2D) { start2DFallbackCharacter(); return; }
@@ -914,30 +1105,30 @@
         if (!charEngine.THREE) charEngine.THREE = await import("https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.module.js");
         const THREE = charEngine.THREE, container = $("threeStage");
         container.style.display = "block"; $("fallback2dCanvas").style.display = "none";
-        const w = container.clientWidth || 320, h = container.clientHeight || 175;
+        const w = container.clientWidth || 122, h = container.clientHeight || 118;
         const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 50);
-        camera.position.set(0, 0.25, 4.0);
+        camera.position.set(0, 0.15, 4.1);
         const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); renderer.setSize(w, h);
         container.appendChild(renderer.domElement);
-        scene.add(new THREE.AmbientLight(0xffffff, 0.9));
-        const key = new THREE.DirectionalLight(0x00e5ff, 1.4); key.position.set(2, 3, 4); scene.add(key);
+        scene.add(new THREE.AmbientLight(0xffffff, 0.95));
+        const key = new THREE.DirectionalLight(0x00e5ff, 1.5); key.position.set(2, 3, 4); scene.add(key);
 
         const bot = new THREE.Group();
-        const shellMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.45, roughness: 0.25 });
+        const shellMat = new THREE.MeshStandardMaterial({ color: 0x0b1630, metalness: 0.45, roughness: 0.25 });
         const visorMat = new THREE.MeshStandardMaterial({ color: 0x020617, metalness: 0.8, roughness: 0.15 });
         const glowMat = new THREE.MeshStandardMaterial({ color: 0x00e5ff, emissive: 0x00e5ff, emissiveIntensity: 0.85 });
         const head = new THREE.Group();
-        const skull = new THREE.Mesh(new THREE.SphereGeometry(0.66, 22, 18), shellMat); skull.scale.set(1.08, 0.94, 0.96);
-        const visor = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.4, 0.26), visorMat); visor.position.set(0, 0.04, 0.54);
-        const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.085, 12, 12), glowMat); eyeL.position.set(-0.22, 0.06, 0.69);
-        const eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.085, 12, 12), glowMat); eyeR.position.set(0.22, 0.06, 0.69);
-        const earL = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.16, 12), glowMat); earL.rotation.z = Math.PI * 0.5; earL.position.set(-0.74, 0.05, 0);
-        const earR = earL.clone(); earR.position.set(0.74, 0.05, 0);
-        head.add(skull, visor, eyeL, eyeR, earL, earR); head.position.y = 0.28;
-        const torso = new THREE.Mesh(new THREE.ConeGeometry(0.44, 0.76, 18), shellMat); torso.rotation.x = Math.PI; torso.position.y = -0.56;
-        const core = new THREE.Mesh(new THREE.SphereGeometry(0.15, 14, 14), glowMat); core.position.set(0, -0.44, 0.31);
-        const halo = new THREE.Mesh(new THREE.TorusGeometry(0.96, 0.032, 10, 44), glowMat); halo.rotation.x = Math.PI * 0.42; halo.position.y = -0.15;
+        const skull = new THREE.Mesh(new THREE.SphereGeometry(0.64, 22, 18), shellMat); skull.scale.set(1.08, 0.94, 0.96);
+        const visor = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.38, 0.26), visorMat); visor.position.set(0, 0.04, 0.52);
+        const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.085, 10, 10), glowMat); eyeL.position.set(-0.21, 0.06, 0.67);
+        const eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.085, 10, 10), glowMat); eyeR.position.set(0.21, 0.06, 0.67);
+        const earL = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.16, 12), glowMat); earL.rotation.z = Math.PI * 0.5; earL.position.set(-0.72, 0.05, 0);
+        const earR = earL.clone(); earR.position.set(0.72, 0.05, 0);
+        head.add(skull, visor, eyeL, eyeR, earL, earR); head.position.y = 0.26;
+        const torso = new THREE.Mesh(new THREE.ConeGeometry(0.42, 0.72, 16), shellMat); torso.rotation.x = Math.PI; torso.position.y = -0.54;
+        const core = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 12), glowMat); core.position.set(0, -0.42, 0.3);
+        const halo = new THREE.Mesh(new THREE.TorusGeometry(0.94, 0.032, 10, 40), glowMat); halo.rotation.x = Math.PI * 0.42; halo.position.y = -0.15;
         bot.add(head, torso, core, halo); scene.add(bot);
         Object.assign(charEngine, { renderer, scene, camera, bot, head, halo, core, eyes: [eyeL, eyeR] });
 
@@ -947,12 +1138,16 @@
           const hex = st === "confused" ? 0xf59e0b : st === "happy" ? 0x10b981 : st === "thinking" ? 0x38bdf8 : 0x00e5ff;
           glowMat.color.setHex(hex); glowMat.emissive.setHex(hex);
           if (st === "thinking") { bot.position.y = Math.sin(t * 3.5) * 0.1; head.rotation.set(0, Math.sin(t * 3) * 0.25, 0.18); halo.rotation.z = t * 3.2; }
-          else if (st === "happy") { bot.position.y = Math.abs(Math.sin(t * 7.5)) * 0.26; head.rotation.set(0, Math.sin(t * 4) * 0.28, Math.sin(t * 6) * 0.12); halo.rotation.z = t * 2.2; }
+          else if (st === "happy") { bot.position.y = Math.abs(Math.sin(t * 7.5)) * 0.24; head.rotation.set(0, Math.sin(t * 4) * 0.28, Math.sin(t * 6) * 0.12); halo.rotation.z = t * 2.2; }
           else if (st === "confused") { bot.position.y = Math.sin(t * 2) * 0.06; head.rotation.set(0, Math.cos(t * 4) * 0.24, Math.sin(t * 5.5) * 0.24); halo.rotation.z = t * 0.7; }
           else if (st === "speaking") { bot.position.y = Math.sin(t * 9) * 0.08; head.rotation.set(Math.sin(t * 14) * 0.08, 0, 0); core.scale.setScalar(1 + Math.abs(Math.sin(t * 15)) * 0.35); halo.rotation.z = t * 1.8; }
           else { bot.position.y = Math.sin(t * 2.3) * 0.1; head.rotation.set(0, Math.sin(t * 1.1) * 0.22, 0); core.scale.setScalar(1); halo.rotation.z = t * 1.1; }
           const blink = Math.sin(t * 2.4) > 0.96 ? 0.15 : 1;
           charEngine.eyes.forEach((e) => { e.scale.y = blink; });
+          if (charEngine.objGroup) {
+            charEngine.objGroup.rotation.y = t * 1.6;
+            charEngine.objGroup.position.y = 0.65 + Math.sin(t * 3.2) * 0.08;
+          }
           renderer.render(scene, camera);
           charEngine.rafId = requestAnimationFrame(animate);
         }
@@ -960,7 +1155,9 @@
       } catch { start2DFallbackCharacter(); }
     }
 
-    // Voice & Speech Bubble
+    // =========================================================================
+    // 7. OPTIONAL TEXT-TO-SPEECH OUTPUT (NO MICROPHONE INPUT)
+    // =========================================================================
     const speechSupported = "speechSynthesis" in window;
     if (!speechSupported) { $("voiceReplayBtn").disabled = true; $("voiceReplayBtn").textContent = "Speech Unsupported"; }
     function stopSpeech() {
@@ -982,6 +1179,7 @@
       const b = $("speechBubbleText"); b.textContent = ""; let i = 0;
       app.typewriterTimer = setInterval(() => { i += 2; b.textContent = text.slice(0, i); if (i >= text.length) clearInterval(app.typewriterTimer); }, 18);
     }
+
     $("voiceReplayBtn").addEventListener("click", () => {
       app.userInteracted = true;
       if (prefs.voiceMuted) { prefs.voiceMuted = false; savePrefs(); $("voiceMuteBtn").textContent = "Mute: Off"; }
@@ -993,11 +1191,31 @@
       if (prefs.voiceMuted) stopSpeech();
     });
     $("replayReplyBtn").addEventListener("click", () => animateSpeechBubble(app.lastReplyText));
-    function dismissAiPanel() { $("aiPanel").classList.add("hidden"); clearInterval(app.typewriterTimer); stopSpeech(); disposeThreeResources(); }
+
+    function openAiPanel() {
+      $("aiPanel").classList.remove("hidden");
+      $("aiMiniPill").classList.add("hidden");
+    }
+    function minimizeAiPanel() {
+      $("aiPanel").classList.add("hidden");
+      $("aiMiniPill").classList.remove("hidden");
+      $("aiMiniLabel").textContent = app.lastAiResult?.object || "ASVIRO AI";
+    }
+    function dismissAiPanel() {
+      $("aiPanel").classList.add("hidden");
+      $("aiMiniPill").classList.add("hidden");
+      clearInterval(app.typewriterTimer);
+      stopSpeech();
+      disposeThreeResources();
+    }
+    $("minimizeAiBtn").addEventListener("click", minimizeAiPanel);
+    $("aiMiniPill").addEventListener("click", async () => { openAiPanel(); await ensureCharacterStage(); });
     $("closeAiPanelBtn").addEventListener("click", dismissAiPanel);
     $("dismissAiBtn").addEventListener("click", dismissAiPanel);
 
-    // Gemini AI Drawing Recognition
+    // =========================================================================
+    // 8. GEMINI AI DRAWING RECOGNITION
+    // =========================================================================
     function isCanvasBlank() {
       const data = drawCtx.getImageData(0, 0, drawCanvas.width, drawCanvas.height).data;
       for (let i = 3; i < data.length; i += 16) { if (data[i] > 12) return false; }
@@ -1011,16 +1229,24 @@
       octx.drawImage(drawCanvas, 0, 0, out.width, out.height);
       return out.toDataURL("image/png");
     }
+
     async function analyzeDrawingWithAI() {
       if (app.isAnalyzing) return;
-      if (isCanvasBlank()) { showToast("Draw something first before asking AI!"); return; }
-      app.isAnalyzing = true; $("aiAnalyzeBtn").disabled = true; $("aiRetryBtn").disabled = true;
-      $("aiPanel").classList.remove("hidden");
+      if (isCanvasBlank()) { showToast("Draw something first before submitting to AI!"); return; }
+      app.isAnalyzing = true;
+      $("aiAnalyzeBtn").disabled = true; $("aiRetryBtn").disabled = true;
+      openAiPanel();
       await ensureCharacterStage();
       setCharacterState("thinking");
-      $("aiObjectTitle").textContent = "Analyzing Sketch..."; $("aiConfidenceBadge").textContent = "...";
+      setMiniObjectReaction("");
+
+      $("aiCategoryTag").textContent = "THINKING";
+      $("aiObjectTitle").textContent = "Analyzing Sketch...";
+      $("aiConfidenceBadge").textContent = "...";
       $("aiExplanationText").textContent = "Sending your artwork securely to Gemini AI...";
+      $("aiSuggestionText").textContent = "";
       animateSpeechBubble("Hmm, let me take a close look at your drawing...");
+
       try {
         const base64 = composeExportDataUrl(768).split(",")[1];
         const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 22_000);
@@ -1031,29 +1257,40 @@
         clearTimeout(timer);
         const data = await res.json().catch(() => ({ success: false, error: "Invalid server response." }));
         if (!res.ok || !data.success) throw new Error(data.error || `AI request failed (${res.status})`);
+
         app.lastAiResult = data;
-        $("aiObjectTitle").textContent = `${data.object} (${data.category})`;
+        $("aiCategoryTag").textContent = String(data.category || "RESULT").toUpperCase();
+        $("aiObjectTitle").textContent = data.object;
         $("aiConfidenceBadge").textContent = typeof data.confidence === "number" ? `${Math.round(data.confidence * 100)}%` : "N/A";
         $("aiExplanationText").textContent = data.explanation;
+        $("aiSuggestionText").textContent = data.suggestion ? `💡 ${data.suggestion}` : "";
+        $("aiMiniLabel").textContent = data.object;
+
         setCharacterState(data.mood === "confused" ? "confused" : "happy");
-        const fullReply = data.suggestion ? `${data.reply} (${data.suggestion})` : data.reply;
-        animateSpeechBubble(fullReply);
+        setMiniObjectReaction(data.mood === "confused" ? "" : data.object);
+        animateSpeechBubble(data.reply);
         speakReply(data.reply);
       } catch (err) {
         const msg = err.name === "AbortError" ? "AI request timed out. Please retry." : err.message;
         setCharacterState("confused");
-        $("aiObjectTitle").textContent = "AI Analysis Failed"; $("aiConfidenceBadge").textContent = "ERR";
+        $("aiCategoryTag").textContent = "ERROR";
+        $("aiObjectTitle").textContent = "AI Analysis Failed";
+        $("aiConfidenceBadge").textContent = "ERR";
         $("aiExplanationText").textContent = msg;
         animateSpeechBubble(`Oops! ${msg}`);
         showToast(msg);
       } finally {
-        app.isAnalyzing = false; $("aiAnalyzeBtn").disabled = false; $("aiRetryBtn").disabled = false;
+        app.isAnalyzing = false;
+        $("aiAnalyzeBtn").disabled = false;
+        $("aiRetryBtn").disabled = false;
       }
     }
     $("aiAnalyzeBtn").addEventListener("click", analyzeDrawingWithAI);
     $("aiRetryBtn").addEventListener("click", analyzeDrawingWithAI);
 
-    // IndexedDB Creations Gallery
+    // =========================================================================
+    // 9. INDEXEDDB MY CREATIONS GALLERY
+    // =========================================================================
     let dbPromise = null;
     function openGalleryDB() {
       if (dbPromise) return dbPromise;
@@ -1115,7 +1352,9 @@
     $("galleryBtn").addEventListener("click", () => { $("galleryModal").classList.remove("hidden"); renderGallery(); });
     $("closeGalleryBtn").addEventListener("click", () => $("galleryModal").classList.add("hidden"));
 
-    // UI Sync & Controls Wiring
+    // =========================================================================
+    // 10. UI SYNC & CONTROLS WIRING
+    // =========================================================================
     function showToast(msg) { const el = $("toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(app.toastTimer); app.toastTimer = setTimeout(() => el.classList.remove("show"), 1600); }
     function syncUiFromPrefs() {
       $("brushBtn").classList.toggle("active", app.tool === "brush"); $("eraserBtn").classList.toggle("active", app.tool === "eraser");
@@ -1132,10 +1371,6 @@
       $("togglePerfHudBtn").classList.toggle("active", prefs.showPerfHud);
       $("perfModeLbl").textContent = prefs.perfMode.toUpperCase();
       document.querySelectorAll("[data-perf]").forEach((b) => b.classList.toggle("active", b.dataset.perf === prefs.perfMode));
-      $("gestureModeBtn").textContent = prefs.gestureMode === "ai" ? "Mode: AI" : "Mode: Standard";
-      $("gestureModeBtn").classList.toggle("active", prefs.gestureMode === "ai");
-      $("gestureModeLbl").textContent = prefs.gestureMode === "ai" ? "AIRSKETCH AI" : "STANDARD";
-      document.querySelectorAll("[data-gmode]").forEach((b) => b.classList.toggle("active", b.dataset.gmode === prefs.gestureMode));
       $("voiceMuteBtn").textContent = prefs.voiceMuted ? "Mute: On" : "Mute: Off";
       $("calSensitivity").value = prefs.sensitivity; $("calSensitivityVal").textContent = Number(prefs.sensitivity).toFixed(2);
       $("calSmoothing").value = prefs.smoothingCutoff; $("calSmoothingVal").textContent = Number(prefs.smoothingCutoff).toFixed(1);
@@ -1147,17 +1382,11 @@
     }
     function setTool(t) { app.tool = t; syncUiFromPrefs(); showToast(t === "brush" ? "Brush Mode" : "Eraser Mode"); }
     function setColor(hex) { prefs.color = hex; app.tool = "brush"; savePrefs(); syncUiFromPrefs(); }
-    function setGestureMode(m) {
-      prefs.gestureMode = m; savePrefs(); syncUiFromPrefs();
-      showToast(m === "ai" ? "AirSketch AI Mode: Closed Fist (1s) submits!" : "Standard 5-Finger Mode");
-    }
 
     $("brushBtn").addEventListener("click", () => setTool("brush"));
     $("eraserBtn").addEventListener("click", () => setTool("eraser"));
     $("undoBtn").addEventListener("click", performUndo);
     $("redoBtn").addEventListener("click", performRedo);
-    $("gestureModeBtn").addEventListener("click", () => setGestureMode(prefs.gestureMode === "standard" ? "ai" : "standard"));
-    document.querySelectorAll("[data-gmode]").forEach((b) => b.addEventListener("click", () => setGestureMode(b.dataset.gmode)));
     document.querySelectorAll(".swatch").forEach((sw) => sw.addEventListener("click", () => setColor(sw.dataset.color)));
     $("customColorInput").addEventListener("input", (e) => setColor(e.target.value));
     $("sizeSlider").addEventListener("input", (e) => { const v = parseInt(e.target.value, 10); if (app.tool === "brush") prefs.brushSize = v; else prefs.eraserSize = v; savePrefs(); syncUiFromPrefs(); });
@@ -1208,7 +1437,9 @@
     });
     syncUiFromPrefs();
 
-    // Camera, MediaPipe & Cleanup
+    // =========================================================================
+    // 11. CAMERA, MEDIAPIPE & RESOURCE CLEANUP
+    // =========================================================================
     function stopCameraStream() {
       if (app.stream) { app.stream.getTracks().forEach((t) => t.stop()); app.stream = null; }
       video.srcObject = null; app.cameraActive = false;
@@ -1258,4 +1489,4 @@
     requestAnimationFrame(mainFrameLoop);
   </script>
 </body>
-      </html>
+</html>
