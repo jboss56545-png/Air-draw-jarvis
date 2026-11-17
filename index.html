@@ -14,40 +14,28 @@
       --text: #f0f9ff; --muted: rgba(186, 230, 253, 0.74);
       --font-ui: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
       --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      --shadow-hud: 0 12px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(0, 229, 255, 0.14);
+      --shadow-hud: 0 10px 28px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(0, 229, 255, 0.14);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
     html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg-void); color: var(--text); font-family: var(--font-ui); }
     button:focus-visible, input:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
 
-    .workspace {
-      position: relative; width: 100vw; height: 100vh; height: 100dvh; overflow: hidden;
-      background: radial-gradient(circle at 50% 45%, rgba(0, 229, 255, 0.08), transparent 55%),
-                  radial-gradient(circle at 15% 15%, #0c1b3a 0%, var(--bg-void) 72%);
-    }
+    .workspace { position: relative; width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; background: radial-gradient(circle at 50% 45%, rgba(0, 229, 255, 0.08), transparent 55%), radial-gradient(circle at 15% 15%, #0c1b3a 0%, var(--bg-void) 72%); }
     #webcam { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); z-index: 1; transition: opacity 0.25s ease, filter 0.25s ease; }
     #webcam.dimmed { opacity: 0.25; filter: saturate(0.45) contrast(1.1); }
     #webcam.hidden-feed { opacity: 0; }
     #drawCanvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; touch-action: none; cursor: crosshair; }
     #overlayCanvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; }
-
-    .hud-grid {
-      position: absolute; inset: 0; z-index: 4; pointer-events: none;
-      background-image: linear-gradient(rgba(0,229,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,255,0.025) 1px, transparent 1px);
-      background-size: 48px 48px;
-      mask-image: radial-gradient(circle at center, transparent 52%, black 100%);
-      -webkit-mask-image: radial-gradient(circle at center, transparent 52%, black 100%);
-    }
+    .hud-grid { position: absolute; inset: 0; z-index: 4; pointer-events: none; background-image: linear-gradient(rgba(0,229,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,255,0.025) 1px, transparent 1px); background-size: 48px 48px; mask-image: radial-gradient(circle at center, transparent 52%, black 100%); -webkit-mask-image: radial-gradient(circle at center, transparent 52%, black 100%); }
     .cb { position: absolute; width: 20px; height: 20px; z-index: 5; pointer-events: none; border: 2px solid rgba(0,229,255,0.45); }
     .cb-tl { top: 8px; left: 8px; border-right: 0; border-bottom: 0; border-top-left-radius: 6px; }
     .cb-tr { top: 8px; right: 8px; border-left: 0; border-bottom: 0; border-top-right-radius: 6px; }
     .cb-bl { bottom: 8px; left: 8px; border-right: 0; border-top: 0; border-bottom-left-radius: 6px; }
     .cb-br { bottom: 8px; right: 8px; border-left: 0; border-top: 0; border-bottom-right-radius: 6px; }
 
-    .glass { background: var(--glass); backdrop-filter: blur(14px) saturate(155%); -webkit-backdrop-filter: blur(14px) saturate(155%); border: 1px solid var(--border-cyan); box-shadow: var(--shadow-hud); }
-    .air-hover { outline: 2px solid var(--cyan) !important; box-shadow: 0 0 16px rgba(0, 229, 255, 0.55) !important; transform: scale(1.04); }
+    .glass { background: var(--glass); backdrop-filter: blur(8px) saturate(140%); -webkit-backdrop-filter: blur(8px) saturate(140%); border: 1px solid var(--border-cyan); box-shadow: var(--shadow-hud); }
+    .air-hover { outline: 2px solid var(--cyan) !important; box-shadow: 0 0 14px rgba(0, 229, 255, 0.55) !important; transform: scale(1.04); }
 
-    /* Top HUD */
     .top-hud { position: fixed; top: max(10px, env(safe-area-inset-top)); left: 12px; right: 12px; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 8px; pointer-events: none; flex-wrap: wrap; }
     .top-hud > * { pointer-events: auto; }
     .brand-cluster { display: flex; align-items: center; gap: 9px; padding: 5px 13px 5px 7px; border-radius: 999px; }
@@ -65,13 +53,13 @@
     .tel-dot.erase { background: var(--crimson); box-shadow: 0 0 10px var(--crimson); }
     .tel-dot.paused { background: var(--amber); box-shadow: 0 0 10px var(--amber); }
     .finger-leds { display: flex; gap: 3px; padding-left: 7px; border-left: 1px solid var(--border-soft); }
-    .f-led { width: 18px; height: 18px; border-radius: 5px; display: grid; place-items: center; font-family: var(--font-mono); font-size: 0.61rem; font-weight: 700; color: var(--muted); background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: 0.12s ease; }
-    .f-led.up { color: #030712; background: var(--cyan); border-color: #fff; box-shadow: 0 0 9px rgba(0,229,255,0.65); }
+    .f-led { width: 18px; height: 18px; border-radius: 5px; display: grid; place-items: center; font-family: var(--font-mono); font-size: 0.61rem; font-weight: 700; color: var(--muted); background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: 0.1s ease; }
+    .f-led.up { color: #030712; background: var(--cyan); border-color: #fff; box-shadow: 0 0 8px rgba(0,229,255,0.65); }
     .gesture-pill { font-family: var(--font-mono); font-size: 0.67rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--cyan-dim); border: 1px solid rgba(0,229,255,0.38); color: var(--cyan); }
     .perf-readout { font-family: var(--font-mono); font-size: 0.66rem; color: var(--muted); border-left: 1px solid var(--border-soft); padding-left: 7px; }
 
     .hud-actions { display: flex; align-items: center; gap: 4px; padding: 4px 7px; border-radius: 999px; flex-wrap: wrap; }
-    .hud-btn { appearance: none; border: 1px solid transparent; background: transparent; color: var(--text); height: 32px; min-width: 32px; padding: 0 9px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 0.74rem; font-weight: 600; cursor: pointer; transition: 0.15s ease; white-space: nowrap; }
+    .hud-btn { appearance: none; border: 1px solid transparent; background: transparent; color: var(--text); height: 32px; min-width: 32px; padding: 0 9px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 0.74rem; font-weight: 600; cursor: pointer; transition: 0.14s ease; white-space: nowrap; }
     .hud-btn:hover:not(:disabled) { background: rgba(0,229,255,0.14); border-color: rgba(0,229,255,0.35); }
     .hud-btn:disabled { opacity: 0.35; cursor: not-allowed; }
     .hud-btn.active { background: rgba(0,229,255,0.22); border-color: var(--cyan); color: var(--cyan); }
@@ -79,26 +67,19 @@
     .hud-btn.primary { background: linear-gradient(135deg, rgba(0,229,255,0.25), rgba(37,99,235,0.3)); border-color: rgba(0,229,255,0.45); }
     .hud-btn.ai-cta { background: linear-gradient(135deg, #00e5ff, #2563eb); color: #030712; font-weight: 800; box-shadow: 0 0 14px rgba(0,229,255,0.36); }
 
-    /* Compact Live Gesture Guide Bar near Webcam */
-    .gesture-guide-bar {
-      position: fixed; top: 58px; left: 50%; transform: translateX(-50%); z-index: 15;
-      display: flex; align-items: center; gap: 10px; padding: 5px 12px; border-radius: 999px;
-      font-size: 0.69rem; font-weight: 700; letter-spacing: 0.03em; color: var(--text);
-      pointer-events: none; max-width: calc(100vw - 24px); flex-wrap: wrap; justify-content: center;
-    }
+    .gesture-guide-bar { position: fixed; top: 58px; left: 50%; transform: translateX(-50%); z-index: 15; display: flex; align-items: center; gap: 10px; padding: 5px 12px; border-radius: 999px; font-size: 0.69rem; font-weight: 700; letter-spacing: 0.03em; color: var(--text); pointer-events: none; max-width: calc(100vw - 24px); flex-wrap: wrap; justify-content: center; }
     .gg-item { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
     .gg-item span { color: var(--cyan); }
 
-    /* Bottom Command Dock */
     .bottom-dock-wrap { position: fixed; bottom: max(10px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 22; width: max-content; max-width: calc(100vw - 16px); }
     .bottom-dock { display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 22px; flex-wrap: wrap; justify-content: center; }
     .dock-sep { width: 1px; height: 22px; background: var(--border-soft); }
     .mode-group { display: flex; padding: 3px; border-radius: 999px; background: rgba(0,0,0,0.36); border: 1px solid var(--border-soft); gap: 3px; }
-    .mode-pill { appearance: none; border: none; background: transparent; color: var(--muted); padding: 6px 12px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; cursor: pointer; transition: 0.16s ease; }
+    .mode-pill { appearance: none; border: none; background: transparent; color: var(--muted); padding: 6px 12px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; cursor: pointer; transition: 0.15s ease; }
     .mode-pill.active[data-tool="brush"] { background: linear-gradient(135deg, #00e5ff, #2563eb); color: #030712; box-shadow: 0 0 14px rgba(0,229,255,0.4); }
     .mode-pill.active[data-tool="eraser"] { background: linear-gradient(135deg, #ff3b5c, #e11d48); color: #fff; box-shadow: 0 0 14px rgba(255,59,92,0.4); }
     .swatches { display: flex; align-items: center; gap: 6px; }
-    .swatch { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.25); cursor: pointer; transition: 0.14s ease; }
+    .swatch { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.25); cursor: pointer; transition: 0.12s ease; }
     .swatch:hover { transform: scale(1.15); }
     .swatch.active { transform: scale(1.18); border-color: #fff; box-shadow: 0 0 11px currentColor; }
     .color-custom { position: relative; width: 23px; height: 23px; border-radius: 50%; padding: 2px; background: conic-gradient(#ff3b5c, #f59e0b, #10b981, #00e5ff, #a855f7, #ff3b5c); cursor: pointer; display: grid; place-items: center; }
@@ -111,27 +92,16 @@
     input[type="range"].cyber-range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--cyan); border: 2px solid #fff; box-shadow: 0 0 8px rgba(0,229,255,0.7); cursor: pointer; }
     .mono-val { font-family: var(--font-mono); font-size: 0.7rem; min-width: 32px; color: var(--text); }
 
-    /* Compact Floating AI Result Card (Never Full-Screen on Mobile) */
-    .ai-panel {
-      position: fixed; z-index: 28; left: 14px; bottom: 78px;
-      width: 500px; max-width: calc(100vw - 24px);
-      max-height: 44vh; max-height: 44dvh;
-      border-radius: 18px; padding: 12px 14px;
-      background: var(--glass-strong); border: 1px solid var(--border-cyan); box-shadow: var(--shadow-hud);
-      display: flex; flex-direction: column; gap: 8px;
-      transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
-    }
+    /* Compact Floating AI Result Card */
+    .ai-panel { position: fixed; z-index: 28; left: 14px; bottom: 78px; width: 500px; max-width: calc(100vw - 24px); max-height: 44vh; max-height: 44dvh; border-radius: 18px; padding: 12px 14px; background: var(--glass-strong); border: 1px solid var(--border-cyan); box-shadow: var(--shadow-hud); display: flex; flex-direction: column; gap: 8px; transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease; }
     .ai-panel.hidden { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(12px) scale(0.98); }
-
     .ai-card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border-soft); }
     .ai-card-title { font-size: 0.76rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: var(--cyan); display: flex; align-items: center; gap: 6px; }
-
     .ai-card-body { display: grid; grid-template-columns: 122px 1fr; gap: 10px; overflow-y: auto; min-height: 0; padding-right: 2px; }
     .char-stage { position: relative; width: 122px; height: 118px; border-radius: 14px; overflow: hidden; background: radial-gradient(circle at 50% 60%, rgba(0,229,255,0.16), rgba(3,7,18,0.92)); border: 1px solid var(--border-cyan); flex-shrink: 0; }
     #threeStage, #fallback2dCanvas { position: absolute; inset: 0; width: 100%; height: 100%; }
     .char-state-pill { position: absolute; top: 5px; left: 5px; padding: 2px 6px; border-radius: 999px; font-family: var(--font-mono); font-size: 0.58rem; font-weight: 700; background: rgba(3,7,18,0.8); border: 1px solid var(--border-cyan); color: var(--cyan); }
     .char-obj-badge { position: absolute; bottom: 5px; right: 5px; padding: 2px 6px; border-radius: 999px; font-size: 0.62rem; background: rgba(3,7,18,0.8); border: 1px solid var(--border-soft); color: var(--text); }
-
     .ai-info-col { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
     .ai-res-head { display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-wrap: wrap; }
     .ai-res-title { font-size: 0.92rem; font-weight: 800; color: var(--text); overflow-wrap: anywhere; }
@@ -139,21 +109,12 @@
     .ai-desc { font-size: 0.74rem; color: var(--muted); line-height: 1.38; overflow-wrap: anywhere; }
     .speech-bubble { padding: 7px 10px; border-radius: 12px; background: rgba(37,99,235,0.18); border: 1px solid rgba(59,130,246,0.35); font-size: 0.75rem; line-height: 1.38; color: #e0f2fe; max-height: 58px; overflow-y: auto; overflow-wrap: anywhere; }
     .ai-suggestion { font-size: 0.7rem; color: var(--cyan); opacity: 0.92; }
-
     .ai-btn-row { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; padding-top: 4px; border-top: 1px solid var(--border-soft); }
     .ai-btn-row .hud-btn { height: 28px; font-size: 0.71rem; padding: 0 8px; }
 
-    /* Minimized Floating AI Pill */
-    .ai-mini-pill {
-      position: fixed; left: 12px; bottom: 80px; z-index: 28;
-      display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px;
-      border-radius: 999px; background: var(--glass-strong); border: 1px solid var(--cyan);
-      color: var(--text); font-size: 0.75rem; font-weight: 700; cursor: pointer;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-    }
+    .ai-mini-pill { position: fixed; left: 12px; bottom: 80px; z-index: 28; display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 999px; background: var(--glass-strong); border: 1px solid var(--cyan); color: var(--text); font-size: 0.75rem; font-weight: 700; cursor: pointer; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6); }
     .ai-mini-pill.hidden { display: none; }
 
-    /* Secondary Panels (Controls, Thumb Menu, Modals) */
     .floating-panel { position: fixed; z-index: 30; border-radius: 20px; padding: 16px; transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease; }
     .floating-panel.hidden { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(8px) scale(0.98); }
     .panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border-soft); gap: 8px; }
@@ -178,7 +139,7 @@
     .thumb-colors .swatch { width: 28px; height: 28px; }
     .thumb-hint { margin-top: 9px; font-size: 0.7rem; text-align: center; color: var(--muted); }
 
-    .modal-backdrop { position: fixed; inset: 0; z-index: 45; background: rgba(2,6,18,0.74); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: grid; place-items: center; padding: 16px; transition: opacity 0.22s ease, visibility 0.22s ease; }
+    .modal-backdrop { position: fixed; inset: 0; z-index: 45; background: rgba(2,6,18,0.74); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: grid; place-items: center; padding: 16px; transition: opacity 0.22s ease, visibility 0.22s ease; }
     .modal-backdrop.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
     .cal-card, .gallery-card { width: 100%; max-width: 560px; max-height: 88dvh; overflow-y: auto; border-radius: 22px; padding: 20px; background: var(--glass-strong); }
     .finger-test-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 14px; }
@@ -221,20 +182,13 @@
     .toast { position: fixed; top: 94px; left: 50%; transform: translateX(-50%) translateY(-8px); z-index: 60; padding: 7px 16px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; color: var(--cyan); opacity: 0; pointer-events: none; transition: 0.2s ease; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* Responsive Breakpoints (Portrait & Landscape Mobile) */
-    @media (max-width: 1020px) {
-      .telemetry-strip { order: 3; width: 100%; justify-content: space-between; }
-      .gesture-guide-bar { top: 92px; }
-    }
+    @media (max-width: 1020px) { .telemetry-strip { order: 3; width: 100%; justify-content: space-between; } .gesture-guide-bar { top: 92px; } }
     @media (max-width: 680px) {
       .brand-sub, .dock-sep, .perf-readout { display: none; }
       .hud-btn { height: 34px; padding: 0 8px; font-size: 0.72rem; }
       .gesture-guide-bar { top: 96px; font-size: 0.64rem; gap: 7px; padding: 4px 10px; }
       .bottom-dock { gap: 6px; padding: 7px 10px; border-radius: 18px; }
-      .ai-panel {
-        left: 12px; right: 12px; width: calc(100% - 24px);
-        bottom: 96px; max-height: 40dvh; padding: 10px 12px;
-      }
+      .ai-panel { left: 12px; right: 12px; width: calc(100% - 24px); bottom: 96px; max-height: 40dvh; padding: 10px 12px; }
       .ai-mini-pill { bottom: 96px; }
       .ai-card-body { grid-template-columns: 98px 1fr; gap: 9px; }
       .char-stage { width: 98px; height: 104px; }
@@ -256,13 +210,11 @@
     <div class="cb cb-tl"></div><div class="cb cb-tr"></div><div class="cb cb-bl"></div><div class="cb cb-br"></div>
   </div>
 
-  <!-- Top HUD -->
   <header class="top-hud">
     <div class="brand-cluster glass">
       <div class="arc-core">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2.4">
-          <circle cx="12" cy="12" r="4"></circle>
-          <path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path>
+          <circle cx="12" cy="12" r="4"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path>
         </svg>
       </div>
       <div class="brand-meta">
@@ -292,7 +244,6 @@
     </div>
   </header>
 
-  <!-- Clear Live Gesture Guide -->
   <div class="gesture-guide-bar glass" aria-label="Gesture Instructions">
     <div class="gg-item">☝️ <span>INDEX FINGER UP</span> — DRAW</div>
     <div class="gg-item">🖐 <span>OPEN PALM</span> — PEN UP / PAUSE</div>
@@ -301,7 +252,6 @@
 
   <div class="toast glass" id="toast"></div>
 
-  <!-- Compact Bottom Drawing Dock -->
   <div class="bottom-dock-wrap">
     <div class="bottom-dock glass">
       <div class="mode-group">
@@ -334,7 +284,7 @@
     </div>
   </div>
 
-  <!-- Compact Floating AI Result Card (Preserves Webcam View) -->
+  <!-- Compact Floating AI Result Card -->
   <aside class="ai-panel hidden" id="aiPanel" aria-label="ASVIRO AI Result">
     <div class="ai-card-head">
       <div class="ai-card-title">🤖 ASVIRO AI • <span id="aiCategoryTag">READY</span></div>
@@ -343,7 +293,6 @@
         <button class="hud-btn" id="closeAiPanelBtn" title="Dismiss">✕</button>
       </div>
     </div>
-
     <div class="ai-card-body">
       <div class="char-stage">
         <div id="threeStage"></div>
@@ -351,7 +300,6 @@
         <span class="char-state-pill" id="charStateTag">IDLE</span>
         <span class="char-obj-badge" id="charObjTag" style="display:none;"></span>
       </div>
-
       <div class="ai-info-col">
         <div class="ai-res-head">
           <span class="ai-res-title" id="aiObjectTitle">Ready to Analyze</span>
@@ -362,7 +310,6 @@
         <div class="ai-suggestion" id="aiSuggestionText"></div>
       </div>
     </div>
-
     <div class="ai-btn-row">
       <button class="hud-btn primary" id="voiceReplayBtn">🔊 Speak</button>
       <button class="hud-btn" id="voiceMuteBtn">Mute: Off</button>
@@ -373,41 +320,22 @@
     </div>
   </aside>
 
-  <!-- Minimized AI Result Pill -->
   <button class="ai-mini-pill hidden" id="aiMiniPill" title="Reopen ASVIRO AI Result">
-    <span>🤖 ASVIRO:</span>
-    <span id="aiMiniLabel" style="color:var(--cyan);">Result</span>
-    <span>▲</span>
+    <span>🤖 ASVIRO:</span><span id="aiMiniLabel" style="color:var(--cyan);">Result</span><span>▲</span>
   </button>
 
-  <!-- Controls Menu Panel (Opens ONLY on Button Tap — NEVER on Open Palm) -->
+  <!-- Controls Menu Panel -->
   <aside class="floating-panel controls-panel glass hidden" id="controlsPanel">
-    <div class="panel-head">
-      <div class="panel-title">ASVIRO Controls Menu</div>
-      <button class="hud-btn" id="closeControlsBtn">✕</button>
-    </div>
-    <div class="control-row">
-      <div class="control-label"><span>Brush Size</span><span id="brushSizeLbl">9px</span></div>
-      <input type="range" class="cyber-range" style="width:100%;" id="panelBrushSize" min="2" max="42" value="9" />
-    </div>
-    <div class="control-row">
-      <div class="control-label"><span>Eraser Size</span><span id="eraserSizeLbl">28px</span></div>
-      <input type="range" class="cyber-range" style="width:100%;" id="panelEraserSize" min="8" max="72" value="28" />
-    </div>
+    <div class="panel-head"><div class="panel-title">ASVIRO Controls Menu</div><button class="hud-btn" id="closeControlsBtn">✕</button></div>
+    <div class="control-row"><div class="control-label"><span>Brush Size</span><span id="brushSizeLbl">9px</span></div><input type="range" class="cyber-range" style="width:100%;" id="panelBrushSize" min="2" max="42" value="9" /></div>
+    <div class="control-row"><div class="control-label"><span>Eraser Size</span><span id="eraserSizeLbl">28px</span></div><input type="range" class="cyber-range" style="width:100%;" id="panelEraserSize" min="8" max="72" value="28" /></div>
     <div class="control-row">
       <div class="control-label"><span>Performance Engine</span><span id="perfModeLbl">AUTO</span></div>
-      <div class="seg-group">
-        <button class="seg-btn active" data-perf="auto">Auto</button>
-        <button class="seg-btn" data-perf="high">High</button>
-        <button class="seg-btn" data-perf="eco">Eco</button>
-      </div>
+      <div class="seg-group"><button class="seg-btn active" data-perf="auto">Auto</button><button class="seg-btn" data-perf="high">High</button><button class="seg-btn" data-perf="eco">Eco</button></div>
     </div>
     <div class="control-row">
       <div class="control-label"><span>System Controls</span></div>
-      <div class="seg-group" style="grid-template-columns:1fr 1fr;">
-        <button class="seg-btn active" id="togglePerfHudBtn">Show FPS</button>
-        <button class="seg-btn" id="restartCamBtn">Restart Cam</button>
-      </div>
+      <div class="seg-group" style="grid-template-columns:1fr 1fr;"><button class="seg-btn active" id="togglePerfHudBtn">Show FPS</button><button class="seg-btn" id="restartCamBtn">Restart Cam</button></div>
     </div>
     <div class="gesture-cheat">
       <div class="cheat-chip"><strong>☝️ Index Up</strong>Draw cyan strokes</div>
@@ -421,12 +349,9 @@
     </div>
   </aside>
 
-  <!-- Quick Tools & Color Menu (Button-Triggered) -->
+  <!-- Quick Tools Menu -->
   <section class="floating-panel thumb-menu glass hidden" id="thumbMenu">
-    <div class="panel-head">
-      <div class="panel-title">Quick Tool &amp; Color Menu</div>
-      <button class="hud-btn" id="closeThumbMenuBtn">✕</button>
-    </div>
+    <div class="panel-head"><div class="panel-title">Quick Tool &amp; Color Menu</div><button class="hud-btn" id="closeThumbMenuBtn">✕</button></div>
     <div class="thumb-grid">
       <button class="thumb-tile" data-tm-action="brush">✏️ Brush</button>
       <button class="thumb-tile" data-tm-action="eraser">🧹 Eraser</button>
@@ -448,14 +373,11 @@
     <div class="thumb-hint">Tap any tool or hover with 2-Finger &amp; Pinch to confirm</div>
   </section>
 
-  <!-- Gesture Calibration Modal -->
+  <!-- Calibration Modal -->
   <div class="modal-backdrop hidden" id="calibrationModal">
     <div class="cal-card glass">
-      <div class="panel-head">
-        <div class="panel-title">Five-Finger Gesture Calibration</div>
-        <button class="hud-btn" id="closeCalBtn">✕</button>
-      </div>
-      <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">Test all five fingers live, enable/disable individual finger controls, and tune sensitivity, smoothing, and hold delay.</p>
+      <div class="panel-head"><div class="panel-title">Five-Finger Gesture Calibration</div><button class="hud-btn" id="closeCalBtn">✕</button></div>
+      <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">Test all five fingers live (including Thumb &amp; Open Palm), toggle controls, and tune sensitivity or smoothing.</p>
       <div class="finger-test-grid">
         <div class="finger-card" id="calCardT"><span class="f-name">Thumb</span><span class="f-role">Pinch / Palm</span><button class="toggle-chip on" data-finger-toggle="thumb">Enabled</button></div>
         <div class="finger-card" id="calCardI"><span class="f-name">Index</span><span class="f-role">Air Draw</span><button class="toggle-chip on" data-finger-toggle="index">Enabled</button></div>
@@ -464,36 +386,18 @@
         <div class="finger-card" id="calCardP"><span class="f-name">Pinky</span><span class="f-role">Undo</span><button class="toggle-chip on" data-finger-toggle="pinky">Enabled</button></div>
       </div>
       <div class="cal-sliders">
-        <div class="cal-slider-row">
-          <div><strong>Gesture Sensitivity</strong><div style="font-size:0.67rem;color:var(--muted);">Lower = easier, Higher = stricter pose</div></div>
-          <div style="display:flex;align-items:center;gap:8px;"><input type="range" class="cyber-range" id="calSensitivity" min="1.02" max="1.24" step="0.01" value="1.09" /><span class="mono-val" id="calSensitivityVal">1.09</span></div>
-        </div>
-        <div class="cal-slider-row">
-          <div><strong>Drawing Smoothing</strong><div style="font-size:0.67rem;color:var(--muted);">Lower = smoother, Higher = faster response</div></div>
-          <div style="display:flex;align-items:center;gap:8px;"><input type="range" class="cyber-range" id="calSmoothing" min="0.4" max="3.0" step="0.1" value="1.4" /><span class="mono-val" id="calSmoothingVal">1.4</span></div>
-        </div>
-        <div class="cal-slider-row">
-          <div><strong>Hold Delay (Undo / Redo)</strong><div style="font-size:0.67rem;color:var(--muted);">Fist AI submit stays at ~1.0s</div></div>
-          <div style="display:flex;align-items:center;gap:8px;"><input type="range" class="cyber-range" id="calDelay" min="180" max="800" step="20" value="380" /><span class="mono-val" id="calDelayVal">380ms</span></div>
-        </div>
+        <div class="cal-slider-row"><div><strong>Gesture Sensitivity</strong><div style="font-size:0.67rem;color:var(--muted);">Lower = easier, Higher = stricter pose</div></div><div style="display:flex;align-items:center;gap:8px;"><input type="range" class="cyber-range" id="calSensitivity" min="1.00" max="1.18" step="0.01" value="1.04" /><span class="mono-val" id="calSensitivityVal">1.04</span></div></div>
+        <div class="cal-slider-row"><div><strong>Drawing Smoothing</strong><div style="font-size:0.67rem;color:var(--muted);">Lower = smoother, Higher = faster response</div></div><div style="display:flex;align-items:center;gap:8px;"><input type="range" class="cyber-range" id="calSmoothing" min="0.8" max="3.2" step="0.1" value="1.8" /><span class="mono-val" id="calSmoothingVal">1.8</span></div></div>
+        <div class="cal-slider-row"><div><strong>Hold Delay (Undo / Redo)</strong><div style="font-size:0.67rem;color:var(--muted);">Fist AI submit stays at ~1.0s</div></div><div style="display:flex;align-items:center;gap:8px;"><input type="range" class="cyber-range" id="calDelay" min="180" max="800" step="20" value="360" /><span class="mono-val" id="calDelayVal">360ms</span></div></div>
       </div>
-      <div style="display:flex;justify-content:space-between;gap:10px;">
-        <button class="hud-btn danger" id="restoreDefaultsBtn">Restore Defaults</button>
-        <button class="hud-btn primary" id="doneCalBtn">Save &amp; Close</button>
-      </div>
+      <div style="display:flex;justify-content:space-between;gap:10px;"><button class="hud-btn danger" id="restoreDefaultsBtn">Restore Defaults</button><button class="hud-btn primary" id="doneCalBtn">Save &amp; Close</button></div>
     </div>
   </div>
 
-  <!-- My Creations Gallery Modal (IndexedDB) -->
+  <!-- Creations Gallery Modal -->
   <div class="modal-backdrop hidden" id="galleryModal">
     <div class="gallery-card glass">
-      <div class="panel-head">
-        <div class="panel-title">My Creations Gallery</div>
-        <div style="display:flex;gap:6px;">
-          <button class="hud-btn primary" id="gallerySaveNowBtn">+ Save Current</button>
-          <button class="hud-btn" id="closeGalleryBtn">✕</button>
-        </div>
-      </div>
+      <div class="panel-head"><div class="panel-title">My Creations Gallery</div><div style="display:flex;gap:6px;"><button class="hud-btn primary" id="gallerySaveNowBtn">+ Save Current</button><button class="hud-btn" id="closeGalleryBtn">✕</button></div></div>
       <p style="font-size:0.75rem;color:var(--muted);">Stored locally via IndexedDB. Reopen, rename, export PNG, or delete any sketch.</p>
       <div class="gallery-grid" id="galleryGrid"></div>
     </div>
@@ -504,10 +408,7 @@
     <div class="confirm-card glass">
       <h3>Purge Drawing Canvas?</h3>
       <p>This clears all current strokes. You can still restore using Undo right after.</p>
-      <div class="confirm-actions">
-        <button class="hud-btn" id="cancelClearBtn">Cancel</button>
-        <button class="hud-btn danger" id="confirmClearBtn" style="border-color:var(--crimson);">Confirm Clear</button>
-      </div>
+      <div class="confirm-actions"><button class="hud-btn" id="cancelClearBtn">Cancel</button><button class="hud-btn danger" id="confirmClearBtn" style="border-color:var(--crimson);">Confirm Clear</button></div>
     </div>
   </div>
 
@@ -533,11 +434,11 @@
     import { FilesetResolver, HandLandmarker } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs";
 
     // =========================================================================
-    // 1. PREFERENCES & ONE-EURO SMOOTHING FILTER
+    // 1. PREFERENCES & LOW-LATENCY ONE-EURO FILTER
     // =========================================================================
-    const PREFS_KEY = "asviro_airsketch_prefs_v1";
+    const PREFS_KEY = "asviro_airsketch_prefs_v2";
     const DEFAULT_PREFS = {
-      sensitivity: 1.09, smoothingCutoff: 1.4, activationDelayMs: 380,
+      sensitivity: 1.04, smoothingCutoff: 1.8, activationDelayMs: 360,
       brushSize: 9, eraserSize: 28, color: "#00e5ff",
       showSkeleton: true, showPerfHud: true, perfMode: "auto", voiceMuted: false,
       enabledFingers: { thumb: true, index: true, middle: true, ring: true, pinky: true }
@@ -560,7 +461,7 @@
       reset() { this.s = null; }
     }
     class OneEuroFilter {
-      constructor(minCutoff = 1.4, beta = 0.022, dCutoff = 1.0) {
+      constructor(minCutoff = 1.8, beta = 0.045, dCutoff = 1.0) {
         this.minCutoff = minCutoff; this.beta = beta; this.dCutoff = dCutoff;
         this.x = new LowPass(); this.dx = new LowPass(); this.lastT = null;
       }
@@ -578,12 +479,12 @@
     }
 
     // =========================================================================
-    // 2. DOM & STATE BUFFERS
+    // 2. GPU-ACCELERATED CANVAS & STATE BUFFERS (ZERO-LAG)
     // =========================================================================
     const $ = (id) => document.getElementById(id);
     const video = $("webcam"), drawCanvas = $("drawCanvas"), overlayCanvas = $("overlayCanvas");
-    const drawCtx = drawCanvas.getContext("2d", { willReadFrequently: true });
-    const overlayCtx = overlayCanvas.getContext("2d");
+    const drawCtx = drawCanvas.getContext("2d", { desynchronized: true });
+    const overlayCtx = overlayCanvas.getContext("2d", { desynchronized: true });
     const ledEls = { T: $("ledT"), I: $("ledI"), M: $("ledM"), R: $("ledR"), P: $("ledP") };
     const calCards = { T: $("calCardT"), I: $("calCardI"), M: $("calCardM"), R: $("calCardR"), P: $("calCardP") };
     const mappedX = new Float32Array(21), mappedY = new Float32Array(21);
@@ -593,35 +494,38 @@
     const app = {
       tool: "brush", activeStrokeTool: "brush", cameraActive: false, stream: null, handLandmarker: null,
       lastVideoTime: -1, camView: "full", isDrawing: false, pointerSource: null, strokePts: [],
-      undoStack: [], redoStack: [], maxHistory: 25, hasHand: false, lostFrames: 0,
-      candidateGesture: "NO_HAND", candidateCount: 0, stableGesture: "NO_HAND", pinchActive: false,
-      holdGesture: null, holdStartTime: 0, holdProgress: 0,
+      undoStack: [], redoStack: [], maxHistory: 20, hasInk: false,
+      hasHand: false, lostFrames: 0, candidateGesture: "NO_HAND", candidateCount: 0, stableGesture: "NO_HAND",
+      drawExitStreak: 0, pinchActive: false, holdGesture: null, holdStartTime: 0, holdProgress: 0,
       cooldowns: { undo: 0, redo: 0, pinchClick: 0, aiSubmit: 0 },
       targetX: 0, targetY: 0, renderX: 0, renderY: 0, hasCursorPos: false, hoveredElement: null, lastHoverCheck: 0,
       lastDetectTime: 0, detectIntervalMs: 0, detectMsAvg: 12, slowStreak: 0, fastStreak: 0, qualityTier: "HIGH",
       fpsFrames: 0, fpsLastCheck: performance.now(), currentFps: 0, lastHudUpdate: 0,
       prevStatusText: "", prevStatusClass: "", prevGestureText: "", prevLedsBitmask: -1, toastTimer: null,
       isAnalyzing: false, userInteracted: false, lastAiResult: null,
-      lastReplyText: "Hey! I'm Asviro. Draw something over the camera and hold a fist to show me!",
-      typewriterTimer: null
+      lastReplyText: "Hey! I'm Asviro. Draw something over the camera and hold a fist to show me!", typewriterTimer: null
     };
 
-    const filterX = new OneEuroFilter(prefs.smoothingCutoff, 0.022);
-    const filterY = new OneEuroFilter(prefs.smoothingCutoff, 0.022);
+    const filterX = new OneEuroFilter(prefs.smoothingCutoff, 0.045);
+    const filterY = new OneEuroFilter(prefs.smoothingCutoff, 0.045);
     document.addEventListener("pointerdown", () => { app.userInteracted = true; }, { once: true });
     document.addEventListener("keydown", () => { app.userInteracted = true; }, { once: true });
 
-    // =========================================================================
-    // 3. CANVAS RESIZE, HISTORY & SMOOTH DRAWING
-    // =========================================================================
+    function captureOffscreenSnapshot() {
+      const c = document.createElement("canvas");
+      c.width = drawCanvas.width; c.height = drawCanvas.height;
+      c.getContext("2d").drawImage(drawCanvas, 0, 0);
+      return c;
+    }
+
+    function restoreOffscreenSnapshot(snap) {
+      drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+      if (snap) drawCtx.drawImage(snap, 0, 0, drawCanvas.width, drawCanvas.height);
+    }
+
     function resizeCanvases() {
       const w = window.innerWidth, h = window.innerHeight;
-      let snap = null;
-      if (drawCanvas.width > 0 && drawCanvas.height > 0) {
-        snap = document.createElement("canvas");
-        snap.width = drawCanvas.width; snap.height = drawCanvas.height;
-        snap.getContext("2d").drawImage(drawCanvas, 0, 0);
-      }
+      const snap = drawCanvas.width > 0 && drawCanvas.height > 0 && app.hasInk ? captureOffscreenSnapshot() : null;
       drawCanvas.width = w; drawCanvas.height = h;
       overlayCanvas.width = w; overlayCanvas.height = h;
       if (snap) drawCtx.drawImage(snap, 0, 0, w, h);
@@ -631,21 +535,21 @@
 
     function pushHistory() {
       if (!drawCanvas.width || !drawCanvas.height) return;
-      app.undoStack.push(drawCtx.getImageData(0, 0, drawCanvas.width, drawCanvas.height));
+      app.undoStack.push(captureOffscreenSnapshot());
       if (app.undoStack.length > app.maxHistory) app.undoStack.shift();
       app.redoStack.length = 0;
       syncHistoryButtons();
     }
     function performUndo() {
       if (!app.undoStack.length) { showToast("Nothing to undo"); return; }
-      app.redoStack.push(drawCtx.getImageData(0, 0, drawCanvas.width, drawCanvas.height));
-      drawCtx.putImageData(app.undoStack.pop(), 0, 0);
+      app.redoStack.push(captureOffscreenSnapshot());
+      restoreOffscreenSnapshot(app.undoStack.pop());
       syncHistoryButtons(); showToast("Undo Applied");
     }
     function performRedo() {
       if (!app.redoStack.length) { showToast("Nothing to redo"); return; }
-      app.undoStack.push(drawCtx.getImageData(0, 0, drawCanvas.width, drawCanvas.height));
-      drawCtx.putImageData(app.redoStack.pop(), 0, 0);
+      app.undoStack.push(captureOffscreenSnapshot());
+      restoreOffscreenSnapshot(app.redoStack.pop());
       syncHistoryButtons(); showToast("Redo Applied");
     }
     function syncHistoryButtons() {
@@ -653,45 +557,65 @@
       $("redoBtn").disabled = app.redoStack.length === 0;
     }
 
+    // Fast 2-Pass Neon Drawing (Zero shadowBlur lag)
     function getStrokeWidth(toolName) { return toolName === "eraser" ? prefs.eraserSize : prefs.brushSize; }
-    function applyStrokeStyle(ctx, toolName) {
-      ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.lineWidth = getStrokeWidth(toolName);
+
+    function drawSegment(drawPathFn, toolName) {
+      const w = getStrokeWidth(toolName);
+      drawCtx.save();
+      drawCtx.lineCap = "round"; drawCtx.lineJoin = "round";
       if (toolName === "eraser") {
-        ctx.globalCompositeOperation = "destination-out"; ctx.strokeStyle = "rgba(0,0,0,1)"; ctx.shadowBlur = 0;
+        drawCtx.globalCompositeOperation = "destination-out";
+        drawCtx.strokeStyle = "rgba(0,0,0,1)";
+        drawCtx.lineWidth = w;
+        drawCtx.beginPath(); drawPathFn(drawCtx); drawCtx.stroke();
       } else {
-        ctx.globalCompositeOperation = "source-over"; ctx.strokeStyle = prefs.color; ctx.shadowColor = prefs.color;
-        ctx.shadowBlur = app.qualityTier === "HIGH" ? 8 : 2;
+        drawCtx.globalCompositeOperation = "source-over";
+        if (app.qualityTier !== "ECO") {
+          drawCtx.globalAlpha = 0.22;
+          drawCtx.strokeStyle = prefs.color;
+          drawCtx.lineWidth = w * 1.9;
+          drawCtx.beginPath(); drawPathFn(drawCtx); drawCtx.stroke();
+        }
+        drawCtx.globalAlpha = 1;
+        drawCtx.strokeStyle = prefs.color;
+        drawCtx.lineWidth = w;
+        drawCtx.beginPath(); drawPathFn(drawCtx); drawCtx.stroke();
       }
+      drawCtx.restore();
     }
+
     function beginStroke(x, y, toolName, source) {
       if (app.isDrawing) finishStroke();
       pushHistory();
-      app.isDrawing = true; app.pointerSource = source; app.activeStrokeTool = toolName; app.strokePts = [{ x, y }];
-      drawCtx.save(); applyStrokeStyle(drawCtx, toolName);
+      app.isDrawing = true; app.hasInk = true;
+      app.pointerSource = source; app.activeStrokeTool = toolName; app.strokePts = [{ x, y }];
+      drawCtx.save();
+      drawCtx.globalCompositeOperation = toolName === "eraser" ? "destination-out" : "source-over";
       drawCtx.beginPath(); drawCtx.arc(x, y, getStrokeWidth(toolName) * 0.5, 0, Math.PI * 2);
-      drawCtx.fillStyle = toolName === "eraser" ? "rgba(0,0,0,1)" : prefs.color; drawCtx.fill(); drawCtx.restore();
+      drawCtx.fillStyle = toolName === "eraser" ? "rgba(0,0,0,1)" : prefs.color;
+      drawCtx.fill(); drawCtx.restore();
     }
     function extendStroke(x, y) {
       if (!app.isDrawing) return;
       const pts = app.strokePts, last = pts[pts.length - 1];
-      if ((x - last.x) ** 2 + (y - last.y) ** 2 < 4) return;
+      if ((x - last.x) ** 2 + (y - last.y) ** 2 < 2.25) return;
       pts.push({ x, y });
-      drawCtx.save(); applyStrokeStyle(drawCtx, app.activeStrokeTool); drawCtx.beginPath();
-      if (pts.length === 2) { drawCtx.moveTo(pts[0].x, pts[0].y); drawCtx.lineTo(pts[1].x, pts[1].y); }
-      else {
-        const p0 = pts[pts.length - 3], p1 = pts[pts.length - 2], p2 = pts[pts.length - 1];
-        drawCtx.moveTo((p0.x + p1.x) * 0.5, (p0.y + p1.y) * 0.5);
-        drawCtx.quadraticCurveTo(p1.x, p1.y, (p1.x + p2.x) * 0.5, (p1.y + p2.y) * 0.5);
-      }
-      drawCtx.stroke(); drawCtx.restore();
+      drawSegment((ctx) => {
+        if (pts.length === 2) { ctx.moveTo(pts[0].x, pts[0].y); ctx.lineTo(pts[1].x, pts[1].y); }
+        else {
+          const p0 = pts[pts.length - 3], p1 = pts[pts.length - 2], p2 = pts[pts.length - 1];
+          ctx.moveTo((p0.x + p1.x) * 0.5, (p0.y + p1.y) * 0.5);
+          ctx.quadraticCurveTo(p1.x, p1.y, (p1.x + p2.x) * 0.5, (p1.y + p2.y) * 0.5);
+        }
+      }, app.activeStrokeTool);
     }
     function finishStroke() {
       if (!app.isDrawing) return;
       const pts = app.strokePts;
       if (pts.length >= 2) {
         const p1 = pts[pts.length - 2], p2 = pts[pts.length - 1];
-        drawCtx.save(); applyStrokeStyle(drawCtx, app.activeStrokeTool); drawCtx.beginPath();
-        drawCtx.moveTo((p1.x + p2.x) * 0.5, (p1.y + p2.y) * 0.5); drawCtx.lineTo(p2.x, p2.y); drawCtx.stroke(); drawCtx.restore();
+        drawSegment((ctx) => { ctx.moveTo((p1.x + p2.x) * 0.5, (p1.y + p2.y) * 0.5); ctx.lineTo(p2.x, p2.y); }, app.activeStrokeTool);
       }
       app.isDrawing = false; app.pointerSource = null; app.strokePts.length = 0;
     }
@@ -707,7 +631,7 @@
     drawCanvas.addEventListener("pointercancel", stopPointer);
 
     // =========================================================================
-    // 4. COORDINATE MAPPING & GESTURES (OPEN PALM = PEN UP, FIST 1s = SUBMIT)
+    // 3. FIXED THUMB, OPEN PALM & SMOOTH CONTINUOUS HAND TRACKING
     // =========================================================================
     function mapAllLandmarks(lm) {
       const vw = video.videoWidth || 640, vh = video.videoHeight || 480, cw = overlayCanvas.width, ch = overlayCanvas.height;
@@ -718,32 +642,52 @@
       for (let i = 0; i < 21; i++) { mappedX[i] = (1 - lm[i].x) * rw + ox; mappedY[i] = lm[i].y * rh + oy; }
     }
     function dist2D(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+
     function updateFingerStates(lm) {
-      const wrist = lm[0], palmScale = Math.max(dist2D(wrist, lm[9]), 0.04), s = prefs.sensitivity;
-      fingerState.T = dist2D(lm[4], lm[17]) > dist2D(lm[3], lm[17]) * (s - 0.02) && dist2D(lm[4], lm[5]) > palmScale * 0.42;
-      fingerState.I = dist2D(wrist, lm[8]) > dist2D(wrist, lm[6]) * s && dist2D(wrist, lm[8]) > dist2D(wrist, lm[5]) * 1.18;
-      fingerState.M = dist2D(wrist, lm[12]) > dist2D(wrist, lm[10]) * s && dist2D(wrist, lm[12]) > dist2D(wrist, lm[9]) * 1.18;
-      fingerState.R = dist2D(wrist, lm[16]) > dist2D(wrist, lm[14]) * s && dist2D(wrist, lm[16]) > dist2D(wrist, lm[13]) * 1.18;
-      fingerState.P = dist2D(wrist, lm[20]) > dist2D(wrist, lm[18]) * s && dist2D(wrist, lm[20]) > dist2D(wrist, lm[17]) * 1.18;
+      const wrist = lm[0];
+      const palmScale = Math.max(dist2D(wrist, lm[9]), dist2D(lm[5], lm[17]), 0.04);
+      const s = prefs.sensitivity;
+
+      // Robust Thumb detection (works sideways, upright, or in open palm)
+      const dThumbPinky = dist2D(lm[4], lm[17]);
+      const dMcpPinky = dist2D(lm[2], lm[17]);
+      const dThumbIndexBase = dist2D(lm[4], lm[5]);
+      const dThumbMidBase = dist2D(lm[4], lm[9]);
+      fingerState.T = (dThumbPinky > dMcpPinky * 1.12 && dThumbIndexBase > palmScale * 0.34) || dThumbMidBase > palmScale * 0.62;
+
+      // 4 Fingers (wrist-to-tip vs PIP & MCP; tolerates angled palms)
+      fingerState.I = dist2D(wrist, lm[8]) > dist2D(wrist, lm[6]) * s && dist2D(wrist, lm[8]) > dist2D(wrist, lm[5]) * 1.12;
+      fingerState.M = dist2D(wrist, lm[12]) > dist2D(wrist, lm[10]) * s && dist2D(wrist, lm[12]) > dist2D(wrist, lm[9]) * 1.12;
+      fingerState.R = dist2D(wrist, lm[16]) > dist2D(wrist, lm[14]) * s && dist2D(wrist, lm[16]) > dist2D(wrist, lm[13]) * 1.12;
+      fingerState.P = dist2D(wrist, lm[20]) > dist2D(wrist, lm[18]) * s && dist2D(wrist, lm[20]) > dist2D(wrist, lm[17]) * 1.12;
+
       const pinchRatio = dist2D(lm[4], lm[8]) / palmScale;
       if (app.pinchActive) { if (pinchRatio > 0.42) app.pinchActive = false; }
       else { if (pinchRatio < 0.30) app.pinchActive = true; }
     }
 
-    function classifyGesturePriority() {
+    function classifyGesturePriority(lm) {
       const { T, I, M, R, P } = fingerState, en = prefs.enabledFingers;
+      const palmScale = Math.max(dist2D(lm[0], lm[9]), 0.04);
 
-      // Priority 1: Closed Fist -> Hold 1s to submit drawing to AI
-      if (!T && !I && !M && !R && !P) return { name: "FIST_SUBMIT", pointerIdx: 9 };
-      // Priority 2: Open Palm -> Pen Up / Pause ONLY (NEVER opens menu)
-      if ((T && I && M && R && P) || (I && M && R && P)) return { name: "OPEN_PALM_PAUSE", pointerIdx: 9 };
-      // Priority 3: Thumb + Index Pinch -> Confirm hovered UI button
+      // Priority 1: Open Palm -> Pen Up / Pause ONLY (detects reliably whenever 4 fingers are open)
+      if (I && M && R && P) return { name: "OPEN_PALM_PAUSE", pointerIdx: 9 };
+
+      // Priority 2: Closed Fist -> Hold 1s to Submit (allows natural thumb position tucked near index)
+      if (!I && !M && !R && !P && (!T || dist2D(lm[4], lm[6]) < palmScale * 0.58)) {
+        return { name: "FIST_SUBMIT", pointerIdx: 9 };
+      }
+
+      // Priority 3: Pinch Confirm
       if (app.pinchActive && !R && !P) return { name: "PINCH_CONFIRM", pointerIdx: 8 };
-      // Priority 4: Three-Finger -> Redo
+
+      // Priority 4: 3-Finger Redo
       if (I && M && R && !P) return { name: "THREE_REDO", pointerIdx: 12 };
-      // Priority 5: Two-Finger -> Hover UI controls without drawing
+
+      // Priority 5: 2-Finger UI Hover
       if (I && M && !R && !P) return { name: "TWO_NAV", pointerIdx: 8 };
-      // Priority 6: Dedicated Single-Finger Roles
+
+      // Priority 6: Single-Finger Roles
       if (I && !M && !R && !P && en.index) return { name: "INDEX_DRAW", pointerIdx: 8 };
       if (M && !I && !R && !P && en.middle) return { name: "MIDDLE_NAV", pointerIdx: 12 };
       if (R && !I && !M && !P && en.ring) return { name: "RING_ERASE", pointerIdx: 16 };
@@ -754,7 +698,7 @@
 
     function clearAirHover() { if (app.hoveredElement) { app.hoveredElement.classList.remove("air-hover"); app.hoveredElement = null; } }
     function updateUiHover(x, y, now) {
-      if (now - app.lastHoverCheck < 55) return;
+      if (now - app.lastHoverCheck < 60) return;
       app.lastHoverCheck = now;
       const el = document.elementFromPoint(x, y);
       const target = el ? el.closest("button, .swatch, input[type='range']") : null;
@@ -771,19 +715,28 @@
       app.holdProgress = Math.min(elapsed / delayMs, 1);
       if (elapsed >= delayMs) {
         app.cooldowns[cdKey] = now + cdMs;
-        app.holdGesture = null;
-        app.holdProgress = 0;
-        fn();
+        app.holdGesture = null; app.holdProgress = 0; fn();
       }
     }
 
     function processStableGesture(g, now) {
       if (g !== "PINKY_UNDO" && g !== "THREE_REDO" && g !== "FIST_SUBMIT") {
-        app.holdGesture = null;
-        app.holdProgress = 0;
+        app.holdGesture = null; app.holdProgress = 0;
       }
-      if (g !== "INDEX_DRAW" && g !== "RING_ERASE" && app.isDrawing && app.pointerSource === "gesture") {
-        finishStroke();
+
+      // Sticky drawing guard: avoid mid-stroke breaks on 1-3 frame jitter, lift immediately on Open Palm
+      if (g === "INDEX_DRAW" || g === "RING_ERASE") {
+        app.drawExitStreak = 0;
+      } else if (app.isDrawing && app.pointerSource === "gesture") {
+        app.drawExitStreak++;
+        if (g === "OPEN_PALM_PAUSE" || app.drawExitStreak >= 4) {
+          finishStroke();
+          app.drawExitStreak = 0;
+        } else {
+          // Keep following smoothly across brief 1-3 frame gesture flicker
+          extendStroke(app.renderX, app.renderY);
+          return;
+        }
       }
 
       switch (g) {
@@ -798,28 +751,15 @@
               if (isCanvasBlank()) showToast("Draw something first before submitting!");
               else analyzeDrawingWithAI();
             }, "aiSubmit", 4500, 1000);
-          } else {
-            app.holdProgress = 0;
-          }
+          } else app.holdProgress = 0;
           break;
-        case "PINKY_UNDO":
-          clearAirHover();
-          handleDeliberateHold("PINKY_UNDO", now, performUndo, "undo", 1100, prefs.activationDelayMs);
-          break;
-        case "THREE_REDO":
-          clearAirHover();
-          handleDeliberateHold("THREE_REDO", now, performRedo, "redo", 1100, prefs.activationDelayMs);
-          break;
-        case "MIDDLE_NAV":
-        case "TWO_NAV":
-          updateUiHover(app.renderX, app.renderY, now);
-          break;
+        case "PINKY_UNDO": clearAirHover(); handleDeliberateHold("PINKY_UNDO", now, performUndo, "undo", 1100, prefs.activationDelayMs); break;
+        case "THREE_REDO": clearAirHover(); handleDeliberateHold("THREE_REDO", now, performRedo, "redo", 1100, prefs.activationDelayMs); break;
+        case "MIDDLE_NAV": case "TWO_NAV": updateUiHover(app.renderX, app.renderY, now); break;
         case "PINCH_CONFIRM":
           updateUiHover(app.renderX, app.renderY, now);
           if (app.hoveredElement && now >= app.cooldowns.pinchClick) {
-            app.cooldowns.pinchClick = now + 750;
-            app.hoveredElement.click();
-            showToast("Pinch Confirmed");
+            app.cooldowns.pinchClick = now + 750; app.hoveredElement.click(); showToast("Pinch Confirmed");
           }
           break;
         case "INDEX_DRAW":
@@ -836,7 +776,7 @@
     }
 
     // =========================================================================
-    // 5. OVERLAY & TELEMETRY RENDERING
+    // 4. OVERLAY, TELEMETRY & TRACKING LOOP
     // =========================================================================
     function renderOverlay() {
       overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
@@ -848,7 +788,7 @@
           const a = HAND_CONNECTIONS[i][0], b = HAND_CONNECTIONS[i][1];
           overlayCtx.moveTo(mappedX[a], mappedY[a]); overlayCtx.lineTo(mappedX[b], mappedY[b]);
         }
-        overlayCtx.stroke(); overlayCtx.fillStyle = "rgba(224, 242, 254, 0.78)";
+        overlayCtx.stroke(); overlayCtx.fillStyle = "rgba(224, 242, 254, 0.8)";
         for (let i = 0; i < 21; i++) { overlayCtx.beginPath(); overlayCtx.arc(mappedX[i], mappedY[i], i % 4 === 0 && i > 0 ? 3.8 : 2.1, 0, Math.PI * 2); overlayCtx.fill(); }
         overlayCtx.restore();
       }
@@ -856,7 +796,6 @@
       if (!app.hasCursorPos) return;
       const x = app.renderX, y = app.renderY, g = app.stableGesture;
       overlayCtx.save();
-
       if (g === "INDEX_DRAW") {
         const activeColor = app.tool === "eraser" ? "#ff3b5c" : prefs.color;
         overlayCtx.beginPath(); overlayCtx.arc(x, y, Math.max(getStrokeWidth(app.tool) * 0.5, 5), 0, Math.PI * 2);
@@ -872,7 +811,6 @@
         overlayCtx.beginPath(); overlayCtx.arc(x, y, 15, 0, Math.PI * 2);
         overlayCtx.strokeStyle = g === "FIST_SUBMIT" ? "#10b981" : "#f59e0b"; overlayCtx.lineWidth = 2.2; overlayCtx.stroke();
       }
-
       if (app.holdProgress > 0) {
         overlayCtx.beginPath(); overlayCtx.arc(x, y, 24, -Math.PI * 0.5, -Math.PI * 0.5 + Math.PI * 2 * app.holdProgress);
         overlayCtx.strokeStyle = g === "FIST_SUBMIT" ? "#10b981" : "#00e5ff"; overlayCtx.lineWidth = 4; overlayCtx.stroke();
@@ -883,11 +821,11 @@
     function updateAutoPerformance(ms) {
       app.detectMsAvg = app.detectMsAvg * 0.85 + ms * 0.15;
       if (prefs.perfMode === "high") { app.qualityTier = "HIGH"; app.detectIntervalMs = 0; return; }
-      if (prefs.perfMode === "eco") { app.qualityTier = "ECO"; app.detectIntervalMs = 45; return; }
-      if (app.detectMsAvg > 42) {
+      if (prefs.perfMode === "eco") { app.qualityTier = "ECO"; app.detectIntervalMs = 40; return; }
+      if (app.detectMsAvg > 45) {
         app.slowStreak++; app.fastStreak = 0;
-        if (app.slowStreak > 12) { app.qualityTier = app.detectMsAvg > 62 ? "ECO" : "BALANCED"; app.detectIntervalMs = app.qualityTier === "ECO" ? 50 : 28; }
-      } else if (app.detectMsAvg < 22) {
+        if (app.slowStreak > 12) { app.qualityTier = app.detectMsAvg > 65 ? "ECO" : "BALANCED"; app.detectIntervalMs = app.qualityTier === "ECO" ? 42 : 24; }
+      } else if (app.detectMsAvg < 24) {
         app.fastStreak++; app.slowStreak = 0;
         if (app.fastStreak > 30) { app.qualityTier = "HIGH"; app.detectIntervalMs = 0; }
       }
@@ -899,7 +837,7 @@
         app.currentFps = Math.round((app.fpsFrames * 1000) / (now - app.fpsLastCheck));
         app.fpsFrames = 0; app.fpsLastCheck = now;
       }
-      if (now - app.lastHudUpdate < 160) return;
+      if (now - app.lastHudUpdate < 140) return;
       app.lastHudUpdate = now;
 
       const mask = (fingerState.T?1:0)|(fingerState.I?2:0)|(fingerState.M?4:0)|(fingerState.R?8:0)|(fingerState.P?16:0);
@@ -939,11 +877,10 @@
         const t0 = performance.now();
         const result = app.handLandmarker.detectForVideo(video, now);
         updateAutoPerformance(performance.now() - t0);
-        const score = result.handedness?.[0]?.[0]?.score ?? 1;
         const lm = result.landmarks?.[0];
-        if (lm && score >= 0.55) {
+        if (lm) {
           app.hasHand = true; app.lostFrames = 0; mapAllLandmarks(lm); updateFingerStates(lm);
-          const raw = classifyGesturePriority();
+          const raw = classifyGesturePriority(lm);
           if (raw.name === app.candidateGesture) app.candidateCount++; else { app.candidateGesture = raw.name; app.candidateCount = 1; }
           if (app.candidateCount >= 2 || raw.name === "OPEN_PALM_PAUSE") app.stableGesture = raw.name;
           const sx = filterX.filter(mappedX[raw.pointerIdx], now), sy = filterY.filter(mappedY[raw.pointerIdx], now);
@@ -951,8 +888,8 @@
           if (!app.hasCursorPos) { app.renderX = sx; app.renderY = sy; app.hasCursorPos = true; }
         } else {
           app.lostFrames++;
-          if (app.lostFrames > 5) {
-            app.hasHand = false; app.hasCursorPos = false; app.stableGesture = "NO_HAND"; app.holdGesture = null; app.holdProgress = 0; app.pinchActive = false;
+          if (app.lostFrames > 10) {
+            app.hasHand = false; app.hasCursorPos = false; app.stableGesture = "NO_HAND"; app.holdGesture = null; app.holdProgress = 0; app.pinchActive = false; app.drawExitStreak = 0;
             fingerState.T = fingerState.I = fingerState.M = fingerState.R = fingerState.P = false;
             filterX.reset(); filterY.reset(); clearAirHover();
             if (app.isDrawing && app.pointerSource === "gesture") finishStroke();
@@ -960,39 +897,28 @@
         }
       }
       if (app.hasHand && app.hasCursorPos) {
-        app.renderX += (app.targetX - app.renderX) * 0.58;
-        app.renderY += (app.targetY - app.renderY) * 0.58;
+        app.renderX += (app.targetX - app.renderX) * 0.72;
+        app.renderY += (app.targetY - app.renderY) * 0.72;
         processStableGesture(app.stableGesture, now);
       }
       renderOverlay(); updateTelemetryHud(now); requestAnimationFrame(mainFrameLoop);
     }
 
     // =========================================================================
-    // 6. ASVIRO 3D CHARACTER + LIGHTWEIGHT OBJECT REACTION + 2D FALLBACK
+    // 5. ASVIRO 3D CHARACTER + OBJECT REACTION + 2D FALLBACK
     // =========================================================================
-    const charEngine = {
-      THREE: null, renderer: null, scene: null, camera: null, bot: null, head: null,
-      halo: null, core: null, eyes: [], objGroup: null, state: "idle", rafId: 0, fbId: 0, use2D: false
-    };
-
+    const charEngine = { THREE: null, renderer: null, scene: null, camera: null, bot: null, head: null, halo: null, core: null, eyes: [], objGroup: null, state: "idle", rafId: 0, fbId: 0, use2D: false };
     function setCharacterState(st) { charEngine.state = st; $("charStateTag").textContent = st.toUpperCase(); }
-
     function clearMiniObject() {
       if (!charEngine.objGroup) return;
-      charEngine.objGroup.traverse((o) => {
-        if (o.geometry) o.geometry.dispose();
-        if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => m.dispose());
-      });
-      charEngine.scene?.remove(charEngine.objGroup);
-      charEngine.objGroup = null;
+      charEngine.objGroup.traverse((o) => { if (o.geometry) o.geometry.dispose(); if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => m.dispose()); });
+      charEngine.scene?.remove(charEngine.objGroup); charEngine.objGroup = null;
     }
-
     function setMiniObjectReaction(objectName) {
       const badge = $("charObjTag");
       if (!objectName) { badge.style.display = "none"; clearMiniObject(); return; }
       const lower = objectName.toLowerCase();
-      let emoji = "✨";
-      let kind = "none";
+      let emoji = "✨", kind = "none";
       if (lower.includes("star")) { emoji = "⭐"; kind = "star"; }
       else if (lower.includes("heart") || lower.includes("love")) { emoji = "💖"; kind = "heart"; }
       else if (lower.includes("fish")) { emoji = "🐟"; kind = "fish"; }
@@ -1001,94 +927,61 @@
       else if (lower.includes("sun") || lower.includes("circle") || lower.includes("ball")) { emoji = "☀️"; kind = "sun"; }
       else if (lower.includes("car") || lower.includes("truck") || lower.includes("bus")) { emoji = "🚗"; kind = "car"; }
       else if (lower.includes("house") || lower.includes("home")) { emoji = "🏠"; kind = "house"; }
-      else if (lower.includes("cat")) { emoji = "🐱"; kind = "none"; }
-
-      badge.textContent = `${emoji} ${objectName.slice(0, 14)}`;
-      badge.style.display = "inline-block";
-
+      else if (lower.includes("cat")) { emoji = "🐱"; }
+      badge.textContent = `${emoji} ${objectName.slice(0, 14)}`; badge.style.display = "inline-block";
       if (!charEngine.scene || !charEngine.THREE || charEngine.use2D) return;
-      clearMiniObject();
-      if (kind === "none") return;
+      clearMiniObject(); if (kind === "none") return;
 
-      const THREE = charEngine.THREE;
-      const g = new THREE.Group();
+      const THREE = charEngine.THREE, g = new THREE.Group();
       const m = new THREE.MeshStandardMaterial({ color: 0x00e5ff, emissive: 0x00e5ff, emissiveIntensity: 0.45, roughness: 0.25 });
-      if (kind === "sun") {
-        g.add(new THREE.Mesh(new THREE.SphereGeometry(0.24, 14, 14), m));
-      } else if (kind === "star") {
+      if (kind === "sun") g.add(new THREE.Mesh(new THREE.SphereGeometry(0.24, 14, 14), m));
+      else if (kind === "star") {
         const s = new THREE.Shape();
-        for (let i = 0; i < 10; i++) {
-          const r = i % 2 === 0 ? 0.3 : 0.13, a = (i * Math.PI) / 5 + Math.PI * 0.5;
-          if (i === 0) s.moveTo(Math.cos(a) * r, Math.sin(a) * r); else s.lineTo(Math.cos(a) * r, Math.sin(a) * r);
-        }
-        s.closePath();
-        g.add(new THREE.Mesh(new THREE.ExtrudeGeometry(s, { depth: 0.08, bevelEnabled: false }), m));
+        for (let i = 0; i < 10; i++) { const r = i % 2 === 0 ? 0.3 : 0.13, a = (i * Math.PI) / 5 + Math.PI * 0.5; if (i === 0) s.moveTo(Math.cos(a) * r, Math.sin(a) * r); else s.lineTo(Math.cos(a) * r, Math.sin(a) * r); }
+        s.closePath(); g.add(new THREE.Mesh(new THREE.ExtrudeGeometry(s, { depth: 0.08, bevelEnabled: false }), m));
       } else if (kind === "heart") {
-        const hs = new THREE.Shape();
-        hs.moveTo(0, -0.22); hs.bezierCurveTo(-0.32, -0.02, -0.24, 0.28, 0, 0.12); hs.bezierCurveTo(0.24, 0.28, 0.32, -0.02, 0, -0.22);
+        const hs = new THREE.Shape(); hs.moveTo(0, -0.22); hs.bezierCurveTo(-0.32, -0.02, -0.24, 0.28, 0, 0.12); hs.bezierCurveTo(0.24, 0.28, 0.32, -0.02, 0, -0.22);
         g.add(new THREE.Mesh(new THREE.ExtrudeGeometry(hs, { depth: 0.08, bevelEnabled: false }), new THREE.MeshStandardMaterial({ color: 0xff3b5c, emissive: 0xff3b5c, emissiveIntensity: 0.45 })));
       } else if (kind === "fish") {
         const body = new THREE.Mesh(new THREE.SphereGeometry(0.2, 12, 12), m); body.scale.set(1.4, 0.85, 0.7);
-        const tail = new THREE.Mesh(new THREE.ConeGeometry(0.14, 0.2, 4), m); tail.rotation.z = -Math.PI * 0.5; tail.position.x = -0.32;
-        g.add(body, tail);
+        const tail = new THREE.Mesh(new THREE.ConeGeometry(0.14, 0.2, 4), m); tail.rotation.z = -Math.PI * 0.5; tail.position.x = -0.32; g.add(body, tail);
       } else if (kind === "flower") {
         g.add(new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 10), new THREE.MeshStandardMaterial({ color: 0xfbbf24, emissive: 0x92400e })));
-        for (let i = 0; i < 5; i++) {
-          const p = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), new THREE.MeshStandardMaterial({ color: 0xf472b6, emissive: 0x831843 }));
-          const a = (i * Math.PI * 2) / 5; p.position.set(Math.cos(a) * 0.18, Math.sin(a) * 0.18, 0); g.add(p);
-        }
+        for (let i = 0; i < 5; i++) { const p = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), new THREE.MeshStandardMaterial({ color: 0xf472b6, emissive: 0x831843 })); const a = (i * Math.PI * 2) / 5; p.position.set(Math.cos(a) * 0.18, Math.sin(a) * 0.18, 0); g.add(p); }
       } else if (kind === "tree") {
         const tr = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.07, 0.25, 8), new THREE.MeshStandardMaterial({ color: 0x92400e })); tr.position.y = -0.18;
-        const top = new THREE.Mesh(new THREE.ConeGeometry(0.24, 0.38, 10), new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x064e3b })); top.position.y = 0.06;
-        g.add(tr, top);
+        const top = new THREE.Mesh(new THREE.ConeGeometry(0.24, 0.38, 10), new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x064e3b })); top.position.y = 0.06; g.add(tr, top);
       } else if (kind === "car") {
-        const base = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.16, 0.24), m);
-        const cab = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.14, 0.2), m); cab.position.y = 0.13;
-        g.add(base, cab);
+        const base = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.16, 0.24), m); const cab = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.14, 0.2), m); cab.position.y = 0.13; g.add(base, cab);
       } else if (kind === "house") {
         const wall = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.24, 0.28), m); wall.position.y = -0.08;
-        const roof = new THREE.Mesh(new THREE.ConeGeometry(0.28, 0.22, 4), new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0x78350f })); roof.rotation.y = Math.PI * 0.25; roof.position.y = 0.14;
-        g.add(wall, roof);
+        const roof = new THREE.Mesh(new THREE.ConeGeometry(0.28, 0.22, 4), new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0x78350f })); roof.rotation.y = Math.PI * 0.25; roof.position.y = 0.14; g.add(wall, roof);
       }
-      g.position.set(0.95, 0.65, 0.2);
-      charEngine.scene.add(g);
-      charEngine.objGroup = g;
+      g.position.set(0.95, 0.65, 0.2); charEngine.scene.add(g); charEngine.objGroup = g;
     }
 
     function disposeThreeResources() {
-      cancelAnimationFrame(charEngine.rafId); cancelAnimationFrame(charEngine.fbId);
-      clearMiniObject();
-      if (charEngine.bot) {
-        charEngine.bot.traverse((o) => {
-          if (o.geometry) o.geometry.dispose();
-          if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => m.dispose());
-        });
-        charEngine.scene?.remove(charEngine.bot); charEngine.bot = null;
-      }
+      cancelAnimationFrame(charEngine.rafId); cancelAnimationFrame(charEngine.fbId); clearMiniObject();
+      if (charEngine.bot) { charEngine.bot.traverse((o) => { if (o.geometry) o.geometry.dispose(); if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => m.dispose()); }); charEngine.scene?.remove(charEngine.bot); charEngine.bot = null; }
       if (charEngine.renderer) { charEngine.renderer.dispose(); charEngine.renderer.domElement?.remove(); charEngine.renderer = null; }
       charEngine.scene = null; charEngine.camera = null; charEngine.eyes = [];
     }
 
     function start2DFallbackCharacter() {
-      disposeThreeResources(); charEngine.use2D = true;
-      $("threeStage").style.display = "none";
+      disposeThreeResources(); charEngine.use2D = true; $("threeStage").style.display = "none";
       const c = $("fallback2dCanvas"); c.style.display = "block";
-      const rect = c.parentElement.getBoundingClientRect();
-      c.width = Math.max(96, Math.round(rect.width)); c.height = Math.max(96, Math.round(rect.height));
+      const rect = c.parentElement.getBoundingClientRect(); c.width = Math.max(96, Math.round(rect.width)); c.height = Math.max(96, Math.round(rect.height));
       const ctx = c.getContext("2d");
       function draw2D(now) {
         if ($("aiPanel").classList.contains("hidden") || !charEngine.use2D) return;
-        const t = now * 0.001, st = charEngine.state, w = c.width, h = c.height;
-        ctx.clearRect(0, 0, w, h);
+        const t = now * 0.001, st = charEngine.state, w = c.width, h = c.height; ctx.clearRect(0, 0, w, h);
         const bob = st === "happy" ? Math.abs(Math.sin(t * 7)) * -8 : st === "speaking" ? Math.sin(t * 11) * 4 : Math.sin(t * 2.5) * 4;
         const tilt = st === "confused" ? Math.sin(t * 5) * 0.2 : st === "thinking" ? 0.12 : 0;
         const col = st === "confused" ? "#f59e0b" : st === "happy" ? "#10b981" : "#00e5ff";
         ctx.save(); ctx.translate(w * 0.5, h * 0.52 + bob); ctx.rotate(tilt);
         ctx.beginPath(); ctx.arc(0, 0, 28, 0, Math.PI * 2); ctx.fillStyle = "rgba(7,16,36,0.92)"; ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = col; ctx.stroke();
-        ctx.fillStyle = col;
-        const eh = st === "happy" ? 3 : Math.sin(t * 3) > 0.95 ? 1.5 : 6;
-        ctx.fillRect(-12, -6, 7, eh); ctx.fillRect(5, -6, 7, eh);
-        ctx.beginPath();
+        ctx.fillStyle = col; const eh = st === "happy" ? 3 : Math.sin(t * 3) > 0.95 ? 1.5 : 6;
+        ctx.fillRect(-12, -6, 7, eh); ctx.fillRect(5, -6, 7, eh); ctx.beginPath();
         if (st === "speaking") ctx.ellipse(0, 10, 8, 2 + Math.abs(Math.sin(t * 16)) * 4, 0, 0, Math.PI * 2);
         else if (st === "happy") ctx.arc(0, 7, 8, 0.15 * Math.PI, 0.85 * Math.PI);
         else { ctx.moveTo(-7, 10); ctx.lineTo(7, 10); }
@@ -1106,11 +999,9 @@
         const THREE = charEngine.THREE, container = $("threeStage");
         container.style.display = "block"; $("fallback2dCanvas").style.display = "none";
         const w = container.clientWidth || 122, h = container.clientHeight || 118;
-        const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 50);
-        camera.position.set(0, 0.15, 4.1);
+        const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 50); camera.position.set(0, 0.15, 4.1);
         const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); renderer.setSize(w, h);
-        container.appendChild(renderer.domElement);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); renderer.setSize(w, h); container.appendChild(renderer.domElement);
         scene.add(new THREE.AmbientLight(0xffffff, 0.95));
         const key = new THREE.DirectionalLight(0x00e5ff, 1.5); key.position.set(2, 3, 4); scene.add(key);
 
@@ -1144,19 +1035,15 @@
           else { bot.position.y = Math.sin(t * 2.3) * 0.1; head.rotation.set(0, Math.sin(t * 1.1) * 0.22, 0); core.scale.setScalar(1); halo.rotation.z = t * 1.1; }
           const blink = Math.sin(t * 2.4) > 0.96 ? 0.15 : 1;
           charEngine.eyes.forEach((e) => { e.scale.y = blink; });
-          if (charEngine.objGroup) {
-            charEngine.objGroup.rotation.y = t * 1.6;
-            charEngine.objGroup.position.y = 0.65 + Math.sin(t * 3.2) * 0.08;
-          }
-          renderer.render(scene, camera);
-          charEngine.rafId = requestAnimationFrame(animate);
+          if (charEngine.objGroup) { charEngine.objGroup.rotation.y = t * 1.6; charEngine.objGroup.position.y = 0.65 + Math.sin(t * 3.2) * 0.08; }
+          renderer.render(scene, camera); charEngine.rafId = requestAnimationFrame(animate);
         }
         charEngine.rafId = requestAnimationFrame(animate);
       } catch { start2DFallbackCharacter(); }
     }
 
     // =========================================================================
-    // 7. OPTIONAL TEXT-TO-SPEECH OUTPUT (NO MICROPHONE INPUT)
+    // 6. OPTIONAL TTS OUTPUT & GEMINI AI RECOGNITION
     // =========================================================================
     const speechSupported = "speechSynthesis" in window;
     if (!speechSupported) { $("voiceReplayBtn").disabled = true; $("voiceReplayBtn").textContent = "Speech Unsupported"; }
@@ -1180,45 +1067,24 @@
       app.typewriterTimer = setInterval(() => { i += 2; b.textContent = text.slice(0, i); if (i >= text.length) clearInterval(app.typewriterTimer); }, 18);
     }
 
-    $("voiceReplayBtn").addEventListener("click", () => {
-      app.userInteracted = true;
-      if (prefs.voiceMuted) { prefs.voiceMuted = false; savePrefs(); $("voiceMuteBtn").textContent = "Mute: Off"; }
-      speakReply(app.lastReplyText);
-    });
-    $("voiceMuteBtn").addEventListener("click", () => {
-      prefs.voiceMuted = !prefs.voiceMuted; savePrefs();
-      $("voiceMuteBtn").textContent = prefs.voiceMuted ? "Mute: On" : "Mute: Off";
-      if (prefs.voiceMuted) stopSpeech();
-    });
+    $("voiceReplayBtn").addEventListener("click", () => { app.userInteracted = true; if (prefs.voiceMuted) { prefs.voiceMuted = false; savePrefs(); $("voiceMuteBtn").textContent = "Mute: Off"; } speakReply(app.lastReplyText); });
+    $("voiceMuteBtn").addEventListener("click", () => { prefs.voiceMuted = !prefs.voiceMuted; savePrefs(); $("voiceMuteBtn").textContent = prefs.voiceMuted ? "Mute: On" : "Mute: Off"; if (prefs.voiceMuted) stopSpeech(); });
     $("replayReplyBtn").addEventListener("click", () => animateSpeechBubble(app.lastReplyText));
 
-    function openAiPanel() {
-      $("aiPanel").classList.remove("hidden");
-      $("aiMiniPill").classList.add("hidden");
-    }
-    function minimizeAiPanel() {
-      $("aiPanel").classList.add("hidden");
-      $("aiMiniPill").classList.remove("hidden");
-      $("aiMiniLabel").textContent = app.lastAiResult?.object || "ASVIRO AI";
-    }
-    function dismissAiPanel() {
-      $("aiPanel").classList.add("hidden");
-      $("aiMiniPill").classList.add("hidden");
-      clearInterval(app.typewriterTimer);
-      stopSpeech();
-      disposeThreeResources();
-    }
+    function openAiPanel() { $("aiPanel").classList.remove("hidden"); $("aiMiniPill").classList.add("hidden"); }
+    function minimizeAiPanel() { $("aiPanel").classList.add("hidden"); $("aiMiniPill").classList.remove("hidden"); $("aiMiniLabel").textContent = app.lastAiResult?.object || "ASVIRO AI"; }
+    function dismissAiPanel() { $("aiPanel").classList.add("hidden"); $("aiMiniPill").classList.add("hidden"); clearInterval(app.typewriterTimer); stopSpeech(); disposeThreeResources(); }
     $("minimizeAiBtn").addEventListener("click", minimizeAiPanel);
     $("aiMiniPill").addEventListener("click", async () => { openAiPanel(); await ensureCharacterStage(); });
     $("closeAiPanelBtn").addEventListener("click", dismissAiPanel);
     $("dismissAiBtn").addEventListener("click", dismissAiPanel);
 
-    // =========================================================================
-    // 8. GEMINI AI DRAWING RECOGNITION
-    // =========================================================================
     function isCanvasBlank() {
-      const data = drawCtx.getImageData(0, 0, drawCanvas.width, drawCanvas.height).data;
-      for (let i = 3; i < data.length; i += 16) { if (data[i] > 12) return false; }
+      if (!app.hasInk) return true;
+      const tiny = document.createElement("canvas"); tiny.width = 48; tiny.height = 48;
+      const tctx = tiny.getContext("2d"); tctx.drawImage(drawCanvas, 0, 0, 48, 48);
+      const data = tctx.getImageData(0, 0, 48, 48).data;
+      for (let i = 3; i < data.length; i += 4) { if (data[i] > 10) return false; }
       return true;
     }
     function composeExportDataUrl(maxDim = null) {
@@ -1233,31 +1099,19 @@
     async function analyzeDrawingWithAI() {
       if (app.isAnalyzing) return;
       if (isCanvasBlank()) { showToast("Draw something first before submitting to AI!"); return; }
-      app.isAnalyzing = true;
-      $("aiAnalyzeBtn").disabled = true; $("aiRetryBtn").disabled = true;
-      openAiPanel();
-      await ensureCharacterStage();
-      setCharacterState("thinking");
-      setMiniObjectReaction("");
-
-      $("aiCategoryTag").textContent = "THINKING";
-      $("aiObjectTitle").textContent = "Analyzing Sketch...";
-      $("aiConfidenceBadge").textContent = "...";
-      $("aiExplanationText").textContent = "Sending your artwork securely to Gemini AI...";
-      $("aiSuggestionText").textContent = "";
+      app.isAnalyzing = true; $("aiAnalyzeBtn").disabled = true; $("aiRetryBtn").disabled = true;
+      openAiPanel(); await ensureCharacterStage(); setCharacterState("thinking"); setMiniObjectReaction("");
+      $("aiCategoryTag").textContent = "THINKING"; $("aiObjectTitle").textContent = "Analyzing Sketch..."; $("aiConfidenceBadge").textContent = "...";
+      $("aiExplanationText").textContent = "Sending your artwork securely to Gemini AI..."; $("aiSuggestionText").textContent = "";
       animateSpeechBubble("Hmm, let me take a close look at your drawing...");
 
       try {
         const base64 = composeExportDataUrl(768).split(",")[1];
         const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 22_000);
-        const res = await fetch("/api/analyze", {
-          method: "POST", headers: { "Content-Type": "application/json" }, signal: ctrl.signal,
-          body: JSON.stringify({ imageBase64: base64, mimeType: "image/png" })
-        });
+        const res = await fetch("/api/analyze", { method: "POST", headers: { "Content-Type": "application/json" }, signal: ctrl.signal, body: JSON.stringify({ imageBase64: base64, mimeType: "image/png" }) });
         clearTimeout(timer);
         const data = await res.json().catch(() => ({ success: false, error: "Invalid server response." }));
         if (!res.ok || !data.success) throw new Error(data.error || `AI request failed (${res.status})`);
-
         app.lastAiResult = data;
         $("aiCategoryTag").textContent = String(data.category || "RESULT").toUpperCase();
         $("aiObjectTitle").textContent = data.object;
@@ -1265,31 +1119,23 @@
         $("aiExplanationText").textContent = data.explanation;
         $("aiSuggestionText").textContent = data.suggestion ? `💡 ${data.suggestion}` : "";
         $("aiMiniLabel").textContent = data.object;
-
         setCharacterState(data.mood === "confused" ? "confused" : "happy");
         setMiniObjectReaction(data.mood === "confused" ? "" : data.object);
-        animateSpeechBubble(data.reply);
-        speakReply(data.reply);
+        animateSpeechBubble(data.reply); speakReply(data.reply);
       } catch (err) {
         const msg = err.name === "AbortError" ? "AI request timed out. Please retry." : err.message;
-        setCharacterState("confused");
-        $("aiCategoryTag").textContent = "ERROR";
-        $("aiObjectTitle").textContent = "AI Analysis Failed";
-        $("aiConfidenceBadge").textContent = "ERR";
-        $("aiExplanationText").textContent = msg;
-        animateSpeechBubble(`Oops! ${msg}`);
-        showToast(msg);
+        setCharacterState("confused"); $("aiCategoryTag").textContent = "ERROR"; $("aiObjectTitle").textContent = "AI Analysis Failed";
+        $("aiConfidenceBadge").textContent = "ERR"; $("aiExplanationText").textContent = msg;
+        animateSpeechBubble(`Oops! ${msg}`); showToast(msg);
       } finally {
-        app.isAnalyzing = false;
-        $("aiAnalyzeBtn").disabled = false;
-        $("aiRetryBtn").disabled = false;
+        app.isAnalyzing = false; $("aiAnalyzeBtn").disabled = false; $("aiRetryBtn").disabled = false;
       }
     }
     $("aiAnalyzeBtn").addEventListener("click", analyzeDrawingWithAI);
     $("aiRetryBtn").addEventListener("click", analyzeDrawingWithAI);
 
     // =========================================================================
-    // 9. INDEXEDDB MY CREATIONS GALLERY
+    // 7. INDEXEDDB GALLERY & UI CONTROLS
     // =========================================================================
     let dbPromise = null;
     function openGalleryDB() {
@@ -1310,13 +1156,9 @@
       if (isCanvasBlank()) { showToast("Draw something before saving!"); return; }
       try {
         await dbOp("readwrite", (s) => s.put({
-          id: `asv_${Date.now()}`,
-          title: app.lastAiResult?.object || `AirSketch ${new Date().toLocaleTimeString()}`,
-          createdAt: Date.now(),
-          imageDataUrl: composeExportDataUrl(),
-          aiObject: app.lastAiResult?.object || "Not analyzed yet",
-          aiConfidence: app.lastAiResult?.confidence ?? null,
-          aiExplanation: app.lastAiResult?.explanation || ""
+          id: `asv_${Date.now()}`, title: app.lastAiResult?.object || `AirSketch ${new Date().toLocaleTimeString()}`,
+          createdAt: Date.now(), imageDataUrl: composeExportDataUrl(),
+          aiObject: app.lastAiResult?.object || "Not analyzed yet", aiConfidence: app.lastAiResult?.confidence ?? null
         }));
         showToast("Saved to My Creations!");
         if (!$("galleryModal").classList.contains("hidden")) renderGallery();
@@ -1334,13 +1176,10 @@
           card.innerHTML = `<img class="gal-thumb" src="${item.imageDataUrl}" alt="${item.title}" /><div class="gal-body"><div class="gal-title">${item.title}</div><div class="gal-ai">AI: ${item.aiObject}${confTxt}</div><div class="gal-date">${new Date(item.createdAt).toLocaleString()}</div><div class="gal-actions"><button class="toggle-chip on" data-ga="open">Reopen</button><button class="toggle-chip" data-ga="rename">Rename</button><button class="toggle-chip" data-ga="png">PNG</button><button class="toggle-chip" style="color:#fda4af;" data-ga="del">Delete</button></div></div>`;
           card.querySelector('[data-ga="open"]').onclick = () => {
             const img = new Image();
-            img.onload = () => { pushHistory(); drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height); drawCtx.drawImage(img, 0, 0, drawCanvas.width, drawCanvas.height); $("galleryModal").classList.add("hidden"); showToast(`Reopened "${item.title}"`); };
+            img.onload = () => { pushHistory(); app.hasInk = true; drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height); drawCtx.drawImage(img, 0, 0, drawCanvas.width, drawCanvas.height); $("galleryModal").classList.add("hidden"); showToast(`Reopened "${item.title}"`); };
             img.src = item.imageDataUrl;
           };
-          card.querySelector('[data-ga="rename"]').onclick = async () => {
-            const name = prompt("Rename creation:", item.title);
-            if (name && name.trim()) { item.title = name.trim().slice(0, 50); await dbOp("readwrite", (s) => s.put(item)); renderGallery(); }
-          };
+          card.querySelector('[data-ga="rename"]').onclick = async () => { const name = prompt("Rename creation:", item.title); if (name && name.trim()) { item.title = name.trim().slice(0, 50); await dbOp("readwrite", (s) => s.put(item)); renderGallery(); } };
           card.querySelector('[data-ga="png"]').onclick = () => { const a = document.createElement("a"); a.download = `${item.title.replace(/\s+/g, "-")}.png`; a.href = item.imageDataUrl; a.click(); };
           card.querySelector('[data-ga="del"]').onclick = async () => { await dbOp("readwrite", (s) => s.delete(item.id)); renderGallery(); };
           grid.appendChild(card);
@@ -1352,23 +1191,18 @@
     $("galleryBtn").addEventListener("click", () => { $("galleryModal").classList.remove("hidden"); renderGallery(); });
     $("closeGalleryBtn").addEventListener("click", () => $("galleryModal").classList.add("hidden"));
 
-    // =========================================================================
-    // 10. UI SYNC & CONTROLS WIRING
-    // =========================================================================
     function showToast(msg) { const el = $("toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(app.toastTimer); app.toastTimer = setTimeout(() => el.classList.remove("show"), 1600); }
     function syncUiFromPrefs() {
       $("brushBtn").classList.toggle("active", app.tool === "brush"); $("eraserBtn").classList.toggle("active", app.tool === "eraser");
       const sz = app.tool === "brush" ? prefs.brushSize : prefs.eraserSize;
       $("sizeSlider").value = sz; $("sizeVal").textContent = `${sz}px`;
       const dotPx = Math.min(Math.max(sz * 0.5, 4), 22);
-      $("sizeDot").style.width = `${dotPx}px`; $("sizeDot").style.height = `${dotPx}px`;
-      $("sizeDot").style.background = app.tool === "brush" ? prefs.color : "#ff3b5c";
+      $("sizeDot").style.width = `${dotPx}px`; $("sizeDot").style.height = `${dotPx}px`; $("sizeDot").style.background = app.tool === "brush" ? prefs.color : "#ff3b5c";
       $("panelBrushSize").value = prefs.brushSize; $("brushSizeLbl").textContent = `${prefs.brushSize}px`;
       $("panelEraserSize").value = prefs.eraserSize; $("eraserSizeLbl").textContent = `${prefs.eraserSize}px`;
       $("customColorInput").value = prefs.color; $("customColorDot").style.background = prefs.color;
       document.querySelectorAll(".swatch").forEach((sw) => sw.classList.toggle("active", sw.dataset.color.toLowerCase() === prefs.color.toLowerCase()));
-      $("skeletonToggleBtn").classList.toggle("active", prefs.showSkeleton);
-      $("togglePerfHudBtn").classList.toggle("active", prefs.showPerfHud);
+      $("skeletonToggleBtn").classList.toggle("active", prefs.showSkeleton); $("togglePerfHudBtn").classList.toggle("active", prefs.showPerfHud);
       $("perfModeLbl").textContent = prefs.perfMode.toUpperCase();
       document.querySelectorAll("[data-perf]").forEach((b) => b.classList.toggle("active", b.dataset.perf === prefs.perfMode));
       $("voiceMuteBtn").textContent = prefs.voiceMuted ? "Mute: On" : "Mute: Off";
@@ -1376,9 +1210,7 @@
       $("calSmoothing").value = prefs.smoothingCutoff; $("calSmoothingVal").textContent = Number(prefs.smoothingCutoff).toFixed(1);
       $("calDelay").value = prefs.activationDelayMs; $("calDelayVal").textContent = `${prefs.activationDelayMs}ms`;
       filterX.setCutoff(prefs.smoothingCutoff); filterY.setCutoff(prefs.smoothingCutoff);
-      document.querySelectorAll("[data-finger-toggle]").forEach((btn) => {
-        const on = prefs.enabledFingers[btn.dataset.fingerToggle]; btn.classList.toggle("on", on); btn.textContent = on ? "Enabled" : "Disabled";
-      });
+      document.querySelectorAll("[data-finger-toggle]").forEach((btn) => { const on = prefs.enabledFingers[btn.dataset.fingerToggle]; btn.classList.toggle("on", on); btn.textContent = on ? "Enabled" : "Disabled"; });
     }
     function setTool(t) { app.tool = t; syncUiFromPrefs(); showToast(t === "brush" ? "Brush Mode" : "Eraser Mode"); }
     function setColor(hex) { prefs.color = hex; app.tool = "brush"; savePrefs(); syncUiFromPrefs(); }
@@ -1404,12 +1236,9 @@
     $("closeThumbMenuBtn").addEventListener("click", () => $("thumbMenu").classList.add("hidden"));
     document.querySelectorAll("[data-tm-action]").forEach((btn) => btn.addEventListener("click", () => {
       const a = btn.dataset.tmAction;
-      if (a === "brush" || a === "eraser") setTool(a);
-      else if (a === "analyze") analyzeDrawingWithAI();
-      else if (a === "undo") performUndo();
-      else if (a === "redo") performRedo();
-      else if (a === "export") $("exportBtn").click();
-      else if (a === "gallery") { $("galleryModal").classList.remove("hidden"); renderGallery(); }
+      if (a === "brush" || a === "eraser") setTool(a); else if (a === "analyze") analyzeDrawingWithAI();
+      else if (a === "undo") performUndo(); else if (a === "redo") performRedo();
+      else if (a === "export") $("exportBtn").click(); else if (a === "gallery") { $("galleryModal").classList.remove("hidden"); renderGallery(); }
       else if (a === "clear") $("clearModal").classList.remove("hidden");
       $("thumbMenu").classList.add("hidden");
     }));
@@ -1417,7 +1246,7 @@
     $("togglePerfHudBtn").addEventListener("click", () => { prefs.showPerfHud = !prefs.showPerfHud; savePrefs(); syncUiFromPrefs(); });
     $("clearBtn").addEventListener("click", () => $("clearModal").classList.remove("hidden"));
     $("cancelClearBtn").addEventListener("click", () => $("clearModal").classList.add("hidden"));
-    $("confirmClearBtn").addEventListener("click", () => { pushHistory(); drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height); $("clearModal").classList.add("hidden"); showToast("Canvas Purged"); });
+    $("confirmClearBtn").addEventListener("click", () => { pushHistory(); app.hasInk = false; drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height); $("clearModal").classList.add("hidden"); showToast("Canvas Purged"); });
     $("exportBtn").addEventListener("click", () => { const a = document.createElement("a"); a.download = `ASVIRO-AirSketch-${Date.now()}.png`; a.href = composeExportDataUrl(); a.click(); showToast("Exported PNG"); });
     $("calibrateBtn").addEventListener("click", () => $("calibrationModal").classList.remove("hidden"));
     $("closeCalBtn").addEventListener("click", () => $("calibrationModal").classList.add("hidden"));
@@ -1438,7 +1267,7 @@
     syncUiFromPrefs();
 
     // =========================================================================
-    // 11. CAMERA, MEDIAPIPE & RESOURCE CLEANUP
+    // 8. CAMERA, MEDIAPIPE & RESOURCE CLEANUP
     // =========================================================================
     function stopCameraStream() {
       if (app.stream) { app.stream.getTracks().forEach((t) => t.stop()); app.stream = null; }
@@ -1449,16 +1278,24 @@
       const vision = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm");
       const modelUrl = "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task";
       try {
-        app.handLandmarker = await HandLandmarker.createFromOptions(vision, { baseOptions: { modelAssetPath: modelUrl, delegate: "GPU" }, runningMode: "VIDEO", numHands: 1, minHandDetectionConfidence: 0.62, minHandPresenceConfidence: 0.62, minTrackingConfidence: 0.62 });
+        app.handLandmarker = await HandLandmarker.createFromOptions(vision, {
+          baseOptions: { modelAssetPath: modelUrl, delegate: "GPU" },
+          runningMode: "VIDEO", numHands: 1,
+          minHandDetectionConfidence: 0.50, minHandPresenceConfidence: 0.50, minTrackingConfidence: 0.45
+        });
       } catch {
-        app.handLandmarker = await HandLandmarker.createFromOptions(vision, { baseOptions: { modelAssetPath: modelUrl, delegate: "CPU" }, runningMode: "VIDEO", numHands: 1, minHandDetectionConfidence: 0.6, minHandPresenceConfidence: 0.6, minTrackingConfidence: 0.6 });
+        app.handLandmarker = await HandLandmarker.createFromOptions(vision, {
+          baseOptions: { modelAssetPath: modelUrl, delegate: "CPU" },
+          runningMode: "VIDEO", numHands: 1,
+          minHandDetectionConfidence: 0.50, minHandPresenceConfidence: 0.50, minTrackingConfidence: 0.45
+        });
       }
       return app.handLandmarker;
     }
     async function acquireCameraStream() {
       if (!navigator.mediaDevices?.getUserMedia) throw new Error("Webcam API unavailable. Run on HTTPS or localhost.");
       const lowSpec = window.innerWidth < 768 || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
-      const w = lowSpec ? 640 : 960, h = lowSpec ? 480 : 540;
+      const w = lowSpec ? 640 : 854, h = lowSpec ? 480 : 480;
       try { return await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: { ideal: w }, height: { ideal: h }, frameRate: { ideal: 30 } }, audio: false }); }
       catch (err) { if (err.name === "OverconstrainedError") return await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false }); throw err; }
     }
