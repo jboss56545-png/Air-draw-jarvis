@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>ASVIRO — Your Imagination. Your AI Companion.</title>
+  <title>ASVIRO AIRSKETCH — Five Finger AI Control System</title>
   <style>
     :root {
       --bg-void: #030712; --bg-navy: #071024;
-      --glass: rgba(7, 16, 36, 0.74); --glass-strong: rgba(5, 12, 28, 0.92);
+      --glass: rgba(7, 16, 36, 0.72); --glass-strong: rgba(5, 12, 28, 0.92);
       --border-cyan: rgba(0, 229, 255, 0.25); --border-soft: rgba(148, 163, 184, 0.16);
       --cyan: #00e5ff; --cyan-dim: rgba(0, 229, 255, 0.14);
       --blue: #2563eb; --emerald: #10b981; --amber: #f59e0b; --crimson: #ff3b5c;
@@ -18,7 +18,6 @@
     }
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
     html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg-void); color: var(--text); font-family: var(--font-ui); }
-    button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
     .workspace {
       position: relative; width: 100vw; height: 100vh; overflow: hidden;
       background: radial-gradient(circle at 50% 45%, rgba(0, 229, 255, 0.08), transparent 55%),
@@ -47,105 +46,82 @@
 
     .top-hud { position: fixed; top: max(12px, env(safe-area-inset-top)); left: 14px; right: 14px; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 8px; pointer-events: none; flex-wrap: wrap; }
     .top-hud > * { pointer-events: auto; }
-    .brand-cluster { display: flex; align-items: center; gap: 10px; padding: 6px 14px 6px 8px; border-radius: 999px; }
-    .arc-core { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; position: relative; background: radial-gradient(circle, rgba(0,229,255,0.34), rgba(37,99,235,0.22)); border: 1.5px solid var(--cyan); box-shadow: 0 0 16px rgba(0,229,255,0.38); }
+    .brand-cluster { display: flex; align-items: center; gap: 11px; padding: 7px 15px 7px 9px; border-radius: 999px; }
+    .arc-core { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; position: relative; background: radial-gradient(circle, rgba(0,229,255,0.34), rgba(37,99,235,0.22)); border: 1.5px solid var(--cyan); box-shadow: 0 0 16px rgba(0,229,255,0.38); }
     .arc-core::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; border: 1px dashed rgba(0,229,255,0.65); animation: spinSlow 16s linear infinite; }
     @keyframes spinSlow { to { transform: rotate(360deg); } }
     .brand-meta h1 { font-size: 0.86rem; font-weight: 800; letter-spacing: 0.08em; }
-    .brand-sub { font-size: 0.61rem; letter-spacing: 0.04em; color: var(--cyan); }
+    .brand-sub { font-size: 0.65rem; letter-spacing: 0.06em; color: var(--cyan); }
 
-    .telemetry-strip { display: flex; align-items: center; gap: 9px; padding: 6px 13px; border-radius: 999px; font-size: 0.72rem; }
+    .telemetry-strip { display: flex; align-items: center; gap: 10px; padding: 7px 14px; border-radius: 999px; font-size: 0.74rem; }
     .tel-item { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
     .tel-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 8px var(--amber); }
     .tel-dot.online { background: var(--emerald); box-shadow: 0 0 9px var(--emerald); }
     .tel-dot.active { background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
     .tel-dot.erase { background: var(--crimson); box-shadow: 0 0 10px var(--crimson); }
     .tel-dot.paused { background: var(--amber); box-shadow: 0 0 10px var(--amber); }
-    .finger-leds { display: flex; gap: 3px; padding-left: 7px; border-left: 1px solid var(--border-soft); }
-    .f-led { width: 19px; height: 19px; border-radius: 5px; display: grid; place-items: center; font-family: var(--font-mono); font-size: 0.63rem; font-weight: 700; color: var(--muted); background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: 0.12s ease; }
+    .finger-leds { display: flex; gap: 4px; padding-left: 8px; border-left: 1px solid var(--border-soft); }
+    .f-led { width: 20px; height: 20px; border-radius: 6px; display: grid; place-items: center; font-family: var(--font-mono); font-size: 0.65rem; font-weight: 700; color: var(--muted); background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: 0.12s ease; }
     .f-led.up { color: #030712; background: var(--cyan); border-color: #fff; box-shadow: 0 0 10px rgba(0,229,255,0.65); }
-    .gesture-pill { font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--cyan-dim); border: 1px solid rgba(0,229,255,0.38); color: var(--cyan); }
-    .perf-readout { font-family: var(--font-mono); font-size: 0.67rem; color: var(--muted); border-left: 1px solid var(--border-soft); padding-left: 7px; }
+    .gesture-pill { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: var(--cyan-dim); border: 1px solid rgba(0,229,255,0.38); color: var(--cyan); }
+    .perf-readout { font-family: var(--font-mono); font-size: 0.69rem; color: var(--muted); border-left: 1px solid var(--border-soft); padding-left: 8px; }
 
-    .hud-actions { display: flex; align-items: center; gap: 4px; padding: 4px 7px; border-radius: 999px; flex-wrap: wrap; }
-    .hud-btn { appearance: none; border: 1px solid transparent; background: transparent; color: var(--text); height: 32px; min-width: 32px; padding: 0 9px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.74rem; font-weight: 600; cursor: pointer; transition: 0.15s ease; white-space: nowrap; }
+    .hud-actions { display: flex; align-items: center; gap: 5px; padding: 5px 8px; border-radius: 999px; flex-wrap: wrap; }
+    .hud-btn { appearance: none; border: 1px solid transparent; background: transparent; color: var(--text); height: 32px; min-width: 32px; padding: 0 9px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: 0.15s ease; white-space: nowrap; }
     .hud-btn:hover:not(:disabled) { background: rgba(0,229,255,0.14); border-color: rgba(0,229,255,0.35); }
     .hud-btn:disabled { opacity: 0.35; cursor: not-allowed; }
     .hud-btn.active { background: rgba(0,229,255,0.22); border-color: var(--cyan); color: var(--cyan); }
     .hud-btn.danger:hover:not(:disabled) { background: rgba(255,59,92,0.2); border-color: rgba(255,59,92,0.5); color: #fda4af; }
     .hud-btn.primary { background: linear-gradient(135deg, rgba(0,229,255,0.25), rgba(37,99,235,0.3)); border-color: rgba(0,229,255,0.45); }
     .hud-btn.ai-cta { background: linear-gradient(135deg, #00e5ff, #2563eb); color: #030712; font-weight: 800; box-shadow: 0 0 16px rgba(0,229,255,0.36); }
-    .hud-btn.listening { background: rgba(16,185,129,0.24); border-color: var(--emerald); color: #6ee7b7; animation: pulseMic 1.2s ease-in-out infinite; }
-    @keyframes pulseMic { 50% { box-shadow: 0 0 16px rgba(16,185,129,0.6); } }
 
     .bottom-dock-wrap { position: fixed; bottom: max(12px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 20; max-width: calc(100vw - 16px); }
-    .bottom-dock { display: flex; align-items: center; gap: 9px; padding: 8px 13px; border-radius: 24px; flex-wrap: wrap; justify-content: center; }
-    .dock-sep { width: 1px; height: 22px; background: var(--border-soft); }
-    .mode-group { display: flex; padding: 3px; border-radius: 999px; background: rgba(0,0,0,0.36); border: 1px solid var(--border-soft); gap: 3px; }
-    .mode-pill { appearance: none; border: none; background: transparent; color: var(--muted); padding: 6px 12px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; cursor: pointer; transition: 0.16s ease; }
-    .mode-pill.active[data-tool="brush"] { background: linear-gradient(135deg, #00e5ff, #2563eb); color: #030712; box-shadow: 0 0 14px rgba(0,229,255,0.4); }
-    .mode-pill.active[data-tool="eraser"] { background: linear-gradient(135deg, #ff3b5c, #e11d48); color: #fff; box-shadow: 0 0 14px rgba(255,59,92,0.4); }
-    .swatches { display: flex; align-items: center; gap: 6px; }
-    .swatch { width: 21px; height: 21px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.25); cursor: pointer; transition: 0.14s ease; }
+    .bottom-dock { display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 24px; flex-wrap: wrap; justify-content: center; }
+    .dock-sep { width: 1px; height: 24px; background: var(--border-soft); }
+    .mode-group { display: flex; padding: 3px; border-radius: 999px; background: rgba(0,0,0,0.36); border: 1px solid var(--border-soft); gap: 4px; }
+    .mode-pill { appearance: none; border: none; background: transparent; color: var(--muted); padding: 6px 13px; border-radius: 999px; font-size: 0.77rem; font-weight: 700; cursor: pointer; transition: 0.16s ease; }
+    .mode-pill.active[data-tool="brush"] { background: linear-gradient(135deg, #00e5ff, #2563eb); color: #030712; box-shadow: 0 0 16px rgba(0,229,255,0.4); }
+    .mode-pill.active[data-tool="eraser"] { background: linear-gradient(135deg, #ff3b5c, #e11d48); color: #fff; box-shadow: 0 0 16px rgba(255,59,92,0.4); }
+    .swatches { display: flex; align-items: center; gap: 7px; }
+    .swatch { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.25); cursor: pointer; transition: 0.14s ease; }
     .swatch:hover { transform: scale(1.15); }
     .swatch.active { transform: scale(1.18); border-color: #fff; box-shadow: 0 0 12px currentColor; }
-    .color-custom { position: relative; width: 23px; height: 23px; border-radius: 50%; padding: 2px; background: conic-gradient(#ff3b5c, #f59e0b, #10b981, #00e5ff, #a855f7, #ff3b5c); cursor: pointer; display: grid; place-items: center; }
+    .color-custom { position: relative; width: 24px; height: 24px; border-radius: 50%; padding: 2px; background: conic-gradient(#ff3b5c, #f59e0b, #10b981, #00e5ff, #a855f7, #ff3b5c); cursor: pointer; display: grid; place-items: center; }
     .color-custom input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
     .color-custom-dot { width: 100%; height: 100%; border-radius: 50%; border: 2px solid #040812; pointer-events: none; }
-    .slider-group { display: flex; align-items: center; gap: 7px; font-size: 0.72rem; color: var(--muted); }
-    .size-dot-wrap { width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid var(--border-soft); display: grid; place-items: center; }
+    .slider-group { display: flex; align-items: center; gap: 8px; font-size: 0.73rem; color: var(--muted); }
+    .size-dot-wrap { width: 25px; height: 25px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid var(--border-soft); display: grid; place-items: center; }
     .size-dot { border-radius: 50%; background: var(--cyan); }
-    input[type="range"].cyber-range { -webkit-appearance: none; appearance: none; width: 80px; height: 4px; border-radius: 99px; background: rgba(0,229,255,0.22); outline: none; cursor: pointer; }
-    input[type="range"].cyber-range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--cyan); border: 2px solid #fff; box-shadow: 0 0 8px rgba(0,229,255,0.7); cursor: pointer; }
-    .mono-val { font-family: var(--font-mono); font-size: 0.7rem; min-width: 32px; color: var(--text); }
-    select.cyber-select { background: rgba(4, 10, 24, 0.88); color: var(--text); border: 1px solid var(--border-cyan); border-radius: 999px; padding: 4px 9px; font-size: 0.71rem; font-weight: 600; cursor: pointer; }
+    input[type="range"].cyber-range { -webkit-appearance: none; appearance: none; width: 84px; height: 4px; border-radius: 99px; background: rgba(0,229,255,0.22); outline: none; cursor: pointer; }
+    input[type="range"].cyber-range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 15px; height: 15px; border-radius: 50%; background: var(--cyan); border: 2px solid #fff; box-shadow: 0 0 8px rgba(0,229,255,0.7); cursor: pointer; }
+    .mono-val { font-family: var(--font-mono); font-size: 0.72rem; min-width: 34px; color: var(--text); }
 
-    .floating-panel { position: fixed; z-index: 30; border-radius: 20px; padding: 16px; transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease; }
+    .floating-panel { position: fixed; z-index: 30; border-radius: 20px; padding: 18px; transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease; }
     .floating-panel.hidden { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(8px) scale(0.98); }
-    .panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border-soft); gap: 8px; }
-    .panel-title { font-size: 0.8rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cyan); }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-soft); gap: 8px; }
+    .panel-title { font-size: 0.82rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cyan); }
 
-    .controls-panel { top: 72px; right: 16px; width: 315px; max-width: calc(100vw - 32px); max-height: calc(100vh - 165px); overflow-y: auto; }
-    .control-row { margin-bottom: 11px; }
-    .control-label { display: flex; justify-content: space-between; font-size: 0.73rem; color: var(--muted); margin-bottom: 5px; }
+    .controls-panel { top: 74px; right: 16px; width: 315px; max-width: calc(100vw - 32px); max-height: calc(100vh - 165px); overflow-y: auto; }
+    .control-row { margin-bottom: 12px; }
+    .control-label { display: flex; justify-content: space-between; font-size: 0.74rem; color: var(--muted); margin-bottom: 5px; }
     .seg-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-    .seg-btn { appearance: none; border: 1px solid var(--border-soft); background: rgba(255,255,255,0.04); color: var(--muted); padding: 7px 6px; border-radius: 10px; font-size: 0.71rem; font-weight: 600; cursor: pointer; }
+    .seg-btn { appearance: none; border: 1px solid var(--border-soft); background: rgba(255,255,255,0.04); color: var(--muted); padding: 7px 6px; border-radius: 10px; font-size: 0.72rem; font-weight: 600; cursor: pointer; }
     .seg-btn.active { background: rgba(0,229,255,0.18); border-color: var(--cyan); color: var(--cyan); }
-    .gesture-cheat { margin-top: 9px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.69rem; }
+    .gesture-cheat { margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.7rem; }
     .cheat-chip { padding: 6px 8px; border-radius: 9px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: var(--muted); }
-    .cheat-chip strong { display: block; color: var(--text); font-size: 0.7rem; }
+    .cheat-chip strong { display: block; color: var(--text); font-size: 0.71rem; }
 
-    /* ASVIRO AI Companion Panel */
-    .ai-panel { top: 72px; left: 16px; width: 370px; max-width: calc(100vw - 24px); max-height: calc(100vh - 160px); overflow-y: auto; background: var(--glass-strong); display: flex; flex-direction: column; gap: 9px; }
-    .char-stage { position: relative; width: 100%; height: 170px; border-radius: 16px; overflow: hidden; background: radial-gradient(circle at 50% 60%, rgba(0,229,255,0.16), rgba(3,7,18,0.92)); border: 1px solid var(--border-cyan); }
+    .ai-panel { top: 74px; left: 16px; width: 350px; max-width: calc(100vw - 32px); max-height: calc(100vh - 165px); overflow-y: auto; background: var(--glass-strong); display: flex; flex-direction: column; gap: 10px; }
+    .char-stage { position: relative; width: 100%; height: 175px; border-radius: 16px; overflow: hidden; background: radial-gradient(circle at 50% 60%, rgba(0,229,255,0.16), rgba(3,7,18,0.92)); border: 1px solid var(--border-cyan); }
     #threeStage, #fallback2dCanvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-    .char-state-pill { position: absolute; top: 8px; left: 8px; padding: 3px 9px; border-radius: 999px; font-family: var(--font-mono); font-size: 0.65rem; font-weight: 700; background: rgba(3,7,18,0.78); border: 1px solid var(--border-cyan); color: var(--cyan); }
-    .char-model-pill { position: absolute; top: 8px; right: 8px; padding: 3px 8px; border-radius: 999px; font-size: 0.63rem; background: rgba(3,7,18,0.75); border: 1px solid var(--border-soft); color: var(--muted); }
-    .audio-bars { position: absolute; bottom: 8px; left: 10px; display: none; gap: 3px; align-items: flex-end; height: 16px; }
-    .audio-bars.active { display: flex; }
-    .audio-bars span { width: 3px; height: 6px; background: var(--cyan); border-radius: 2px; animation: eqBar 0.55s ease-in-out infinite alternate; }
-    .audio-bars span:nth-child(2) { animation-delay: 0.15s; }
-    .audio-bars span:nth-child(3) { animation-delay: 0.3s; }
-    @keyframes eqBar { to { height: 15px; } }
-
-    .voice-strip { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; padding: 7px 9px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-soft); }
-    .transcript-box { padding: 6px 10px; border-radius: 10px; background: rgba(0,0,0,0.34); border: 1px solid var(--border-soft); font-size: 0.72rem; color: var(--muted); }
-    .transcript-box strong { color: var(--cyan); }
-
-    .ai-result-card { padding: 9px 11px; border-radius: 12px; background: rgba(0,229,255,0.06); border: 1px solid rgba(0,229,255,0.22); }
-    .ai-res-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 4px; }
-    .ai-res-title { font-size: 0.94rem; font-weight: 800; color: var(--text); }
-    .ai-conf { font-family: var(--font-mono); font-size: 0.66rem; padding: 2px 8px; border-radius: 999px; background: rgba(16,185,129,0.18); border: 1px solid rgba(16,185,129,0.45); color: #6ee7b7; }
-    .ai-desc { font-size: 0.74rem; color: var(--muted); line-height: 1.4; }
-    .speech-bubble { padding: 9px 11px; border-radius: 14px; background: rgba(37,99,235,0.16); border: 1px solid rgba(59,130,246,0.35); font-size: 0.77rem; line-height: 1.45; color: #e0f2fe; min-height: 44px; }
-
-    .chat-log { max-height: 120px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; padding: 7px; border-radius: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-soft); }
-    .chat-msg { font-size: 0.73rem; line-height: 1.38; padding: 5px 9px; border-radius: 10px; max-width: 92%; }
-    .chat-msg.user { align-self: flex-end; background: rgba(0,229,255,0.18); border: 1px solid rgba(0,229,255,0.32); }
-    .chat-msg.model { align-self: flex-start; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); }
-    .chat-row { display: flex; gap: 6px; }
-    .chat-input { flex: 1; background: rgba(0,0,0,0.42); border: 1px solid var(--border-soft); border-radius: 999px; padding: 7px 12px; color: var(--text); font-size: 0.76rem; user-select: text; -webkit-user-select: text; }
-    .mic-note { font-size: 0.67rem; color: var(--muted); line-height: 1.35; padding: 6px 8px; border-radius: 9px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); }
+    .char-state-pill { position: absolute; top: 8px; left: 8px; padding: 3px 9px; border-radius: 999px; font-family: var(--font-mono); font-size: 0.66rem; font-weight: 700; background: rgba(3,7,18,0.75); border: 1px solid var(--border-cyan); color: var(--cyan); }
+    .ai-result-card { padding: 10px 12px; border-radius: 14px; background: rgba(0,229,255,0.06); border: 1px solid rgba(0,229,255,0.22); }
+    .ai-res-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 5px; }
+    .ai-res-title { font-size: 1rem; font-weight: 800; color: var(--text); }
+    .ai-conf { font-family: var(--font-mono); font-size: 0.68rem; padding: 2px 8px; border-radius: 999px; background: rgba(16,185,129,0.18); border: 1px solid rgba(16,185,129,0.45); color: #6ee7b7; }
+    .ai-desc { font-size: 0.76rem; color: var(--muted); line-height: 1.42; }
+    .speech-bubble { padding: 10px 12px; border-radius: 14px; background: rgba(37,99,235,0.16); border: 1px solid rgba(59,130,246,0.35); font-size: 0.78rem; line-height: 1.45; color: #e0f2fe; min-height: 52px; }
+    .ai-btn-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 
     .thumb-menu { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 370px; max-width: calc(100vw - 28px); background: var(--glass-strong); }
     .thumb-menu.hidden { transform: translate(-50%, -46%) scale(0.95); }
@@ -154,7 +130,7 @@
     .thumb-tile:hover { border-color: var(--cyan); background: rgba(0,229,255,0.16); }
     .thumb-colors { display: flex; justify-content: space-between; gap: 8px; padding: 10px; border-radius: 12px; background: rgba(0,0,0,0.32); }
     .thumb-colors .swatch { width: 28px; height: 28px; }
-    .thumb-hint { margin-top: 9px; font-size: 0.7rem; text-align: center; color: var(--muted); }
+    .thumb-hint { margin-top: 9px; font-size: 0.71rem; text-align: center; color: var(--muted); }
 
     .modal-backdrop { position: fixed; inset: 0; z-index: 45; background: rgba(2,6,18,0.74); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: grid; place-items: center; padding: 16px; transition: opacity 0.22s ease, visibility 0.22s ease; }
     .modal-backdrop.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
@@ -184,25 +160,25 @@
     .confirm-card p { font-size: 0.81rem; color: var(--muted); margin-bottom: 18px; }
     .confirm-actions { display: flex; gap: 10px; justify-content: center; }
 
-    .startup-card { width: 100%; max-width: 520px; border-radius: 26px; padding: 24px 22px; background: var(--glass-strong); text-align: center; }
-    .startup-badge { display: inline-block; padding: 5px 12px; border-radius: 999px; background: var(--cyan-dim); border: 1px solid rgba(0,229,255,0.4); color: var(--cyan); font-size: 0.69rem; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 10px; }
-    .startup-card h2 { font-size: 1.42rem; font-weight: 800; margin-bottom: 6px; }
-    .startup-card p { font-size: 0.83rem; color: var(--muted); line-height: 1.5; margin-bottom: 14px; }
-    .feature-matrix { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; text-align: left; margin-bottom: 16px; }
-    .fm-item { padding: 9px 11px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); font-size: 0.72rem; color: var(--muted); }
+    .startup-card { width: 100%; max-width: 510px; border-radius: 26px; padding: 26px 22px; background: var(--glass-strong); text-align: center; }
+    .startup-badge { display: inline-block; padding: 5px 12px; border-radius: 999px; background: var(--cyan-dim); border: 1px solid rgba(0,229,255,0.4); color: var(--cyan); font-size: 0.69rem; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 12px; }
+    .startup-card h2 { font-size: 1.45rem; font-weight: 800; margin-bottom: 8px; }
+    .startup-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.5; margin-bottom: 16px; }
+    .feature-matrix { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; text-align: left; margin-bottom: 18px; }
+    .fm-item { padding: 9px 11px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); font-size: 0.73rem; color: var(--muted); }
     .fm-item strong { color: var(--cyan); display: block; margin-bottom: 2px; }
     .start-cta { width: 100%; padding: 13px 20px; border-radius: 999px; border: none; background: linear-gradient(135deg, #00e5ff, #2563eb); color: #030712; font-size: 0.92rem; font-weight: 800; cursor: pointer; box-shadow: 0 10px 28px rgba(0,229,255,0.36); }
     .start-cta:disabled { opacity: 0.65; cursor: wait; }
-    .secondary-cta { margin-top: 9px; width: 100%; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--border-soft); background: transparent; color: var(--muted); font-size: 0.79rem; font-weight: 600; cursor: pointer; }
+    .secondary-cta { margin-top: 10px; width: 100%; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--border-soft); background: transparent; color: var(--muted); font-size: 0.79rem; font-weight: 600; cursor: pointer; }
     .secondary-cta:hover { border-color: var(--cyan); color: var(--text); }
     .error-banner { display: none; margin-top: 12px; padding: 10px 12px; border-radius: 12px; background: rgba(255,59,92,0.14); border: 1px solid rgba(255,59,92,0.42); color: #fda4af; font-size: 0.77rem; text-align: left; }
     .toast { position: fixed; top: 72px; left: 50%; transform: translateX(-50%) translateY(-8px); z-index: 60; padding: 7px 16px; border-radius: 999px; font-size: 0.77rem; font-weight: 700; color: var(--cyan); opacity: 0; pointer-events: none; transition: 0.2s ease; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    @media (max-width: 1080px) { .telemetry-strip { order: 3; width: 100%; justify-content: space-between; } }
+    @media (max-width: 1040px) { .telemetry-strip { order: 3; width: 100%; justify-content: space-between; } }
     @media (max-width: 640px) {
       .brand-sub, .dock-sep, .perf-readout { display: none; }
-      .bottom-dock { gap: 7px; padding: 8px 10px; }
+      .bottom-dock { gap: 8px; padding: 8px 10px; }
       .finger-test-grid { grid-template-columns: repeat(2, 1fr); }
       .feature-matrix { grid-template-columns: 1fr; }
       .ai-panel { left: 10px; right: 10px; width: auto; max-height: 60vh; }
@@ -228,8 +204,8 @@
         </svg>
       </div>
       <div class="brand-meta">
-        <h1>ASVIRO</h1>
-        <div class="brand-sub">YOUR IMAGINATION. YOUR AI COMPANION.</div>
+        <h1>ASVIRO AIRSKETCH</h1>
+        <div class="brand-sub">POWERED BY ASVIRO STUDIO</div>
       </div>
     </div>
 
@@ -243,10 +219,7 @@
     </div>
 
     <div class="hud-actions glass">
-      <button class="hud-btn ai-cta" id="asviroToggleBtn" title="Open ASVIRO AI Assistant">🤖 ASVIRO</button>
-      <button class="hud-btn" id="micHudBtn" title="Push-to-Talk / Listen to Voice Command">🎤 Talk</button>
-      <button class="hud-btn" id="wakeHudBtn" title="Toggle 'Hi Asviro' Wake Word Listening">Wake: Off</button>
-      <button class="hud-btn primary" id="aiAnalyzeBtn" title="Analyze Drawing with Gemini AI">✨ Ask AI</button>
+      <button class="hud-btn ai-cta" id="aiAnalyzeBtn" title="Analyze Drawing with Gemini AI">✨ Ask AI</button>
       <button class="hud-btn" id="gestureModeBtn" title="Toggle Standard / AirSketch AI Mode">Mode: Standard</button>
       <button class="hud-btn" id="galleryBtn" title="My Creations Gallery">Gallery</button>
       <button class="hud-btn" id="undoBtn" title="Undo (Pinky Hold / Ctrl+Z)" disabled>Undo</button>
@@ -283,7 +256,7 @@
       <div class="dock-sep"></div>
       <div class="slider-group">
         <div class="size-dot-wrap"><div class="size-dot" id="sizeDot" style="width:9px;height:9px;"></div></div>
-        <input type="range" class="cyber-range" id="sizeSlider" min="2" max="54" value="9" aria-label="Brush or Eraser Size" />
+        <input type="range" class="cyber-range" id="sizeSlider" min="2" max="54" value="9" />
         <span class="mono-val" id="sizeVal">9px</span>
       </div>
       <div class="dock-sep"></div>
@@ -293,68 +266,34 @@
     </div>
   </div>
 
-  <!-- ASVIRO Conversational AI & 3D Character Assistant Panel -->
+  <!-- Floating AI Recognition & 3D Character Panel -->
   <aside class="floating-panel ai-panel glass hidden" id="aiPanel">
     <div class="panel-head">
-      <div>
-        <div class="panel-title">ASVIRO • AI Companion</div>
-        <div style="font-size:0.64rem;color:var(--muted);" id="drawingContextLbl">Context: Canvas ready</div>
-      </div>
+      <div class="panel-title">ASVIRO AI • Assistant</div>
       <div style="display:flex;gap:4px;">
         <button class="hud-btn primary" id="saveToGalleryBtn" title="Save to Gallery">Save</button>
-        <button class="hud-btn" id="closeAiPanelBtn" title="Hide Assistant">✕</button>
+        <button class="hud-btn" id="closeAiPanelBtn" title="Dismiss">✕</button>
       </div>
     </div>
-
     <div class="char-stage">
       <div id="threeStage"></div>
       <canvas id="fallback2dCanvas" style="display:none;"></canvas>
       <span class="char-state-pill" id="charStateTag">IDLE</span>
-      <span class="char-model-pill" id="charModelTag">3D Bot</span>
-      <div class="audio-bars" id="audioBars"><span></span><span></span><span></span></div>
     </div>
-
-    <div class="voice-strip">
-      <button class="hud-btn primary" id="panelTalkBtn">🎤 Talk</button>
-      <button class="hud-btn" id="stopListenBtn" disabled>Stop Mic</button>
-      <button class="hud-btn" id="voiceReplayBtn">🔊 Speak</button>
-      <button class="hud-btn" id="stopSpeakBtn">Stop Voice</button>
-      <button class="hud-btn" id="voiceMuteBtn">Mute: Off</button>
-      <select class="cyber-select" id="speechLangSelect" aria-label="Speech Recognition Language">
-        <option value="en-US">Lang: EN</option>
-        <option value="hi-IN">Lang: HI</option>
-      </select>
-      <select class="cyber-select" id="ttsVoiceSelect" style="max-width:115px;" aria-label="TTS Voice"></select>
-      <input type="range" class="cyber-range" id="ttsRateSlider" min="0.7" max="1.4" step="0.1" value="1.0" style="width:62px;" title="Speech Speed" />
-    </div>
-
-    <div class="transcript-box" id="transcriptBox"><strong>Heard:</strong> Say "Hi Asviro" or tap Talk...</div>
-
     <div class="ai-result-card">
       <div class="ai-res-head">
-        <span class="ai-res-title" id="aiObjectTitle">ASVIRO Ready</span>
+        <span class="ai-res-title" id="aiObjectTitle">Ready to Analyze</span>
         <span class="ai-conf" id="aiConfidenceBadge">--%</span>
       </div>
-      <div class="ai-desc" id="aiExplanationText">Draw anything or say "Hi Asviro, draw a star" / "What have I drawn?"</div>
+      <div class="ai-desc" id="aiExplanationText">Draw anything on the canvas and click "Ask AI" (or hold a Closed Fist 1s in AI Mode).</div>
     </div>
-
-    <div class="speech-bubble" id="speechBubbleText">Hey! I'm Asviro. Ready to turn your imagination into something amazing?</div>
-
-    <div class="chat-log" id="chatLog"></div>
-    <div class="chat-row">
-      <input type="text" class="chat-input" id="chatInput" placeholder="Ask Asviro about your drawing or give a command..." maxlength="350" />
-      <button class="hud-btn primary" id="chatSendBtn">Send</button>
-    </div>
-
-    <div style="display:flex;flex-wrap:wrap;gap:5px;">
+    <div class="speech-bubble" id="speechBubbleText">Hello! I'm your ASVIRO AI companion. Draw something and let's see what it is!</div>
+    <div class="ai-btn-row">
+      <button class="hud-btn primary" id="voiceReplayBtn">🔊 Speak</button>
+      <button class="hud-btn" id="voiceMuteBtn">Mute: Off</button>
       <button class="hud-btn" id="replayReplyBtn">Replay Text</button>
-      <button class="hud-btn" id="aiRetryBtn">Analyze Canvas</button>
-      <button class="hud-btn" id="clearChatBtn">Clear Chat</button>
+      <button class="hud-btn" id="aiRetryBtn">Retry AI</button>
       <button class="hud-btn danger" id="dismissAiBtn">Dismiss</button>
-    </div>
-
-    <div class="mic-note" id="micNotice">
-      Mic Note: Wake-word ("Hi Asviro") only listens while this tab stays open. Browser speech recognition may process audio via your browser's speech service. Drawing works 100% without mic access.
     </div>
   </aside>
 
@@ -471,7 +410,7 @@
     </div>
   </div>
 
-  <!-- My Creations Gallery Modal -->
+  <!-- My Creations Gallery Modal (IndexedDB) -->
   <div class="modal-backdrop hidden" id="galleryModal">
     <div class="gallery-card glass">
       <div class="panel-head">
@@ -501,14 +440,14 @@
   <!-- Startup Modal -->
   <div class="modal-backdrop" id="startupModal">
     <div class="startup-card glass">
-      <div class="startup-badge">ASVIRO • YOUR IMAGINATION. YOUR AI COMPANION.</div>
-      <h2>Initialize ASVIRO Studio</h2>
-      <p>Air-draw with five-finger tracking, say <strong>"Hi Asviro"</strong> for voice commands &amp; shape creation, or chat with ASVIRO about your drawings.</p>
+      <div class="startup-badge">ASVIRO AIRSKETCH • 5-FINGER + GEMINI AI</div>
+      <h2>Initialize Vision System</h2>
+      <p>Draw in mid-air with five-finger hand tracking, let Gemini AI recognize your sketch, and watch the 3D assistant react.</p>
       <div class="feature-matrix">
-        <div class="fm-item"><strong>☝️ 5-Finger Control</strong>Index draws, Ring erases, Middle hovers UI, Pinky undoes.</div>
-        <div class="fm-item"><strong>🎙 "Hi Asviro" Voice</strong>Speak commands, draw shapes, or ask questions hands-free.</div>
-        <div class="fm-item"><strong>🤖 3D ASVIRO Assistant</strong>Expressive 3D companion reacting to every state &amp; answer.</div>
-        <div class="fm-item"><strong>✨ Context Gemini AI</strong>Understands your actual drawing &amp; follow-up questions.</div>
+        <div class="fm-item"><strong>☝️ Index / 🖕 Middle</strong>Index draws; Middle steers cursor &amp; hovers UI.</div>
+        <div class="fm-item"><strong>💍 Ring / 🤙 Pinky</strong>Ring erases strokes; Pinky hold triggers Undo.</div>
+        <div class="fm-item"><strong>👍 Thumb / 🤏 Pinch</strong>Thumb opens menu; Pinch confirms selection.</div>
+        <div class="fm-item"><strong>✨ Ask AI / AI Mode</strong>Click Ask AI or hold Closed Fist 1s in AI Mode.</div>
       </div>
       <button class="start-cta" id="startCamBtn">Initialize Camera &amp; AI Tracking</button>
       <button class="secondary-cta" id="touchOnlyBtn">Continue with Touch / Mouse Only</button>
@@ -519,15 +458,12 @@
   <script type="module">
     import { FilesetResolver, HandLandmarker } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs";
 
-    // =========================================================================
-    // 1. PERSISTENT USER PREFERENCES
-    // =========================================================================
     const PREFS_KEY = "asviro_airsketch_prefs_v1";
     const DEFAULT_PREFS = {
       sensitivity: 1.09, smoothingCutoff: 1.4, activationDelayMs: 380,
       brushSize: 9, eraserSize: 28, color: "#00e5ff",
       showSkeleton: true, showPerfHud: true, perfMode: "auto",
-      gestureMode: "standard", voiceMuted: false, ttsRate: 1.0, speechLang: "en-US",
+      gestureMode: "standard", voiceMuted: false,
       enabledFingers: { thumb: true, index: true, middle: true, ring: true, pinky: true }
     };
 
@@ -542,9 +478,6 @@
     function savePrefs() { try { localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); } catch {} }
     let prefs = loadPrefs();
 
-    // =========================================================================
-    // 2. ONE-EURO FILTER & CORE DOM REFERENCES
-    // =========================================================================
     class LowPass {
       constructor() { this.s = null; }
       filter(val, alpha) { return (this.s = this.s === null ? val : alpha * val + (1 - alpha) * this.s); }
@@ -589,10 +522,8 @@
       lastDetectTime: 0, detectIntervalMs: 0, detectMsAvg: 12, slowStreak: 0, fastStreak: 0, qualityTier: "HIGH",
       fpsFrames: 0, fpsLastCheck: performance.now(), currentFps: 0, lastHudUpdate: 0,
       prevStatusText: "", prevStatusClass: "", prevGestureText: "", prevLedsBitmask: -1, toastTimer: null,
-      isAnalyzing: false, userInteracted: false,
-      assistantState: "IDLE", lastAiResult: null, lastRecognizedObject: "",
-      lastReplyText: "Hey! I'm Asviro. Ready to turn your imagination into something amazing?",
-      chatHistory: [], typewriterTimer: null
+      isAnalyzing: false, userInteracted: false, lastAiResult: null,
+      lastReplyText: "Hello! I'm your ASVIRO AI companion. Draw something and click Ask AI!", typewriterTimer: null
     };
 
     const filterX = new OneEuroFilter(prefs.smoothingCutoff, 0.022);
@@ -600,9 +531,7 @@
     document.addEventListener("pointerdown", () => { app.userInteracted = true; }, { once: true });
     document.addEventListener("keydown", () => { app.userInteracted = true; }, { once: true });
 
-    // =========================================================================
-    // 3. CANVAS RESIZE, HISTORY & SMOOTH DRAWING ENGINE
-    // =========================================================================
+    // Canvas Resize & History
     function resizeCanvases() {
       const w = window.innerWidth, h = window.innerHeight;
       let snap = null;
@@ -626,31 +555,23 @@
       syncHistoryButtons();
     }
     function performUndo() {
-      if (!app.undoStack.length) { showToast("Nothing to undo"); return false; }
+      if (!app.undoStack.length) { showToast("Nothing to undo"); return; }
       app.redoStack.push(drawCtx.getImageData(0, 0, drawCanvas.width, drawCanvas.height));
       drawCtx.putImageData(app.undoStack.pop(), 0, 0);
-      syncHistoryButtons(); showToast("Undo Applied"); return true;
+      syncHistoryButtons(); showToast("Undo Applied");
     }
     function performRedo() {
-      if (!app.redoStack.length) { showToast("Nothing to redo"); return false; }
+      if (!app.redoStack.length) { showToast("Nothing to redo"); return; }
       app.undoStack.push(drawCtx.getImageData(0, 0, drawCanvas.width, drawCanvas.height));
       drawCtx.putImageData(app.redoStack.pop(), 0, 0);
-      syncHistoryButtons(); showToast("Redo Applied"); return true;
+      syncHistoryButtons(); showToast("Redo Applied");
     }
     function syncHistoryButtons() {
       $("undoBtn").disabled = app.undoStack.length === 0;
       $("redoBtn").disabled = app.redoStack.length === 0;
     }
 
-    function clearDrawingCanvasSafely() {
-      pushHistory();
-      drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
-      app.lastRecognizedObject = "";
-      app.lastAiResult = null;
-      $("drawingContextLbl").textContent = "Context: Canvas cleared";
-      showToast("Canvas Cleared (Undo available)");
-    }
-
+    // Smooth Bezier Drawing
     function getStrokeWidth(toolName) { return toolName === "eraser" ? prefs.eraserSize : prefs.brushSize; }
     function applyStrokeStyle(ctx, toolName) {
       ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.lineWidth = getStrokeWidth(toolName);
@@ -704,76 +625,7 @@
     drawCanvas.addEventListener("pointerup", stopPointer);
     drawCanvas.addEventListener("pointercancel", stopPointer);
 
-    // =========================================================================
-    // 4. SMART SHAPE GENERATION ON ACTUAL DRAWING CANVAS
-    // =========================================================================
-    function generateShapeOnCanvas(shapeName) {
-      const w = drawCanvas.width, h = drawCanvas.height;
-      const cx = w * 0.52, cy = h * 0.5;
-      const r = Math.min(w, h) * 0.18;
-
-      pushHistory();
-      drawCtx.save();
-      applyStrokeStyle(drawCtx, "brush");
-      drawCtx.beginPath();
-
-      switch (shapeName) {
-        case "circle":
-          drawCtx.arc(cx, cy, r, 0, Math.PI * 2);
-          break;
-        case "square":
-          drawCtx.rect(cx - r, cy - r, r * 2, r * 2);
-          break;
-        case "rectangle":
-          drawCtx.rect(cx - r * 1.4, cy - r * 0.85, r * 2.8, r * 1.7);
-          break;
-        case "triangle":
-          drawCtx.moveTo(cx, cy - r);
-          drawCtx.lineTo(cx + r * 0.95, cy + r * 0.85);
-          drawCtx.lineTo(cx - r * 0.95, cy + r * 0.85);
-          drawCtx.closePath();
-          break;
-        case "star":
-          for (let i = 0; i < 10; i++) {
-            const rad = i % 2 === 0 ? r * 1.1 : r * 0.46;
-            const ang = (i * Math.PI) / 5 - Math.PI * 0.5;
-            const px = cx + Math.cos(ang) * rad, py = cy + Math.sin(ang) * rad;
-            if (i === 0) drawCtx.moveTo(px, py); else drawCtx.lineTo(px, py);
-          }
-          drawCtx.closePath();
-          break;
-        case "heart":
-          drawCtx.moveTo(cx, cy + r * 0.85);
-          drawCtx.bezierCurveTo(cx - r * 1.45, cy - r * 0.1, cx - r * 0.72, cy - r * 1.15, cx, cy - r * 0.38);
-          drawCtx.bezierCurveTo(cx + r * 0.72, cy - r * 1.15, cx + r * 1.45, cy - r * 0.1, cx, cy + r * 0.85);
-          break;
-        case "line":
-          drawCtx.moveTo(cx - r * 1.35, cy);
-          drawCtx.lineTo(cx + r * 1.35, cy);
-          break;
-        case "pattern":
-          for (let k = 0; k < 6; k++) {
-            const a = (k * Math.PI) / 3;
-            drawCtx.moveTo(cx + Math.cos(a) * r * 0.55 + r * 0.55, cy + Math.sin(a) * r * 0.55);
-            drawCtx.arc(cx + Math.cos(a) * r * 0.55, cy + Math.sin(a) * r * 0.55, r * 0.55, 0, Math.PI * 2);
-          }
-          break;
-        default:
-          drawCtx.restore();
-          return false;
-      }
-
-      drawCtx.stroke();
-      drawCtx.restore();
-      app.lastRecognizedObject = shapeName;
-      $("drawingContextLbl").textContent = `Context: Drew ${shapeName}`;
-      showToast(`ASVIRO drew a ${shapeName}`);
-      return true;
-    }
-
-    // =========================================================================
-    // 5. MEDIAPIPE HAND TRACKING & DUAL-MODE GESTURE SYSTEM
-    // =========================================================================
+    // Coordinate Mapping & Dual-Mode 5-Finger Recognition
     function mapAllLandmarks(lm) {
       const vw = video.videoWidth || 640, vh = video.videoHeight || 480, cw = overlayCanvas.width, ch = overlayCanvas.height;
       const vAspect = vw / vh, cAspect = cw / ch;
@@ -818,12 +670,14 @@
       if (T && !I && !M && !R && !P && en.thumb) return { name: "THUMB_MENU", pointerIdx: 4 };
       return { name: "IDLE", pointerIdx: 8 };
     }
-    function clearAirHover() { if (app.hoveredElement) { app.hoveredElement.classList.remove("air-hover"); app.hoveredElement = null; } }
+    function clearAirHover() {
+      if (app.hoveredElement) { app.hoveredElement.classList.remove("air-hover"); app.hoveredElement = null; }
+    }
     function updateUiHover(x, y, now) {
       if (now - app.lastHoverCheck < 55) return;
       app.lastHoverCheck = now;
       const el = document.elementFromPoint(x, y);
-      const target = el ? el.closest("button, .swatch, input[type='range'], select") : null;
+      const target = el ? el.closest("button, .swatch, input[type='range']") : null;
       if (target !== app.hoveredElement) {
         clearAirHover();
         if (target && target.id !== "drawCanvas") { app.hoveredElement = target; target.classList.add("air-hover"); }
@@ -846,8 +700,11 @@
         case "CLOSED_FIST": case "AI_PALM_PAUSE": clearAirHover(); break;
         case "AI_FIST_SUBMIT":
           clearAirHover();
-          if (!app.isAnalyzing) handleDeliberateHold("AI_FIST_SUBMIT", now, () => { analyzeDrawingWithAI(); }, "aiSubmit", 4500, 1000);
-          else app.holdProgress = 0;
+          if (!app.isAnalyzing) {
+            handleDeliberateHold("AI_FIST_SUBMIT", now, () => { analyzeDrawingWithAI(); }, "aiSubmit", 4500, 1000);
+          } else {
+            app.holdProgress = 0;
+          }
           break;
         case "OPEN_PALM":
           clearAirHover();
@@ -1006,29 +863,11 @@
       renderOverlay(); updateTelemetryHud(now); requestAnimationFrame(mainFrameLoop);
     }
 
-    // =========================================================================
-    // 6. PREMIUM 3D ASVIRO CHARACTER (GLTF LOADER + PROCEDURAL + 2D FALLBACK)
-    // =========================================================================
-    const charEngine = {
-      THREE: null, renderer: null, scene: null, camera: null, mixer: null, clock: null,
-      bot: null, head: null, armR: null, armL: null, halo: null, core: null, eyes: [],
-      animState: "idle", rafId: 0, fbId: 0, use2D: false, modelKind: "Procedural 3D"
-    };
-
-    function setAssistantState(stateName, charAnimOverride = null) {
-      app.assistantState = stateName;
-      $("charStateTag").textContent = stateName;
-      const map = {
-        IDLE: "idle", WAKE_WORD_DETECTED: "greeting", LISTENING: "listening",
-        PROCESSING_COMMAND: "thinking", ANALYZING_DRAWING: "thinking",
-        THINKING: "thinking", SPEAKING: "speaking", ERROR: "confused"
-      };
-      charEngine.animState = charAnimOverride || map[stateName] || "idle";
-    }
-
+    // Floating Procedural 3D Character + 2D Fallback
+    const charEngine = { THREE: null, renderer: null, scene: null, camera: null, bot: null, head: null, halo: null, core: null, eyes: [], state: "idle", rafId: 0, fbId: 0, use2D: false };
+    function setCharacterState(st) { charEngine.state = st; $("charStateTag").textContent = st.toUpperCase(); }
     function disposeThreeResources() {
       cancelAnimationFrame(charEngine.rafId); cancelAnimationFrame(charEngine.fbId);
-      if (charEngine.mixer) { charEngine.mixer.stopAllAction(); charEngine.mixer = null; }
       if (charEngine.bot) {
         charEngine.bot.traverse((o) => {
           if (o.geometry) o.geometry.dispose();
@@ -1039,29 +878,28 @@
       if (charEngine.renderer) { charEngine.renderer.dispose(); charEngine.renderer.domElement?.remove(); charEngine.renderer = null; }
       charEngine.scene = null; charEngine.camera = null; charEngine.eyes = [];
     }
-
     function start2DFallbackCharacter() {
       disposeThreeResources(); charEngine.use2D = true;
-      $("threeStage").style.display = "none"; $("charModelTag").textContent = "2D Holo";
+      $("threeStage").style.display = "none";
       const c = $("fallback2dCanvas"); c.style.display = "block";
       const rect = c.parentElement.getBoundingClientRect();
-      c.width = Math.max(260, Math.round(rect.width)); c.height = Math.max(155, Math.round(rect.height));
+      c.width = Math.max(260, Math.round(rect.width)); c.height = Math.max(160, Math.round(rect.height));
       const ctx = c.getContext("2d");
       function draw2D(now) {
         if ($("aiPanel").classList.contains("hidden") || !charEngine.use2D) return;
-        const t = now * 0.001, st = charEngine.animState, w = c.width, h = c.height;
+        const t = now * 0.001, st = charEngine.state, w = c.width, h = c.height;
         ctx.clearRect(0, 0, w, h);
         const bob = st === "happy" ? Math.abs(Math.sin(t * 7)) * -12 : st === "speaking" ? Math.sin(t * 11) * 5 : Math.sin(t * 2.5) * 6;
-        const tilt = st === "confused" ? Math.sin(t * 5) * 0.22 : st === "looking_drawing" ? 0.16 : 0;
-        const col = st === "confused" ? "#f59e0b" : st === "happy" || st === "listening" ? "#10b981" : "#00e5ff";
+        const tilt = st === "confused" ? Math.sin(t * 5) * 0.22 : st === "thinking" ? 0.14 : 0;
+        const col = st === "confused" ? "#f59e0b" : st === "happy" ? "#10b981" : "#00e5ff";
         ctx.save(); ctx.translate(w * 0.5, h * 0.52 + bob); ctx.rotate(tilt);
         ctx.beginPath(); ctx.arc(0, 0, 42, 0, Math.PI * 2); ctx.fillStyle = "rgba(7,16,36,0.92)"; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = col; ctx.stroke();
         ctx.fillStyle = col;
-        const eh = st === "happy" || st === "greeting" ? 4 : Math.sin(t * 3) > 0.95 ? 1.5 : 8;
+        const eh = st === "happy" ? 4 : Math.sin(t * 3) > 0.95 ? 1.5 : 8;
         ctx.fillRect(-17, -8, 10, eh); ctx.fillRect(7, -8, 10, eh);
         ctx.beginPath();
         if (st === "speaking") ctx.ellipse(0, 14, 11, 3 + Math.abs(Math.sin(t * 16)) * 6, 0, 0, Math.PI * 2);
-        else if (st === "happy" || st === "greeting") ctx.arc(0, 10, 11, 0.15 * Math.PI, 0.85 * Math.PI);
+        else if (st === "happy") ctx.arc(0, 10, 11, 0.15 * Math.PI, 0.85 * Math.PI);
         else if (st === "confused") { ctx.moveTo(-10, 16); ctx.lineTo(10, 12); }
         else { ctx.moveTo(-10, 14); ctx.lineTo(10, 14); }
         ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.stroke(); ctx.restore();
@@ -1069,7 +907,6 @@
       }
       charEngine.fbId = requestAnimationFrame(draw2D);
     }
-
     async function ensureCharacterStage() {
       if (charEngine.renderer) return;
       if (charEngine.use2D) { start2DFallbackCharacter(); return; }
@@ -1077,145 +914,45 @@
         if (!charEngine.THREE) charEngine.THREE = await import("https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.module.js");
         const THREE = charEngine.THREE, container = $("threeStage");
         container.style.display = "block"; $("fallback2dCanvas").style.display = "none";
-        const w = container.clientWidth || 340, h = container.clientHeight || 170;
+        const w = container.clientWidth || 320, h = container.clientHeight || 175;
         const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 50);
-        camera.position.set(0, 0.25, 4.2);
+        camera.position.set(0, 0.25, 4.0);
         const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); renderer.setSize(w, h);
         container.appendChild(renderer.domElement);
+        scene.add(new THREE.AmbientLight(0xffffff, 0.9));
+        const key = new THREE.DirectionalLight(0x00e5ff, 1.4); key.position.set(2, 3, 4); scene.add(key);
 
-        scene.add(new THREE.AmbientLight(0xffffff, 0.95));
-        const key = new THREE.DirectionalLight(0x00e5ff, 1.5); key.position.set(2.5, 3.5, 4); scene.add(key);
-        const rim = new THREE.DirectionalLight(0x3b82f6, 0.9); rim.position.set(-3, 1.5, -2); scene.add(rim);
-
-        let loadedGlb = false;
-        try {
-          const headCheck = await fetch("./assets/models/asviro.glb", { method: "HEAD" });
-          if (headCheck.ok) {
-            const { GLTFLoader } = await import("https://cdn.jsdelivr.net/npm/three@0.174.0/examples/jsm/loaders/GLTFLoader.js");
-            const gltf = await new GLTFLoader().loadAsync("./assets/models/asviro.glb");
-            const model = gltf.scene;
-            const box = new THREE.Box3().setFromObject(model);
-            const size = box.getSize(new THREE.Vector3()).length() || 1;
-            model.scale.setScalar(2.2 / size);
-            box.setFromObject(model);
-            model.position.sub(box.getCenter(new THREE.Vector3()));
-            scene.add(model);
-            charEngine.bot = model;
-            charEngine.modelKind = "GLB Model";
-            if (gltf.animations?.length) {
-              charEngine.mixer = new THREE.AnimationMixer(model);
-              charEngine.mixer.clipAction(gltf.animations[0]).play();
-            }
-            loadedGlb = true;
-          }
-        } catch {}
-
-        let glowMat = null;
-        if (!loadedGlb) {
-          const bot = new THREE.Group();
-          const navyMat = new THREE.MeshStandardMaterial({ color: 0x0b1630, metalness: 0.45, roughness: 0.28 });
-          const visorMat = new THREE.MeshStandardMaterial({ color: 0x020617, metalness: 0.85, roughness: 0.14 });
-          glowMat = new THREE.MeshStandardMaterial({ color: 0x00e5ff, emissive: 0x00e5ff, emissiveIntensity: 0.85 });
-
-          const head = new THREE.Group();
-          const skull = new THREE.Mesh(new THREE.SphereGeometry(0.64, 24, 20), navyMat); skull.scale.set(1.08, 0.94, 0.96);
-          const visor = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.38, 0.26), visorMat); visor.position.set(0, 0.04, 0.52);
-          const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.085, 12, 12), glowMat); eyeL.position.set(-0.21, 0.06, 0.67);
-          const eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.085, 12, 12), glowMat); eyeR.position.set(0.21, 0.06, 0.67);
-          const earL = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.16, 12), glowMat); earL.rotation.z = Math.PI * 0.5; earL.position.set(-0.72, 0.05, 0);
-          const earR = earL.clone(); earR.position.set(0.72, 0.05, 0);
-          const antenna = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.25, 8), navyMat); antenna.position.set(0, 0.68, 0);
-          const tip = new THREE.Mesh(new THREE.SphereGeometry(0.065, 10, 10), glowMat); tip.position.set(0, 0.82, 0);
-          head.add(skull, visor, eyeL, eyeR, earL, earR, antenna, tip); head.position.y = 0.34;
-
-          const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.36, 0.38, 8, 16), navyMat); torso.position.y = -0.44;
-          const core = new THREE.Mesh(new THREE.SphereGeometry(0.14, 14, 14), glowMat); core.position.set(0, -0.42, 0.34);
-
-          const armL = new THREE.Group(); armL.position.set(-0.52, -0.32, 0);
-          const finL = new THREE.Mesh(new THREE.CapsuleGeometry(0.09, 0.36, 6, 10), navyMat); finL.position.y = -0.18;
-          armL.add(finL);
-          const armR = new THREE.Group(); armR.position.set(0.52, -0.32, 0);
-          const finR = new THREE.Mesh(new THREE.CapsuleGeometry(0.09, 0.36, 6, 10), navyMat); finR.position.y = -0.18;
-          armR.add(finR);
-
-          const halo = new THREE.Mesh(new THREE.TorusGeometry(0.95, 0.028, 10, 44), glowMat);
-          halo.rotation.x = Math.PI * 0.42; halo.position.y = -0.18;
-
-          bot.add(head, torso, core, armL, armR, halo);
-          scene.add(bot);
-          Object.assign(charEngine, { bot, head, armL, armR, halo, core, eyes: [eyeL, eyeR], modelKind: "ASVIRO 3D" });
-        }
-
-        $("charModelTag").textContent = charEngine.modelKind;
-        charEngine.renderer = renderer; charEngine.scene = scene; charEngine.camera = camera;
-        charEngine.clock = new THREE.Clock();
+        const bot = new THREE.Group();
+        const shellMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.45, roughness: 0.25 });
+        const visorMat = new THREE.MeshStandardMaterial({ color: 0x020617, metalness: 0.8, roughness: 0.15 });
+        const glowMat = new THREE.MeshStandardMaterial({ color: 0x00e5ff, emissive: 0x00e5ff, emissiveIntensity: 0.85 });
+        const head = new THREE.Group();
+        const skull = new THREE.Mesh(new THREE.SphereGeometry(0.66, 22, 18), shellMat); skull.scale.set(1.08, 0.94, 0.96);
+        const visor = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.4, 0.26), visorMat); visor.position.set(0, 0.04, 0.54);
+        const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.085, 12, 12), glowMat); eyeL.position.set(-0.22, 0.06, 0.69);
+        const eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.085, 12, 12), glowMat); eyeR.position.set(0.22, 0.06, 0.69);
+        const earL = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.16, 12), glowMat); earL.rotation.z = Math.PI * 0.5; earL.position.set(-0.74, 0.05, 0);
+        const earR = earL.clone(); earR.position.set(0.74, 0.05, 0);
+        head.add(skull, visor, eyeL, eyeR, earL, earR); head.position.y = 0.28;
+        const torso = new THREE.Mesh(new THREE.ConeGeometry(0.44, 0.76, 18), shellMat); torso.rotation.x = Math.PI; torso.position.y = -0.56;
+        const core = new THREE.Mesh(new THREE.SphereGeometry(0.15, 14, 14), glowMat); core.position.set(0, -0.44, 0.31);
+        const halo = new THREE.Mesh(new THREE.TorusGeometry(0.96, 0.032, 10, 44), glowMat); halo.rotation.x = Math.PI * 0.42; halo.position.y = -0.15;
+        bot.add(head, torso, core, halo); scene.add(bot);
+        Object.assign(charEngine, { renderer, scene, camera, bot, head, halo, core, eyes: [eyeL, eyeR] });
 
         function animate(now) {
           if ($("aiPanel").classList.contains("hidden") || charEngine.use2D) return;
-          const dt = charEngine.clock.getDelta();
-          if (charEngine.mixer) charEngine.mixer.update(dt);
-
-          const t = now * 0.001, st = charEngine.animState;
-          if (!loadedGlb && charEngine.bot) {
-            const hex = st === "confused" ? 0xf59e0b : st === "happy" || st === "listening" ? 0x10b981 : st === "thinking" ? 0x38bdf8 : 0x00e5ff;
-            glowMat.color.setHex(hex); glowMat.emissive.setHex(hex);
-
-            charEngine.armL.rotation.set(0, 0, 0.16);
-            charEngine.armR.rotation.set(0, 0, -0.16);
-
-            if (st === "greeting") {
-              charEngine.bot.position.y = Math.sin(t * 5) * 0.12;
-              charEngine.armR.rotation.z = -2.2 + Math.sin(t * 11) * 0.45;
-              charEngine.head.rotation.set(-0.08, 0, 0.12);
-            } else if (st === "goodbye") {
-              charEngine.bot.position.y = Math.sin(t * 2.5) * 0.06 - 0.1;
-              charEngine.armR.rotation.z = -1.9 + Math.sin(t * 7) * 0.3;
-              charEngine.head.rotation.set(0.24, 0, 0);
-            } else if (st === "listening") {
-              charEngine.bot.position.y = Math.sin(t * 4) * 0.08;
-              charEngine.head.rotation.set(0.08, 0, -0.1);
-              charEngine.core.scale.setScalar(1 + Math.sin(t * 10) * 0.18);
-              charEngine.halo.rotation.z = t * 2.2;
-            } else if (st === "looking_drawing") {
-              charEngine.bot.position.y = Math.sin(t * 2.4) * 0.08;
-              charEngine.head.rotation.set(0.22, 0.55, 0);
-              charEngine.halo.rotation.z = t * 1.4;
-            } else if (st === "looking_around") {
-              charEngine.bot.position.y = Math.sin(t * 2.2) * 0.09;
-              charEngine.head.rotation.set(0.05, Math.sin(t * 1.8) * 0.55, 0);
-            } else if (st === "thinking") {
-              charEngine.bot.position.y = Math.sin(t * 3.5) * 0.1;
-              charEngine.head.rotation.set(-0.1, Math.sin(t * 3) * 0.25, 0.18);
-              charEngine.armR.rotation.z = -0.8;
-              charEngine.halo.rotation.z = t * 3.4;
-            } else if (st === "happy") {
-              charEngine.bot.position.y = Math.abs(Math.sin(t * 7.5)) * 0.24;
-              charEngine.head.rotation.set(0, Math.sin(t * 4) * 0.26, Math.sin(t * 6) * 0.1);
-              charEngine.armL.rotation.z = 1.2; charEngine.armR.rotation.z = -1.2;
-              charEngine.halo.rotation.z = t * 2.2;
-            } else if (st === "confused") {
-              charEngine.bot.position.y = Math.sin(t * 2) * 0.05;
-              charEngine.head.rotation.set(0, Math.cos(t * 4) * 0.24, Math.sin(t * 5.5) * 0.24);
-              charEngine.halo.rotation.z = t * 0.7;
-            } else if (st === "speaking") {
-              charEngine.bot.position.y = Math.sin(t * 9) * 0.08;
-              charEngine.head.rotation.set(Math.sin(t * 14) * 0.08, 0, 0);
-              charEngine.armR.rotation.z = -0.45 + Math.sin(t * 8) * 0.25;
-              charEngine.core.scale.setScalar(1 + Math.abs(Math.sin(t * 15)) * 0.35);
-              charEngine.halo.rotation.z = t * 1.8;
-            } else {
-              const lookPhase = Math.sin(t * 0.55) > 0.7 ? Math.sin(t * 2.2) * 0.42 : Math.sin(t * 1.1) * 0.18;
-              charEngine.bot.position.y = Math.sin(t * 2.3) * 0.1;
-              charEngine.head.rotation.set(0, lookPhase, 0);
-              charEngine.core.scale.setScalar(1);
-              charEngine.halo.rotation.z = t * 1.1;
-            }
-
-            const blink = Math.sin(t * 2.4) > 0.96 ? 0.15 : 1;
-            charEngine.eyes.forEach((e) => { e.scale.y = blink; });
-          }
-
+          const t = now * 0.001, st = charEngine.state;
+          const hex = st === "confused" ? 0xf59e0b : st === "happy" ? 0x10b981 : st === "thinking" ? 0x38bdf8 : 0x00e5ff;
+          glowMat.color.setHex(hex); glowMat.emissive.setHex(hex);
+          if (st === "thinking") { bot.position.y = Math.sin(t * 3.5) * 0.1; head.rotation.set(0, Math.sin(t * 3) * 0.25, 0.18); halo.rotation.z = t * 3.2; }
+          else if (st === "happy") { bot.position.y = Math.abs(Math.sin(t * 7.5)) * 0.26; head.rotation.set(0, Math.sin(t * 4) * 0.28, Math.sin(t * 6) * 0.12); halo.rotation.z = t * 2.2; }
+          else if (st === "confused") { bot.position.y = Math.sin(t * 2) * 0.06; head.rotation.set(0, Math.cos(t * 4) * 0.24, Math.sin(t * 5.5) * 0.24); halo.rotation.z = t * 0.7; }
+          else if (st === "speaking") { bot.position.y = Math.sin(t * 9) * 0.08; head.rotation.set(Math.sin(t * 14) * 0.08, 0, 0); core.scale.setScalar(1 + Math.abs(Math.sin(t * 15)) * 0.35); halo.rotation.z = t * 1.8; }
+          else { bot.position.y = Math.sin(t * 2.3) * 0.1; head.rotation.set(0, Math.sin(t * 1.1) * 0.22, 0); core.scale.setScalar(1); halo.rotation.z = t * 1.1; }
+          const blink = Math.sin(t * 2.4) > 0.96 ? 0.15 : 1;
+          charEngine.eyes.forEach((e) => { e.scale.y = blink; });
           renderer.render(scene, camera);
           charEngine.rafId = requestAnimationFrame(animate);
         }
@@ -1223,464 +960,49 @@
       } catch { start2DFallbackCharacter(); }
     }
 
-    // =========================================================================
-    // 7. VOICE OUTPUT (TTS) & ASSISTANT DIALOGUE
-    // =========================================================================
+    // Voice & Speech Bubble
     const speechSupported = "speechSynthesis" in window;
-    let ttsVoices = [];
-
-    function populateVoices() {
-      if (!speechSupported) return;
-      ttsVoices = window.speechSynthesis.getVoices();
-      const sel = $("ttsVoiceSelect");
-      sel.innerHTML = "";
-      const filtered = ttsVoices.filter((v) => v.lang.startsWith("en") || v.lang.startsWith("hi"));
-      const list = filtered.length ? filtered : ttsVoices;
-      list.slice(0, 24).forEach((v) => {
-        const opt = document.createElement("option");
-        opt.value = v.name;
-        opt.textContent = `${v.name.slice(0, 16)} (${v.lang})`;
-        sel.appendChild(opt);
-      });
-    }
-    if (speechSupported) {
-      populateVoices();
-      window.speechSynthesis.onvoiceschanged = populateVoices;
-    } else {
-      $("voiceReplayBtn").disabled = true;
-      $("stopSpeakBtn").disabled = true;
-      $("ttsVoiceSelect").style.display = "none";
-    }
-
+    if (!speechSupported) { $("voiceReplayBtn").disabled = true; $("voiceReplayBtn").textContent = "Speech Unsupported"; }
     function stopSpeech() {
       if (speechSupported) { try { window.speechSynthesis.cancel(); } catch {} }
-      $("audioBars").classList.remove("active");
-      if (app.assistantState === "SPEAKING") {
-        setAssistantState(voiceCtrl.activeListening ? "LISTENING" : "IDLE");
-      }
+      if (charEngine.state === "speaking") setCharacterState(app.lastAiResult?.mood === "confused" ? "confused" : "happy");
     }
-
-    function speakReply(text, afterAnim = "idle") {
+    function speakReply(text) {
       if (!speechSupported || prefs.voiceMuted || !app.userInteracted || !text) return;
       try {
         window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(text);
-        u.rate = prefs.ttsRate;
-        u.lang = prefs.speechLang;
-        const chosen = ttsVoices.find((v) => v.name === $("ttsVoiceSelect").value);
-        if (chosen) u.voice = chosen;
-        u.onstart = () => {
-          setAssistantState("SPEAKING", "speaking");
-          $("audioBars").classList.add("active");
-        };
-        u.onend = u.onerror = () => {
-          $("audioBars").classList.remove("active");
-          setAssistantState(voiceCtrl.activeListening ? "LISTENING" : "IDLE", afterAnim);
-        };
+        const u = new SpeechSynthesisUtterance(text); u.rate = 1.02;
+        u.onstart = () => setCharacterState("speaking");
+        u.onend = u.onerror = () => { if (charEngine.state === "speaking") setCharacterState(app.lastAiResult?.mood === "confused" ? "confused" : "happy"); };
         window.speechSynthesis.speak(u);
       } catch {}
     }
-
     function animateSpeechBubble(text) {
-      clearInterval(app.typewriterTimer);
-      app.lastReplyText = text;
-      const b = $("speechBubbleText");
-      b.textContent = "";
-      let i = 0;
-      app.typewriterTimer = setInterval(() => {
-        i += 2;
-        b.textContent = text.slice(0, i);
-        if (i >= text.length) clearInterval(app.typewriterTimer);
-      }, 16);
+      clearInterval(app.typewriterTimer); app.lastReplyText = text;
+      const b = $("speechBubbleText"); b.textContent = ""; let i = 0;
+      app.typewriterTimer = setInterval(() => { i += 2; b.textContent = text.slice(0, i); if (i >= text.length) clearInterval(app.typewriterTimer); }, 18);
     }
-
-    function addChatMessage(role, text) {
-      app.chatHistory.push({ role, text });
-      if (app.chatHistory.length > 20) app.chatHistory.shift();
-      const log = $("chatLog");
-      const div = document.createElement("div");
-      div.className = `chat-msg ${role}`;
-      div.textContent = text;
-      log.appendChild(div);
-      log.scrollTop = log.scrollHeight;
-    }
-
-    function asviroRespond(text, { anim = "happy", speak = true, log = true } = {}) {
-      animateSpeechBubble(text);
-      if (log) addChatMessage("model", text);
-      if (speak && !prefs.voiceMuted && app.userInteracted) speakReply(text, anim);
-      else setAssistantState(voiceCtrl.activeListening ? "LISTENING" : "IDLE", anim);
-    }
-
-    // =========================================================================
-    // 8. WAKE WORD ("HI ASVIRO"), SPEECH RECOGNITION & UNIVERSAL INTENT ENGINE
-    // =========================================================================
-    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const voiceCtrl = {
-      supported: Boolean(SpeechRec),
-      recognition: null,
-      isRunning: false,
-      wakeMode: false,
-      activeListening: false,
-      listenTimeoutId: null,
-      userStopped: false
-    };
-
-    const COLOR_MAP = {
-      cyan: "#00e5ff", aqua: "#00e5ff", red: "#ff3b5c", crimson: "#ff3b5c",
-      blue: "#3b82f6", green: "#10b981", emerald: "#10b981",
-      yellow: "#f59e0b", gold: "#f59e0b", orange: "#f59e0b",
-      purple: "#a855f7", violet: "#a855f7", pink: "#f472b6", white: "#ffffff"
-    };
-
-    function isWakePhrase(text) {
-      return /\b(hi|hey|hello|ok|okay)\s+(asviro|asvero|asbiro|ashviro|aswiro|osviro|aspiro)\b/i.test(text);
-    }
-    function stripWakePhrase(text) {
-      return text.replace(/\b(hi|hey|hello|ok|okay)\s+(asviro|asvero|asbiro|ashviro|aswiro|osviro|aspiro)[,.!\s]*/i, "").trim();
-    }
-
-    function interpretVoiceIntent(rawText) {
-      const t = rawText.toLowerCase().trim();
-      if (!t) return { intent: "NONE" };
-
-      if (/\b(goodbye|bye)\s*(asviro|asvero|asbiro|ashviro)?\b/.test(t)) return { intent: "GOODBYE" };
-      if (/^(are you listening|you there|hello\??)$/.test(t)) return { intent: "PING" };
-      if (/\b(what can you do|your features|help me|capabilities)\b/.test(t)) return { intent: "CAPABILITIES" };
-      if (/\b(repeat that|say that again|repeat)\b/.test(t)) return { intent: "REPEAT" };
-      if (/\b(stop speaking|stop talking|shut up|be quiet|silence)\b/.test(t)) return { intent: "STOP_SPEAKING" };
-      if (/\b(mute yourself|mute voice|mute)\b/.test(t)) return { intent: "MUTE", params: { muted: true } };
-      if (/\b(unmute|turn on voice|speak again)\b/.test(t)) return { intent: "MUTE", params: { muted: false } };
-
-      if (/\b(clear|reset|erase)\s+(the\s+)?(screen|canvas|drawing|board|everything)\b/.test(t)) return { intent: "CLEAR_CANVAS" };
-      if (/\b(undo|undo that|go back)\b/.test(t)) return { intent: "UNDO" };
-      if (/\b(redo|redo that)\b/.test(t)) return { intent: "REDO" };
-      if (/\b(save)\s+(my\s+|the\s+)?(drawing|sketch|art|creation)\b/.test(t)) return { intent: "SAVE_GALLERY" };
-      if (/\b(export|download)\s+(my\s+|the\s+)?(drawing|sketch|png|image)\b/.test(t)) return { intent: "EXPORT_PNG" };
-      if (/\b(open|show)\s+(my\s+)?gallery\b/.test(t)) return { intent: "OPEN_GALLERY" };
-
-      for (const [name, hex] of Object.entries(COLOR_MAP)) {
-        if (new RegExp(`\\b(color|brush|change|set|make|use)\\b.*\\b${name}\\b|\\b${name}\\s+color\\b`).test(t)) {
-          return { intent: "CHANGE_BRUSH_COLOR", params: { colorName: name, hex } };
-        }
-      }
-      if (/\b(bigger|larger|thicker|increase)\b.*\b(brush|size|pen|stroke)\b|\bmake\s+(the\s+)?brush\s+bigger\b/.test(t)) {
-        return { intent: "BRUSH_SIZE_DELTA", params: { delta: 6 } };
-      }
-      if (/\b(smaller|thinner|decrease)\b.*\b(brush|size|pen|stroke)\b|\bmake\s+(the\s+)?brush\s+smaller\b/.test(t)) {
-        return { intent: "BRUSH_SIZE_DELTA", params: { delta: -6 } };
-      }
-      if (/\b(select|use|switch to|pick)\s+(the\s+)?eraser\b/.test(t)) return { intent: "SELECT_TOOL", params: { tool: "eraser" } };
-      if (/\b(select|use|switch to|pick)\s+(the\s+)?brush\b/.test(t)) return { intent: "SELECT_TOOL", params: { tool: "brush" } };
-
-      const shapeMatch = t.match(/\b(draw|create|make|sketch)\s+(?:a|an|me a)?\s*(circle|square|rectangle|triangle|star|heart|straight line|line|pattern|mandala|spiral)\b/);
-      if (shapeMatch) {
-        let shape = shapeMatch[2];
-        if (shape === "straight line") shape = "line";
-        if (shape === "mandala" || shape === "spiral") shape = "pattern";
-        return { intent: "DRAW_SHAPE", params: { shape } };
-      }
-      if (/\b(draw|create|make)\s+(a|an)\s+\w+/.test(t)) {
-        return { intent: "UNSUPPORTED_SHAPE", params: { text: rawText } };
-      }
-
-      if (/\b(what have i drawn|what did i draw|what is this|describe this|recognize|analyze)\b/.test(t)) {
-        return { intent: "ANALYZE_DRAWING" };
-      }
-
-      return { intent: "CONVERSATION", params: { question: rawText } };
-    }
-
-    async function executeVoiceOrTextCommand(rawText, fromVoice = true) {
-      const cleaned = rawText.trim();
-      if (!cleaned) return;
+    $("voiceReplayBtn").addEventListener("click", () => {
       app.userInteracted = true;
-      $("aiPanel").classList.remove("hidden");
-      await ensureCharacterStage();
-
-      if (fromVoice) $("transcriptBox").innerHTML = `<strong>Heard:</strong> "${cleaned}"`;
-      setAssistantState("PROCESSING_COMMAND", "thinking");
-
-      const classified = interpretVoiceIntent(cleaned);
-      addChatMessage("user", cleaned);
-
-      switch (classified.intent) {
-        case "PING":
-          asviroRespond("Yes! I'm right here and listening. What would you like to create?", { anim: "listening", log: true });
-          break;
-        case "GOODBYE":
-          stopVoiceListening(true);
-          asviroRespond("Goodbye! Call me anytime by saying Hi Asviro. Happy sketching!", { anim: "goodbye", log: true });
-          break;
-        case "CAPABILITIES":
-          asviroRespond(
-            "I'm Asviro! You can draw in the air with your index finger, erase with your ring finger, undo with your pinky, ask me to draw shapes like stars or hearts, clear or save the canvas, and ask me to analyze or explain anything you draw.",
-            { anim: "happy", log: true }
-          );
-          break;
-        case "REPEAT":
-          asviroRespond(app.lastReplyText, { anim: "speaking", log: false });
-          break;
-        case "STOP_SPEAKING":
-          stopSpeech();
-          animateSpeechBubble("Voice stopped.");
-          break;
-        case "MUTE":
-          prefs.voiceMuted = classified.params.muted;
-          savePrefs(); syncUiFromPrefs();
-          if (prefs.voiceMuted) stopSpeech();
-          animateSpeechBubble(prefs.voiceMuted ? "Muted." : "Voice unmuted!");
-          if (!prefs.voiceMuted) speakReply("Voice unmuted!", "happy");
-          break;
-        case "CLEAR_CANVAS":
-          clearDrawingCanvasSafely();
-          asviroRespond("Sure! Clearing your drawing canvas now. You can say undo if you want it back.", { anim: "happy", log: true });
-          break;
-        case "UNDO":
-          const undone = performUndo();
-          asviroRespond(undone ? "Undone! Back one step." : "There's nothing left to undo.", { anim: undone ? "happy" : "confused", log: true });
-          break;
-        case "REDO":
-          const redone = performRedo();
-          asviroRespond(redone ? "Redone!" : "Nothing to redo right now.", { anim: redone ? "happy" : "confused", log: true });
-          break;
-        case "SAVE_GALLERY":
-          await saveCreationToGallery();
-          asviroRespond("Saved your drawing to My Creations Gallery!", { anim: "happy", log: true });
-          break;
-        case "EXPORT_PNG":
-          $("exportBtn").click();
-          asviroRespond("Exporting your drawing as a PNG image now.", { anim: "happy", log: true });
-          break;
-        case "OPEN_GALLERY":
-          $("galleryModal").classList.remove("hidden"); renderGallery();
-          asviroRespond("Opening your Creations Gallery.", { anim: "happy", log: true });
-          break;
-        case "CHANGE_BRUSH_COLOR":
-          setColor(classified.params.hex);
-          asviroRespond(`Brush color changed to ${classified.params.colorName}!`, { anim: "happy", log: true });
-          break;
-        case "BRUSH_SIZE_DELTA":
-          if (app.tool === "brush") prefs.brushSize = Math.min(48, Math.max(2, prefs.brushSize + classified.params.delta));
-          else prefs.eraserSize = Math.min(72, Math.max(8, prefs.eraserSize + classified.params.delta));
-          savePrefs(); syncUiFromPrefs();
-          asviroRespond(`Size adjusted to ${getStrokeWidth(app.tool)} pixels.`, { anim: "happy", log: true });
-          break;
-        case "SELECT_TOOL":
-          setTool(classified.params.tool);
-          asviroRespond(`${classified.params.tool === "eraser" ? "Eraser" : "Brush"} selected!`, { anim: "happy", log: true });
-          break;
-        case "DRAW_SHAPE":
-          generateShapeOnCanvas(classified.params.shape);
-          asviroRespond(`Here's a ${classified.params.shape} on your canvas!`, { anim: "looking_drawing", log: true });
-          break;
-        case "UNSUPPORTED_SHAPE":
-          asviroRespond(
-            "I can draw basic geometric shapes like a circle, square, rectangle, triangle, star, heart, straight line, or pattern. Which one would you like me to draw?",
-            { anim: "confused", log: true }
-          );
-          break;
-        case "ANALYZE_DRAWING":
-          await analyzeDrawingWithAI();
-          break;
-        case "CONVERSATION":
-          await askAsviroConversation(cleaned);
-          break;
-      }
-    }
-
-    function armListeningTimeout() {
-      clearTimeout(voiceCtrl.listenTimeoutId);
-      voiceCtrl.listenTimeoutId = setTimeout(() => {
-        if (voiceCtrl.activeListening) {
-          voiceCtrl.activeListening = false;
-          if (!voiceCtrl.wakeMode) stopVoiceListening(true);
-          else {
-            setAssistantState("IDLE", "idle");
-            $("micHudBtn").classList.remove("listening");
-            $("micHudBtn").textContent = "🎤 Talk";
-          }
-        }
-      }, 13_000);
-    }
-
-    function updateMicButtonsUI() {
-      const listening = voiceCtrl.isRunning && voiceCtrl.activeListening;
-      $("micHudBtn").classList.toggle("listening", listening);
-      $("micHudBtn").textContent = listening ? "🎙 Listening" : "🎤 Talk";
-      $("panelTalkBtn").classList.toggle("listening", listening);
-      $("stopListenBtn").disabled = !voiceCtrl.isRunning;
-      $("wakeHudBtn").classList.toggle("active", voiceCtrl.wakeMode);
-      $("wakeHudBtn").textContent = voiceCtrl.wakeMode ? "Wake: On" : "Wake: Off";
-    }
-
-    function startSpeechRecognition({ wakeStandby = false } = {}) {
-      if (!voiceCtrl.supported) {
-        showToast("SpeechRecognition unsupported in this browser. Use text chat!");
-        $("aiPanel").classList.remove("hidden");
-        ensureCharacterStage();
-        return;
-      }
-      app.userInteracted = true;
-      voiceCtrl.userStopped = false;
-      if (wakeStandby) voiceCtrl.wakeMode = true;
-      else voiceCtrl.activeListening = true;
-
-      if (voiceCtrl.isRunning) {
-        updateMicButtonsUI();
-        if (voiceCtrl.activeListening) {
-          setAssistantState("LISTENING", "listening");
-          armListeningTimeout();
-        }
-        return;
-      }
-
-      try {
-        const rec = new SpeechRec();
-        rec.lang = prefs.speechLang;
-        rec.continuous = voiceCtrl.wakeMode;
-        rec.interimResults = false;
-        rec.maxAlternatives = 1;
-
-        rec.onstart = () => {
-          voiceCtrl.isRunning = true;
-          updateMicButtonsUI();
-          if (voiceCtrl.activeListening) {
-            setAssistantState("LISTENING", "listening");
-            armListeningTimeout();
-          }
-        };
-
-        rec.onresult = async (event) => {
-          const result = event.results[event.results.length - 1];
-          if (!result?.isFinal) return;
-          const transcript = (result[0]?.transcript || "").trim();
-          if (!transcript) return;
-
-          $("transcriptBox").innerHTML = `<strong>Heard:</strong> "${transcript}"`;
-
-          if (isWakePhrase(transcript)) {
-            $("aiPanel").classList.remove("hidden");
-            await ensureCharacterStage();
-            const remainder = stripWakePhrase(transcript);
-            setAssistantState("WAKE_WORD_DETECTED", "greeting");
-            if (remainder) {
-              voiceCtrl.activeListening = true;
-              armListeningTimeout();
-              await executeVoiceOrTextCommand(remainder, true);
-            } else {
-              voiceCtrl.activeListening = true;
-              armListeningTimeout();
-              asviroRespond("Yes! I'm listening.", { anim: "greeting", log: true });
-            }
-            return;
-          }
-
-          if (voiceCtrl.activeListening) {
-            armListeningTimeout();
-            await executeVoiceOrTextCommand(transcript, true);
-          }
-        };
-
-        rec.onerror = (e) => {
-          if (e.error === "not-allowed" || e.error === "service-not-allowed") {
-            voiceCtrl.wakeMode = false;
-            voiceCtrl.activeListening = false;
-            voiceCtrl.userStopped = true;
-            setAssistantState("ERROR", "confused");
-            showToast("Microphone permission denied. Drawing & text chat still work!");
-          } else if (e.error !== "no-speech" && e.error !== "aborted") {
-            showToast(`Mic notice: ${e.error}`);
-          }
-        };
-
-        rec.onend = () => {
-          voiceCtrl.isRunning = false;
-          voiceCtrl.recognition = null;
-          if (!voiceCtrl.userStopped && voiceCtrl.wakeMode && !document.hidden) {
-            setTimeout(() => {
-              if (voiceCtrl.wakeMode && !voiceCtrl.isRunning && !voiceCtrl.userStopped) {
-                startSpeechRecognition({ wakeStandby: true });
-              }
-            }, 350);
-          } else if (!voiceCtrl.wakeMode) {
-            voiceCtrl.activeListening = false;
-            if (app.assistantState === "LISTENING") setAssistantState("IDLE", "idle");
-          }
-          updateMicButtonsUI();
-        };
-
-        voiceCtrl.recognition = rec;
-        rec.start();
-      } catch {
-        voiceCtrl.isRunning = false;
-        showToast("Could not start microphone recognition.");
-        updateMicButtonsUI();
-      }
-    }
-
-    function stopVoiceListening(fullStop = true) {
-      clearTimeout(voiceCtrl.listenTimeoutId);
-      voiceCtrl.activeListening = false;
-      if (fullStop) {
-        voiceCtrl.wakeMode = false;
-        voiceCtrl.userStopped = true;
-      }
-      if (voiceCtrl.recognition) {
-        try { voiceCtrl.recognition.stop(); } catch {}
-      }
-      setAssistantState("IDLE", "idle");
-      updateMicButtonsUI();
-    }
-
-    $("asviroToggleBtn").addEventListener("click", async () => {
-      app.userInteracted = true;
-      $("aiPanel").classList.toggle("hidden");
-      if (!$("aiPanel").classList.contains("hidden")) {
-        await ensureCharacterStage();
-        setAssistantState("IDLE", "greeting");
-      } else {
-        stopSpeech();
-        disposeThreeResources();
-      }
+      if (prefs.voiceMuted) { prefs.voiceMuted = false; savePrefs(); $("voiceMuteBtn").textContent = "Mute: Off"; }
+      speakReply(app.lastReplyText);
     });
-    $("micHudBtn").addEventListener("click", () => {
-      $("aiPanel").classList.remove("hidden");
-      ensureCharacterStage();
-      startSpeechRecognition({ wakeStandby: voiceCtrl.wakeMode });
+    $("voiceMuteBtn").addEventListener("click", () => {
+      prefs.voiceMuted = !prefs.voiceMuted; savePrefs();
+      $("voiceMuteBtn").textContent = prefs.voiceMuted ? "Mute: On" : "Mute: Off";
+      if (prefs.voiceMuted) stopSpeech();
     });
-    $("panelTalkBtn").addEventListener("click", () => startSpeechRecognition({ wakeStandby: voiceCtrl.wakeMode }));
-    $("stopListenBtn").addEventListener("click", () => stopVoiceListening(true));
-    $("wakeHudBtn").addEventListener("click", () => {
-      if (voiceCtrl.wakeMode) {
-        stopVoiceListening(true);
-        showToast("Wake-word listening stopped");
-      } else {
-        $("aiPanel").classList.remove("hidden");
-        ensureCharacterStage();
-        startSpeechRecognition({ wakeStandby: true });
-        showToast('Wake mode active: say "Hi Asviro"');
-      }
-    });
-    $("speechLangSelect").addEventListener("change", (e) => {
-      prefs.speechLang = e.target.value;
-      savePrefs();
-      if (voiceCtrl.isRunning) {
-        const wasWake = voiceCtrl.wakeMode;
-        stopVoiceListening(true);
-        startSpeechRecognition({ wakeStandby: wasWake });
-      }
-    });
+    $("replayReplyBtn").addEventListener("click", () => animateSpeechBubble(app.lastReplyText));
+    function dismissAiPanel() { $("aiPanel").classList.add("hidden"); clearInterval(app.typewriterTimer); stopSpeech(); disposeThreeResources(); }
+    $("closeAiPanelBtn").addEventListener("click", dismissAiPanel);
+    $("dismissAiBtn").addEventListener("click", dismissAiPanel);
 
-    // =========================================================================
-    // 9. GEMINI AI ANALYSIS (MODE A) & CONTEXT-AWARE CONVERSATION (MODE B)
-    // =========================================================================
+    // Gemini AI Drawing Recognition
     function isCanvasBlank() {
       const data = drawCtx.getImageData(0, 0, drawCanvas.width, drawCanvas.height).data;
       for (let i = 3; i < data.length; i += 16) { if (data[i] > 12) return false; }
       return true;
     }
-
     function composeExportDataUrl(maxDim = null) {
       const scale = maxDim ? Math.min(1, maxDim / Math.max(drawCanvas.width, drawCanvas.height)) : 1;
       const out = document.createElement("canvas");
@@ -1689,47 +1011,38 @@
       octx.drawImage(drawCanvas, 0, 0, out.width, out.height);
       return out.toDataURL("image/png");
     }
-
     async function analyzeDrawingWithAI() {
       if (app.isAnalyzing) return;
-      if (isCanvasBlank()) {
-        asviroRespond("Your canvas is empty right now! Draw something first and I'll recognize it.", { anim: "confused", log: true });
-        return;
-      }
-      app.isAnalyzing = true;
-      $("aiAnalyzeBtn").disabled = true; $("aiRetryBtn").disabled = true;
+      if (isCanvasBlank()) { showToast("Draw something first before asking AI!"); return; }
+      app.isAnalyzing = true; $("aiAnalyzeBtn").disabled = true; $("aiRetryBtn").disabled = true;
       $("aiPanel").classList.remove("hidden");
       await ensureCharacterStage();
-      setAssistantState("ANALYZING_DRAWING", "looking_drawing");
-      $("aiObjectTitle").textContent = "Inspecting Canvas...";
-      $("aiConfidenceBadge").textContent = "...";
-      $("aiExplanationText").textContent = "ASVIRO is examining your strokes with Gemini AI...";
-      animateSpeechBubble("Let me take a look at your drawing...");
-
+      setCharacterState("thinking");
+      $("aiObjectTitle").textContent = "Analyzing Sketch..."; $("aiConfidenceBadge").textContent = "...";
+      $("aiExplanationText").textContent = "Sending your artwork securely to Gemini AI...";
+      animateSpeechBubble("Hmm, let me take a close look at your drawing...");
       try {
         const base64 = composeExportDataUrl(768).split(",")[1];
         const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 22_000);
         const res = await fetch("/api/analyze", {
           method: "POST", headers: { "Content-Type": "application/json" }, signal: ctrl.signal,
-          body: JSON.stringify({ mode: "analyze", imageBase64: base64, mimeType: "image/png" })
+          body: JSON.stringify({ imageBase64: base64, mimeType: "image/png" })
         });
         clearTimeout(timer);
         const data = await res.json().catch(() => ({ success: false, error: "Invalid server response." }));
         if (!res.ok || !data.success) throw new Error(data.error || `AI request failed (${res.status})`);
-
         app.lastAiResult = data;
-        app.lastRecognizedObject = data.object;
-        $("drawingContextLbl").textContent = `Context: ${data.object}`;
         $("aiObjectTitle").textContent = `${data.object} (${data.category})`;
         $("aiConfidenceBadge").textContent = typeof data.confidence === "number" ? `${Math.round(data.confidence * 100)}%` : "N/A";
         $("aiExplanationText").textContent = data.explanation;
-
-        const fullMsg = data.suggestion ? `${data.reply} ${data.suggestion}` : data.reply;
-        asviroRespond(fullMsg, { anim: data.mood === "confused" ? "confused" : "happy", speak: true, log: true });
+        setCharacterState(data.mood === "confused" ? "confused" : "happy");
+        const fullReply = data.suggestion ? `${data.reply} (${data.suggestion})` : data.reply;
+        animateSpeechBubble(fullReply);
+        speakReply(data.reply);
       } catch (err) {
         const msg = err.name === "AbortError" ? "AI request timed out. Please retry." : err.message;
-        setAssistantState("ERROR", "confused");
-        $("aiObjectTitle").textContent = "AI Unavailable"; $("aiConfidenceBadge").textContent = "ERR";
+        setCharacterState("confused");
+        $("aiObjectTitle").textContent = "AI Analysis Failed"; $("aiConfidenceBadge").textContent = "ERR";
         $("aiExplanationText").textContent = msg;
         animateSpeechBubble(`Oops! ${msg}`);
         showToast(msg);
@@ -1737,90 +1050,10 @@
         app.isAnalyzing = false; $("aiAnalyzeBtn").disabled = false; $("aiRetryBtn").disabled = false;
       }
     }
-
-    async function askAsviroConversation(question) {
-      if (app.isAnalyzing) return;
-      app.isAnalyzing = true;
-      setAssistantState("THINKING", "thinking");
-      animateSpeechBubble("Thinking...");
-      try {
-        const hasDrawing = !isCanvasBlank();
-        const payload = {
-          mode: "chat",
-          question,
-          lastObject: app.lastRecognizedObject,
-          lang: prefs.speechLang,
-          toolContext: { tool: app.tool, color: prefs.color, size: getStrokeWidth(app.tool) },
-          history: app.chatHistory.slice(-8)
-        };
-        if (hasDrawing) {
-          payload.imageBase64 = composeExportDataUrl(640).split(",")[1];
-          payload.mimeType = "image/png";
-        }
-
-        const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 20_000);
-        const res = await fetch("/api/analyze", {
-          method: "POST", headers: { "Content-Type": "application/json" }, signal: ctrl.signal,
-          body: JSON.stringify(payload)
-        });
-        clearTimeout(timer);
-        const data = await res.json().catch(() => ({ success: false, error: "Invalid server response." }));
-        if (!res.ok || !data.success) throw new Error(data.error || "Conversation failed");
-
-        if (data.recognizedObject) {
-          app.lastRecognizedObject = data.recognizedObject;
-          $("drawingContextLbl").textContent = `Context: ${data.recognizedObject}`;
-          $("aiObjectTitle").textContent = data.recognizedObject;
-        }
-        const replyText = data.suggestion ? `${data.reply} ${data.suggestion}` : data.reply;
-        asviroRespond(replyText, { anim: data.mood === "confused" ? "confused" : "happy", speak: true, log: true });
-      } catch (err) {
-        const msg = err.name === "AbortError" ? "Response timed out. Try asking again." : err.message;
-        setAssistantState("ERROR", "confused");
-        animateSpeechBubble(`Sorry, ${msg}`);
-      } finally {
-        app.isAnalyzing = false;
-      }
-    }
-
     $("aiAnalyzeBtn").addEventListener("click", analyzeDrawingWithAI);
     $("aiRetryBtn").addEventListener("click", analyzeDrawingWithAI);
-    $("chatSendBtn").addEventListener("click", () => {
-      const val = $("chatInput").value.trim();
-      if (!val) return;
-      $("chatInput").value = "";
-      executeVoiceOrTextCommand(val, false);
-    });
-    $("chatInput").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") $("chatSendBtn").click();
-    });
-    $("clearChatBtn").addEventListener("click", () => { app.chatHistory = []; $("chatLog").innerHTML = ""; });
 
-    $("voiceReplayBtn").addEventListener("click", () => {
-      app.userInteracted = true;
-      if (prefs.voiceMuted) { prefs.voiceMuted = false; savePrefs(); syncUiFromPrefs(); }
-      speakReply(app.lastReplyText);
-    });
-    $("stopSpeakBtn").addEventListener("click", stopSpeech);
-    $("voiceMuteBtn").addEventListener("click", () => {
-      prefs.voiceMuted = !prefs.voiceMuted; savePrefs(); syncUiFromPrefs();
-      if (prefs.voiceMuted) stopSpeech();
-    });
-    $("ttsRateSlider").addEventListener("input", (e) => { prefs.ttsRate = parseFloat(e.target.value); savePrefs(); });
-    $("replayReplyBtn").addEventListener("click", () => animateSpeechBubble(app.lastReplyText));
-
-    function dismissAiPanel() {
-      $("aiPanel").classList.add("hidden");
-      clearInterval(app.typewriterTimer);
-      stopSpeech();
-      disposeThreeResources();
-    }
-    $("closeAiPanelBtn").addEventListener("click", dismissAiPanel);
-    $("dismissAiBtn").addEventListener("click", dismissAiPanel);
-
-    // =========================================================================
-    // 10. INDEXEDDB CREATIONS GALLERY
-    // =========================================================================
+    // IndexedDB Creations Gallery
     let dbPromise = null;
     function openGalleryDB() {
       if (dbPromise) return dbPromise;
@@ -1841,10 +1074,10 @@
       try {
         await dbOp("readwrite", (s) => s.put({
           id: `asv_${Date.now()}`,
-          title: app.lastRecognizedObject || `AirSketch ${new Date().toLocaleTimeString()}`,
+          title: app.lastAiResult?.object || `AirSketch ${new Date().toLocaleTimeString()}`,
           createdAt: Date.now(),
           imageDataUrl: composeExportDataUrl(),
-          aiObject: app.lastRecognizedObject || "Not analyzed yet",
+          aiObject: app.lastAiResult?.object || "Not analyzed yet",
           aiConfidence: app.lastAiResult?.confidence ?? null,
           aiExplanation: app.lastAiResult?.explanation || ""
         }));
@@ -1882,10 +1115,8 @@
     $("galleryBtn").addEventListener("click", () => { $("galleryModal").classList.remove("hidden"); renderGallery(); });
     $("closeGalleryBtn").addEventListener("click", () => $("galleryModal").classList.add("hidden"));
 
-    // =========================================================================
-    // 11. UI SYNC & CONTROLS WIRING
-    // =========================================================================
-    function showToast(msg) { const el = $("toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(app.toastTimer); app.toastTimer = setTimeout(() => el.classList.remove("show"), 1650); }
+    // UI Sync & Controls Wiring
+    function showToast(msg) { const el = $("toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(app.toastTimer); app.toastTimer = setTimeout(() => el.classList.remove("show"), 1600); }
     function syncUiFromPrefs() {
       $("brushBtn").classList.toggle("active", app.tool === "brush"); $("eraserBtn").classList.toggle("active", app.tool === "eraser");
       const sz = app.tool === "brush" ? prefs.brushSize : prefs.eraserSize;
@@ -1906,8 +1137,6 @@
       $("gestureModeLbl").textContent = prefs.gestureMode === "ai" ? "AIRSKETCH AI" : "STANDARD";
       document.querySelectorAll("[data-gmode]").forEach((b) => b.classList.toggle("active", b.dataset.gmode === prefs.gestureMode));
       $("voiceMuteBtn").textContent = prefs.voiceMuted ? "Mute: On" : "Mute: Off";
-      $("ttsRateSlider").value = prefs.ttsRate;
-      $("speechLangSelect").value = prefs.speechLang;
       $("calSensitivity").value = prefs.sensitivity; $("calSensitivityVal").textContent = Number(prefs.sensitivity).toFixed(2);
       $("calSmoothing").value = prefs.smoothingCutoff; $("calSmoothingVal").textContent = Number(prefs.smoothingCutoff).toFixed(1);
       $("calDelay").value = prefs.activationDelayMs; $("calDelayVal").textContent = `${prefs.activationDelayMs}ms`;
@@ -1959,7 +1188,7 @@
     $("togglePerfHudBtn").addEventListener("click", () => { prefs.showPerfHud = !prefs.showPerfHud; savePrefs(); syncUiFromPrefs(); });
     $("clearBtn").addEventListener("click", () => $("clearModal").classList.remove("hidden"));
     $("cancelClearBtn").addEventListener("click", () => $("clearModal").classList.add("hidden"));
-    $("confirmClearBtn").addEventListener("click", () => { clearDrawingCanvasSafely(); $("clearModal").classList.add("hidden"); });
+    $("confirmClearBtn").addEventListener("click", () => { pushHistory(); drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height); $("clearModal").classList.add("hidden"); showToast("Canvas Purged"); });
     $("exportBtn").addEventListener("click", () => { const a = document.createElement("a"); a.download = `ASVIRO-AirSketch-${Date.now()}.png`; a.href = composeExportDataUrl(); a.click(); showToast("Exported PNG"); });
     $("calibrateBtn").addEventListener("click", () => $("calibrationModal").classList.remove("hidden"));
     $("closeCalBtn").addEventListener("click", () => $("calibrationModal").classList.add("hidden"));
@@ -1971,7 +1200,7 @@
     $("restoreDefaultsBtn").addEventListener("click", () => { prefs = structuredClone(DEFAULT_PREFS); savePrefs(); syncUiFromPrefs(); showToast("Defaults Restored"); });
 
     window.addEventListener("keydown", (e) => {
-      if (document.activeElement?.tagName === "INPUT" || document.activeElement?.tagName === "SELECT") return;
+      if (document.activeElement?.tagName === "INPUT") return;
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") { e.preventDefault(); e.shiftKey ? performRedo() : performUndo(); }
       else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") { e.preventDefault(); performRedo(); }
       else if (e.key.toLowerCase() === "b") setTool("brush");
@@ -1979,9 +1208,7 @@
     });
     syncUiFromPrefs();
 
-    // =========================================================================
-    // 12. CAMERA, MEDIAPIPE & RESOURCE CLEANUP
-    // =========================================================================
+    // Camera, MediaPipe & Cleanup
     function stopCameraStream() {
       if (app.stream) { app.stream.getTracks().forEach((t) => t.stop()); app.stream = null; }
       video.srcObject = null; app.cameraActive = false;
@@ -2024,16 +1251,11 @@
     $("restartCamBtn").addEventListener("click", () => { $("startupModal").classList.remove("hidden"); startVisionSystem(); });
     $("touchOnlyBtn").addEventListener("click", () => { stopCameraStream(); $("startupModal").classList.add("hidden"); showToast("Touch / Mouse Mode Active"); });
 
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) {
-        if (app.isDrawing) finishStroke();
-        if (voiceCtrl.isRunning) stopVoiceListening(false);
-      }
-    });
-    window.addEventListener("pagehide", () => { stopCameraStream(); stopVoiceListening(true); disposeThreeResources(); stopSpeech(); });
-    window.addEventListener("beforeunload", () => { stopCameraStream(); stopVoiceListening(true); disposeThreeResources(); stopSpeech(); });
+    document.addEventListener("visibilitychange", () => { if (document.hidden && app.isDrawing) finishStroke(); });
+    window.addEventListener("pagehide", () => { stopCameraStream(); disposeThreeResources(); stopSpeech(); });
+    window.addEventListener("beforeunload", () => { stopCameraStream(); disposeThreeResources(); stopSpeech(); });
 
     requestAnimationFrame(mainFrameLoop);
   </script>
 </body>
-</html>
+      </html>
